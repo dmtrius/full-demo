@@ -13,10 +13,12 @@ public class App21 {
 //            } else {
 //                output.append(current);
 //            }
-            if ((short)input.charAt(i) >= (short)'A' && (short)input.charAt(i) <= (short)'Z') {
-                output.append(Character.toLowerCase(input.charAt(i)));
+            if (current >= 'A' && current <= 'Z') {
+                output.append(Character.toLowerCase(current));
+            } else if(current >= 'a' && current <= 'z') {
+                output.append(Character.toUpperCase(current));
             } else {
-                output.append(Character.toUpperCase(input.charAt(i)));
+                output.append(current);
             }
 //            if ((short)input.charAt(i) >= 65 && (short)input.charAt(i) <= 90) {
 //                output.append(Character.toLowerCase(input.charAt(i)));
