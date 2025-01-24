@@ -1,0 +1,148 @@
+server:
+  port: 8843
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: password
+    key-store-type: PKCS12
+    key-alias: mydemoapplication
+    bundle:
+      jks:
+        server:
+          key:
+            alias: mydemoapplication
+          keystore:
+            location: classpath:keystore.p12
+            password: password
+            type: PKCS12
+
+#keycloak:
+#  jwks-url: 'http://localhost:8080/realms/dmtrius/protocol/openid-connect/certs'
+#  realm: dmtrius
+#  resource: mydemoapplication
+#  bearer-only: true
+#  public-client: true
+#  auth-server-url: 'http://localhost:8080/auth'
+#  credentials:
+#    secret: 6R4eZ0za4MysBqEtoloAH4DKQG7GEnxl
+#  ssl-required: external
+#  use-resource-role-mappings: true
+#  cors: true
+
+spring:
+  application:
+    name: demo
+  main:
+    allow-bean-definition-overriding: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      topic: my-topic
+      group-id: my-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+      max-poll-records: 10
+      listener:
+        ack-mode: manual
+    data:
+      redis:
+        host: localhost
+        port: 6379
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+    open-in-view: true
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations: classpath:/data/schema.sql
+      data-locations: classpath:/data/data.sql
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demo
+    username: dmytrogordiienko
+    password: enter
+    hikari:
+      minimumIdle: 0
+      maximum-pool-size: 40
+      maxLifetime: 900000
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+      auto-commit: false
+      data-source-properties:
+        useServerPrepStmts: false
+        cachePrepStmts: true
+        prepStmtCacheSize: 500
+        prepStmtCacheSqlLimit: 1024
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        connectionTimeout: 30000
+        idleTimeout: 60000
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: mydemoapplication
+            client-secret: 6R4eZ0za4MysBqEtoloAH4DKQG7GEnxl
+            scope: openid, profile, email
+            authorization-grant-type: authorization_code
+            redirect-uri: {baseUrl}/login/oauth2/code/keycloak
+            issuer-uri: http://localhost:8080/realms/dmtrius
+        provider:
+          keycloak:
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt.issuer-uri: http://localhost:8080/realms/dmtrius
+  devtools:
+    livereload:
+      enabled: true
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    root: INFO
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.data.*: trace
+    org.springframework.cache.*: trace
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+    org.hibernate:
+      type: trace
+    net:
+      ttddyy:
+        dsproxy:
+          listener: debug
+management:
+  endpoint:
+    health:
+      show-details: always
+      db:
+        enabled: true
+        validation-query: SELECT 1
+    web:
+      exposure:
+        include: *
+#        exclude: threaddump
+  info:
+    git:
+      mode: full
+  security:
+    enabled: true
+    roles: ADMIN
+    user:
+      name: admin
+      password: admin

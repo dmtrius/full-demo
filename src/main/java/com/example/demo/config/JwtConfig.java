@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
-@Configuration
+//@Configuration
 public class JwtConfig {
-    @Value("${keycloak.jwks-url}")
-    private String jwksUrl;
-
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(jwksUrl).build();
-    }
+//    @Value("${keycloak.jwks-url}")
+//    private String jwksUrl;
+//
+//    @Bean
+//    public JwtDecoder jwtDecoder() {
+//        return NimbusJwtDecoder.withJwkSetUri(jwksUrl).build();
+//    }
 }
