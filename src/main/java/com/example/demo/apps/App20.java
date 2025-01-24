@@ -7,6 +7,9 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +20,27 @@ import java.util.concurrent.TimeUnit;
 public class App20 {
     void main() {
 //        testObservable();
-        testFutures();
+//        testFutures();
+        testCompletableFuture();
+    }
+
+    private static void testCompletableFuture() {
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> 42); // Asynchronously compute 42
+
+        future.thenApply(result -> result * 2) // Double the result
+                .thenAccept(finalResult -> log.info("Result: {}", finalResult))
+                .thenRun(System.out::println)
+                .exceptionally(ex -> {
+                    log.error("Exception: {}", ex.getMessage());
+                    return null;
+                });
+        // Wait for the CompletableFuture to complete
+        try {
+            future.join(); // Block until the CompletableFuture is done
+        } catch (CancellationException | CompletionException e) {
+            log.error(e.getMessage());
+        }
+        log.info("Main thread continues to execute other tasks...");
     }
 
     @SneakyThrows
@@ -41,6 +64,8 @@ public class App20 {
                 } catch (InterruptedException | ExecutionException e) {
                     log.error(e.getMessage());
                 }
+            } else if (future.isCancelled()) {
+                log.info("Task is cancelled - {}", future.get());
             } else {
                 log.info("Task is not yet complete. Continuing with other tasks...");
             }
