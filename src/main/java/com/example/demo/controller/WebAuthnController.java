@@ -1,17 +1,16 @@
 package com.example.demo.controller;
 
 import com.webauthn4j.springframework.security.WebAuthnAuthenticationRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/webauthn")
+//@RestController
+//@RequestMapping("/webauthn")
 public class WebAuthnController {
 
-    private final WebAuthnAuthenticatorService authenticatorService;
+    /*private final WebAuthnAuthenticatorService authenticatorService;
 
     public WebAuthnController(WebAuthnAuthenticatorService authenticatorService) {
         this.authenticatorService = authenticatorService;
@@ -27,5 +26,5 @@ public class WebAuthnController {
     public String authenticate(@RequestBody WebAuthnAuthenticationRequest request) {
         // Handle authentication request
         return authenticatorService.authenticate(request);
-    }
+    }*/
 }
