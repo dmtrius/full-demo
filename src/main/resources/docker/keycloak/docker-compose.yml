@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for Keycloak
+  postgres:
+    image: postgres:15.10
+    container_name: keycloak-postgres-15.10
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+
+  # Keycloak service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    entrypoint: /opt/keycloak/bin/kc.sh start-dev
+    container_name: keycloak-26.1
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - keycloak-network
+
+# Docker volumes and networks
+volumes:
+  postgres_data:
+
+networks:
+  keycloak-network:
+    driver: bridge
