@@ -2,7 +2,9 @@ services:
   my-spring-boot-app:
     build: .
     ports:
-      - "8882:8882"
+      - "8843:8843"
+#    networks:
+#      - keycloak-network
     platform: linux/amd64
     environment:
       - JAVA_HOME=/usr/lib/jvm/java-23-openjdk-amd64
@@ -10,15 +12,18 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KEYCLOAK_URL=http://keycloak:8080/auth
     depends_on:
       - redis
-      - postgres
-      - kafka
+#      - postgres
+#      - kafka
 
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+#    networks:
+#      - keycloak-network
 
   postgres:
     image: postgres:latest
@@ -28,21 +33,32 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+#    networks:
+#      - keycloak-network
 
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
+#  kafka:
+#    image: confluentinc/cp-kafka:latest
+#    environment:
+#      - KAFKA_BROKER_ID=1
+#      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+#      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+#    ports:
+#      - "9092:9092"
+#    depends_on:
+#      - zookeeper
+#    networks:
+#      - keycloak-network
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      - ZOOKEEPER_CLIENT_PORT=2181
-    ports:
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:latest
+#    environment:
+#      - ZOOKEEPER_CLIENT_PORT=2181
+#    ports:
       - "2181:2181"
+#    networks:
+#      - keycloak-network
+
+#networks:
+#  keycloak-network:
+#    driver: bridge
+#
