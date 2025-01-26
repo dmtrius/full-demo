@@ -1,48 +1,134 @@
 services:
   my-spring-boot-app:
+    container_name: my-spring-boot-app-docker
     build: .
     ports:
-      - "8882:8882"
-    platform: linux/amd64
+      - "8843:8843"
+    platform: linux/arm64
     environment:
       - JAVA_HOME=/usr/lib/jvm/java-23-openjdk-amd64
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/demo
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:9092
+      - SPRING_KEYCLOAK_URL=http://keycloak:8080
+      - SPRING_REDIS_URL=redis
     depends_on:
       - redis
       - postgres
-      - kafka
+      - broker
+      - keycloak
+    networks:
+      - app-network
 
   redis:
     image: redis:latest
+    container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - app-network
 
   postgres:
     image: postgres:latest
+    container_name: postgres
     environment:
       - POSTGRES_DB=demo
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+    networks:
+      - app-network
 
-  kafka:
+  broker:
     image: confluentinc/cp-kafka:latest
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+    hostname: broker
+    container_name: broker
     ports:
       - "9092:9092"
-    depends_on:
-      - zookeeper
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    networks:
+        - app-network
+    expose:
+      - 9092
     environment:
-      - ZOOKEEPER_CLIENT_PORT=2181
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://broker:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker
     ports:
-      - "2181:2181"
+      - "8081:8081"
+    networks:
+        - app-network
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_DEBUG: "true"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: broker:29092
+
+  # PostgreSQL database for Keycloak
+  postgres-keycloak:
+    image: postgres:15.10
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+      - app-network
+
+# Keycloak service
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    entrypoint: /opt/keycloak/bin/kc.sh start-dev
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://keycloak:8080/
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - keycloak-network
+      - app-network
+
+# Docker volumes and networks
+volumes:
+  postgres_data:
+
+networks:
+  keycloak-network:
+    driver: bridge
+  app-network:
+    driver: bridge
