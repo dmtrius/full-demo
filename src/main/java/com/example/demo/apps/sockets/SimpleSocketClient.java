@@ -11,10 +11,11 @@ import java.net.Socket;
 @Slf4j
 public class SimpleSocketClient {
     public static final int PORT = 8888;
+    public static final String HOST = "localhost";
 
     @SuppressWarnings("unused")
     public static void main(String... args) {
-        try (Socket socket = new Socket("localhost", PORT);
+        try (Socket socket = new Socket(HOST, PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
