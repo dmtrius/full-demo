@@ -1,39 +1,27 @@
 package com.example.demo.apps.sockets;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.net.*;
 
+@Slf4j
 public class SimpleSocketServer {
-    public static void main(String[] args) {
-        try {
-            // Create server socket on port 8888
-            ServerSocket serverSocket = new ServerSocket(8888);
-            System.out.println("Server started. Waiting for client connection...");
+    public static final int PORT = 8888;
 
-            // Wait for client connection
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
-
-            // Set up input and output streams
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-            // Read message from client
+    @SuppressWarnings("unused")
+    public static void main(String... args) {
+        try (ServerSocket serverSocket = new ServerSocket(PORT);
+             Socket clientSocket = serverSocket.accept();
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+            log.info("Server started. Waiting for client connection...");
+            log.info("Client connected: {}", clientSocket.getInetAddress().getHostAddress());
             String inputLine = in.readLine();
-            System.out.println("Received from client: " + inputLine);
-
-            // Send response to client
+            log.info("Received from client: {}", inputLine);
             out.println("Hello from server! I received: " + inputLine);
-
-            // Close connections
-            in.close();
-            out.close();
-            clientSocket.close();
-            serverSocket.close();
-
         } catch (IOException e) {
-            System.out.println("Exception occurred: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Exception occurred: {}", e.getMessage());
         }
     }
 }
