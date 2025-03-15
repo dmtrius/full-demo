@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.kafka.KafkaProducer;
 import com.example.demo.service.KafkaService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
