@@ -1,5 +1,7 @@
 package com.example.demo.apps.sockets;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -11,8 +13,14 @@ import java.nio.channels.CompletionHandler;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class NIO2AsyncServer {
-    public static void main(String[] args) {
+
+    public static final String LOCALHOST = "localhost";
+    public static final int PORT = 8888;
+
+    @SuppressWarnings("unused")
+    public static void main(String... args) {
         try {
             // Create a thread pool for the channel group
             AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(
@@ -21,12 +29,12 @@ public class NIO2AsyncServer {
             // Create the asynchronous server socket channel
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel
                     .open(group)
-                    .bind(new InetSocketAddress("localhost", 8888));
+                    .bind(new InetSocketAddress(LOCALHOST, PORT));
 
             // Configure socket options
             serverChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 
-            System.out.println("NIO.2 Asynchronous server started on port 8888");
+            log.info("NIO.2 Asynchronous server started on port {}", PORT);
 
             // Start accepting connections asynchronously
             serverChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
@@ -36,13 +44,13 @@ public class NIO2AsyncServer {
                     serverChannel.accept(null, this);
 
                     try {
-                        System.out.println("Client connected: " + clientChannel.getRemoteAddress());
+                        log.info("Client connected: {}", clientChannel.getRemoteAddress());
 
                         // Allocate buffer for reading client data
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
 
                         // Read data asynchronously
-                        clientChannel.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+                        clientChannel.read(buffer, buffer, new CompletionHandler<>() {
                             @Override
                             public void completed(Integer bytesRead, ByteBuffer buffer) {
                                 if (bytesRead > 0) {
@@ -50,11 +58,11 @@ public class NIO2AsyncServer {
                                     byte[] data = new byte[buffer.limit()];
                                     buffer.get(data);
                                     String message = new String(data);
-                                    System.out.println("Received: " + message.trim());
+                                    log.info("Received: {}", message.trim());
 
                                     // Echo the message back to client
                                     ByteBuffer writeBuffer = ByteBuffer.wrap(("Echo: " + message).getBytes());
-                                    clientChannel.write(writeBuffer, writeBuffer, new CompletionHandler<Integer, ByteBuffer>() {
+                                    clientChannel.write(writeBuffer, writeBuffer, new CompletionHandler<>() {
                                         @Override
                                         public void completed(Integer bytesWritten, ByteBuffer buffer) {
                                             // Read next message from the client
@@ -69,7 +77,7 @@ public class NIO2AsyncServer {
 
                                         @Override
                                         public void failed(Throwable exc, ByteBuffer buffer) {
-                                            System.out.println("Write failed: " + exc.getMessage());
+                                            log.info("Write failed: {}", exc.getMessage());
                                             closeChannel(clientChannel);
                                         }
                                     });
@@ -81,20 +89,19 @@ public class NIO2AsyncServer {
 
                             @Override
                             public void failed(Throwable exc, ByteBuffer buffer) {
-                                System.out.println("Read failed: " + exc.getMessage());
+                                log.info("Read failed: {}", exc.getMessage());
                                 closeChannel(clientChannel);
                             }
                         });
 
                     } catch (IOException e) {
-                        System.out.println("Client handling exception: " + e.getMessage());
-                        closeChannel(clientChannel);
+                        log.error("Client handling exception: {}", e.getMessage());
                     }
                 }
 
                 @Override
                 public void failed(Throwable exc, Void attachment) {
-                    System.out.println("Accept failed: " + exc.getMessage());
+                    log.info("Accept failed: {}", exc.getMessage());
                 }
             });
 
@@ -102,8 +109,7 @@ public class NIO2AsyncServer {
             group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 
         } catch (IOException | InterruptedException e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Server exception: {}", e.getMessage());
         }
     }
 
@@ -122,11 +128,10 @@ public class NIO2AsyncServer {
                 byte[] data = new byte[buffer.limit()];
                 buffer.get(data);
                 String message = new String(data);
-                System.out.println("Received: " + message.trim());
-
+                log.info("Received: {}", message.trim());
                 // Echo the message back to client
                 ByteBuffer writeBuffer = ByteBuffer.wrap(("Echo: " + message).getBytes());
-                clientChannel.write(writeBuffer, writeBuffer, new CompletionHandler<Integer, ByteBuffer>() {
+                clientChannel.write(writeBuffer, writeBuffer, new CompletionHandler<>() {
                     @Override
                     public void completed(Integer bytesWritten, ByteBuffer buffer) {
                         if (buffer.hasRemaining()) {
@@ -136,10 +141,9 @@ public class NIO2AsyncServer {
                             clientChannel.read(newBuffer, newBuffer, ReadCompletionHandler.this);
                         }
                     }
-
                     @Override
                     public void failed(Throwable exc, ByteBuffer buffer) {
-                        System.out.println("Write failed: " + exc.getMessage());
+                        log.info("Write failed: {}", exc.getMessage());
                         closeChannel(clientChannel);
                     }
                 });
@@ -148,20 +152,19 @@ public class NIO2AsyncServer {
                 closeChannel(clientChannel);
             }
         }
-
         @Override
         public void failed(Throwable exc, ByteBuffer buffer) {
-            System.out.println("Read failed: " + exc.getMessage());
+            log.info("Read failed: {}", exc.getMessage());
             closeChannel(clientChannel);
         }
     }
 
     private static void closeChannel(AsynchronousSocketChannel channel) {
         try {
-            System.out.println("Closing connection with client: " + channel.getRemoteAddress());
+            log.info("Closing connection with client: {}", channel.getRemoteAddress());
             channel.close();
         } catch (IOException e) {
-            System.out.println("Error closing channel: " + e.getMessage());
+            log.error("Error closing channel: {}", e.getMessage());
         }
     }
 }

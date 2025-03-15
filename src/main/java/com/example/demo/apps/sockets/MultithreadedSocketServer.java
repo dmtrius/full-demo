@@ -10,9 +10,8 @@ public class MultithreadedSocketServer {
     public static final int PORT = 8888;
 
     @SuppressWarnings("unused")
-    public static void main(String[] args) {
-        try(ServerSocket serverSocket = new ServerSocket(PORT)
-        ) {
+    public static void main(String... args) {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             log.info("Multithreaded server started. Waiting for clients...");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
