@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 
 public class NIO2AsyncClient {
     public static void main(String[] args) {
