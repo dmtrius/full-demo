@@ -8,7 +8,6 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +63,7 @@ public class NIO2AsyncServer {
                                             } else {
                                                 ByteBuffer newBuffer = ByteBuffer.allocate(1024);
                                                 clientChannel.read(newBuffer, newBuffer,
-                                                        NIO2AsyncServer.this.new ReadCompletionHandler(clientChannel));
+                                                        new ReadCompletionHandler(clientChannel));
                                             }
                                         }
 
@@ -109,7 +108,7 @@ public class NIO2AsyncServer {
     }
 
     // Inner class for continuous reading from client
-    private class ReadCompletionHandler implements CompletionHandler<Integer, ByteBuffer> {
+    private static class ReadCompletionHandler implements CompletionHandler<Integer, ByteBuffer> {
         private final AsynchronousSocketChannel clientChannel;
 
         ReadCompletionHandler(AsynchronousSocketChannel clientChannel) {
