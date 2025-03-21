@@ -29,12 +29,12 @@ public class App23 {
 
         HttpEntity<String> entity = new HttpEntity<>("{}", headers);
         ResponseEntity<?> result =
-                restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+                restTemplate.exchange(uri, HttpMethod.POST, entity, Judges.class);
         return result.hasBody() ? result.getBody().toString() : "";
     }
 }
 
-class Judges<Judge> extends ArrayList {
+class Judges extends ArrayList<Judge> {
 
 }
 
