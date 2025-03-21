@@ -13,10 +13,10 @@ import java.util.Scanner;
 @Slf4j
 public class NIO2AsyncClient {
 
-    public static final String LOCALHOST = "localhost";
-    public static final int PORT = 8888;
-    public static final int CAPACITY = 1024;
-    public static final String EXIT = "exit";
+    private static final String LOCALHOST = "localhost";
+    private static final int PORT = 8888;
+    private static final int CAPACITY = 1024;
+    private static final String EXIT = "quit";
 
     @SuppressWarnings("unused")
     public static void main(String... args) {

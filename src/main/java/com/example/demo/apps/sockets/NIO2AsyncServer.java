@@ -22,12 +22,9 @@ public class NIO2AsyncServer {
     @SuppressWarnings("unused")
     public static void main(String... args) {
         try {
-            // Create a thread pool for the channel group
             AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(
-                    Executors.newFixedThreadPool(10));
-
-            // Create the asynchronous server socket channel
-            AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel
+                    Executors.newVirtualThreadPerTaskExecutor());
+           AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel
                     .open(group)
                     .bind(new InetSocketAddress(LOCALHOST, PORT));
 
@@ -106,7 +103,10 @@ public class NIO2AsyncServer {
             });
 
             // Keep the server running
-            group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            if (!group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS)) {
+                group.shutdown();
+                log.error("Group shutdown");
+            }
 
         } catch (IOException | InterruptedException e) {
             log.error("Server exception: {}", e.getMessage());
