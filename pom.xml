@@ -264,6 +264,17 @@
             <version>4.1.117.Final</version>
             <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-nn</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-stable</artifactId>
+            <version>3.8.6</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -285,9 +296,6 @@
                     <source>23</source>
                     <target>23</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgs>
-                        <compilerArg>--enable-preview</compilerArg>
-                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
