@@ -1,4 +1,4 @@
-package com.example.demo.apps.algo;
+package com.example.demo.apps;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,9 +10,13 @@ import java.util.concurrent.atomic.AtomicLong;
 // Interface for all cache implementations
 interface Cache<K, V> {
     void put(K key, V value);
+
     V get(K key);
+
     void remove(K key);
+
     int size();
+
     void clear();
 }
 
@@ -58,13 +62,13 @@ class SimpleCache<K, V> implements Cache<K, V> {
 
 // 2. LRU Cache using LinkedHashMap
 class LRUCache<K, V> implements Cache<K, V> {
-    private final Map<K, V> cache;
+    private final LinkedHashMap<K, V> cache;
     private final int capacity;
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
         // Access-order LinkedHashMap for LRU
-        this.cache = new LinkedHashMap<>(capacity, 0.75f, true) {
+        this.cache = new LinkedHashMap<K, V>(capacity, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return size() > LRUCache.this.capacity;
@@ -266,8 +270,8 @@ class TTLCache<K, V> implements Cache<K, V> {
     }
 }
 
-// Main class to demonstrate usage
 public class CacheImplementations {
+    // Main class to demonstrate usage
     public static void main(String[] args) {
         // Simple Cache Demo
         System.out.println("Simple Cache Demo:");
