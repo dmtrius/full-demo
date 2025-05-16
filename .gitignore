@@ -33,3 +33,4 @@ build/
 .vscode/
 /.fastRequest/config/fastRequestCurrentProjectConfig.json
 /*-snapshot.json
+**/node_modules/**
