@@ -6,26 +6,17 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.apache.commons.lang.math.NumberUtils.isNumber;
-
-public class FactorialCalculator {
+public class FactorialCalculatorVirtualThreads {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final BlockingQueue<Integer> inputQueue = new LinkedBlockingQueue<>();
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
 
-    static class Result {
-        int number;
-        BigInteger factorial;
-        int index;
-
-        Result(int number, BigInteger factorial, int index) {
-            this.number = number;
-            this.factorial = factorial;
-            this.index = index;
-        }
-    }
+    record Result(
+        int number,
+        BigInteger factorial,
+        int index) {}
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -34,49 +25,56 @@ public class FactorialCalculator {
         scanner.close();
 
         // Start reader thread
-        Thread readerThread = new Thread(() -> readInputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/input.txt"));
-        readerThread.start();
+        Thread readerThread = Thread.ofVirtual().start(() -> readInputFile("input.txt"));
 
         // Start writer thread
-        Thread writerThread = new Thread(() -> writeOutputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/output.txt"));
-        writerThread.start();
+        Thread writerThread = Thread.ofVirtual().start(() -> writeOutputFile("output.txt"));
 
-        // Use try-with-resources for ExecutorService
-        try (ExecutorService executor = Executors.newFixedThreadPool(numThreads)) {
+        // Use try-with-resources for ExecutorService with virtual threads
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             // Submit calculation tasks
-            while (true) {
-                try {
-                    int number = inputQueue.take();
-                    System.out.println("TAKING: " + number);
-                    if (number == -1) {
-                        break; // Null indicates the end of input
+            for (int i = 0; i < numThreads; i++) {
+                executor.submit(() -> {
+                    while (true) {
+                        try {
+                            Integer number = inputQueue.take();
+                            if (number == -1) {
+                                break; // Null indicates end of input
+                            }
+                            calculateFactorial(number);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
                     }
-                    executor.submit(() -> calculateFactorial(number));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                });
             }
-        } // ExecutorService automatically shuts down when block exits
+            // Wait for reader thread to finish before closing executor
+            try {
+                readerThread.join();
+//                writerThread.join();
+                executor.shutdown();
+                executor.awaitTermination(60, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     private static void readInputFile(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
+            int index = 0;
             while ((line = reader.readLine()) != null) {
                 try {
-                    String pNumber = line.trim();
-                    if (!isNumber(pNumber)) {
-                        continue;
-                    }
-                    int number = Integer.parseInt(pNumber);
+                    int number = Integer.parseInt(line.trim());
                     if (number >= 0) {
                         inputQueue.put(number);
                     } else {
                         System.err.println("Skipping negative number: " + number);
                     }
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid number format in input: '" + line + "'");
+                    System.err.println("Invalid number format in input: " + line);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -86,7 +84,7 @@ public class FactorialCalculator {
             System.err.println("Error reading input file: " + e.getMessage());
         } finally {
             try {
-                inputQueue.put(-1); // Signal end of input
+                inputQueue.put(null); // Signal end of input
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -137,9 +135,7 @@ public class FactorialCalculator {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             while (true) {
                 Result result = resultQueue.take();
-                if (result.number == -1 && result.factorial.equals(BigInteger.ZERO)) {
-                    break; // End signal
-                }
+                if (result.number == -1 && result.factorial.equals(BigInteger.ZERO)) break; // End signal
                 resultMap.put(result.index, result);
 
                 // Write all results in order up to the current expected index
