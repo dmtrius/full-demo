@@ -129,7 +129,7 @@ public class FactorialCalculatorVirtualThreads {
     }
 
     private static void writeOutputFile(String filename) {
-        TreeMap<Integer, Result> resultMap = new TreeMap<>();
+        Map<Integer, Result> resultMap = new TreeMap<>();
         int expectedIndex = 0;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {

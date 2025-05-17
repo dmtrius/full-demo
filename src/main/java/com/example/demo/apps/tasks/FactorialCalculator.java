@@ -34,11 +34,11 @@ public class FactorialCalculator {
         scanner.close();
 
         // Start reader thread
-        Thread readerThread = new Thread(() -> readInputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/input.txt"));
+        Thread readerThread = new Thread(() -> readInputFile("input.txt"));
         readerThread.start();
 
         // Start writer thread
-        Thread writerThread = new Thread(() -> writeOutputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/output.txt"));
+        Thread writerThread = new Thread(() -> writeOutputFile("output.txt"));
         writerThread.start();
 
         // Use try-with-resources for ExecutorService

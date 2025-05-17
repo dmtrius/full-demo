@@ -10,32 +10,35 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class FactorialCalculatorFixed {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
-    private static int resultsCount = 0;
     private static final BlockingQueue<InputTask> inputQueue = new LinkedBlockingQueue<>();
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
     private static final Lock lock = new ReentrantLock();
 
+    private static int resultsCount = 0;
     private static final InputTask POISON_PILL = new InputTask(-1, -1);
-    private static final Result NAN = new Result(-1, BigInteger.ZERO, -1);
+    private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
 
-    private static final String BASE_PATH = "/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/";
+    private static final String BASE_PATH = "C:\\work\\full-demo\\src\\main\\java\\com\\example\\demo\\apps\\tasks\\";
 
-    record InputTask(int number,
-                     int index) {}
+    private record InputTask(
+            int number,
+            int index) {
+    }
 
     record Result(
             int number,
-            BigInteger factorial,
-            int index) {}
+            int index,
+            BigInteger factorial) {
+    }
 
     @SuppressWarnings("unused")
     public static void main(String... args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of calculation threads: ");
-        int numThreads = scanner.nextInt();
-        System.out.print("Results count: ");
+        final int numThreads = scanner.nextInt();
+        System.out.print("Enter results count (0 for all): ");
         resultsCount = scanner.nextInt();
         scanner.close();
 
@@ -49,7 +52,7 @@ public class FactorialCalculatorFixed {
                     try {
                         while (true) {
                             InputTask task = inputQueue.take();
-                            if (task == POISON_PILL) {
+                            if (POISON_PILL.equals(task)) {
                                 break;
                             }
                             calculateFactorial(task);
@@ -97,7 +100,7 @@ public class FactorialCalculatorFixed {
             String line;
             int index = 0;
             while ((line = reader.readLine()) != null) {
-                if (resultsCount != 0 && index > resultsCount) {
+                if (resultsCount >= 0 && index > resultsCount) {
                     break;
                 }
                 line = line.trim();
@@ -132,7 +135,7 @@ public class FactorialCalculatorFixed {
             factorial = factorial.multiply(BigInteger.valueOf(i));
         }
         try {
-            resultQueue.put(new Result(task.number, factorial, task.index));
+            resultQueue.put(new Result(task.number, task.index, factorial));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
