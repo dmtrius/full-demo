@@ -29,10 +29,9 @@ public class FactorialCalculatorAsync {
 
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
-        CompletableFuture<List<InputTask>> inputFuture =
-                CompletableFuture.supplyAsync(() -> readInputFile(BASE_PATH + "input.txt"), executor);
-
-        inputFuture.thenComposeAsync(inputTasks -> {
+        CompletableFuture<Void> futurePipeline = CompletableFuture
+                .supplyAsync(() -> readInputFile(BASE_PATH + "input.txt"), executor)
+                .thenComposeAsync(inputTasks -> {
                     List<CompletableFuture<Void>> futures = new ArrayList<>();
                     Semaphore rateLimiter = new Semaphore(MAX_CALCULATIONS_PER_SECOND);
 
@@ -44,17 +43,20 @@ public class FactorialCalculatorAsync {
                     }
 
                     return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-                }, executor).thenRunAsync(() -> {
+                }, executor)
+                .thenRunAsync(() -> {
                     try {
                         resultQueue.put(NAN);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
-                }, executor).thenRunAsync(() -> writeOutputFile(BASE_PATH + "output.txt"), executor)
-                .thenRun(() -> {
-                    executor.shutdown();
-                    System.out.println("Completed.");
-                });
+                }, executor)
+                .thenRunAsync(() -> writeOutputFile(BASE_PATH + "output.txt"), executor);
+
+        futurePipeline.join();
+
+        executor.shutdown();
+        System.out.println("Completed.");
     }
 
     private static List<InputTask> readInputFile(String filename) {
