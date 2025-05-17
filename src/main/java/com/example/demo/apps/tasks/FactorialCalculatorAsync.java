@@ -5,10 +5,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntPredicate;
-import java.util.logging.Logger;
 
 public class FactorialCalculatorAsync {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
@@ -16,7 +13,6 @@ public class FactorialCalculatorAsync {
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
-    private static final Lock LOCK = new ReentrantLock();
     private static int resultsCount = 0;
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
     private static String basePath = "/";
@@ -30,8 +26,6 @@ public class FactorialCalculatorAsync {
 
     private record Result(int number, int index, BigInteger factorial) {
     }
-
-    private static final Logger LOGGGER = Logger.getLogger(FactorialCalculatorAsync.class.getName());
 
     @SuppressWarnings("unused")
     public static void main(String... args) {
@@ -51,7 +45,7 @@ public class FactorialCalculatorAsync {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        LOGGGER.info("Started...");
+        System.out.println("Started...");
         CompletableFuture<Void> futurePipeline = CompletableFuture
                 .supplyAsync(() -> readInputFile(basePath + INPUT), executor)
                 .thenComposeAsync(inputTasks -> {
@@ -79,7 +73,7 @@ public class FactorialCalculatorAsync {
         futurePipeline.join();
 
         executor.shutdown();
-        LOGGGER.info("Completed.");
+        System.out.println("Completed.");
     }
 
     private static List<InputTask> readInputFile(String filename) {
@@ -98,7 +92,7 @@ public class FactorialCalculatorAsync {
                 inputTasks.add(new InputTask(Integer.parseInt(line), index++));
             }
         } catch (IOException e) {
-            LOGGGER.severe("Error reading input file: " + e.getLocalizedMessage());
+            System.out.println("Error reading input file: " + e.getLocalizedMessage());
         }
         return inputTasks;
     }
@@ -117,21 +111,17 @@ public class FactorialCalculatorAsync {
 
     private static void rateLimit(Semaphore rateLimiter) {
         long now = System.currentTimeMillis() / 1000;
-        if (LOCK.tryLock()) {
+        synchronized (FactorialCalculatorAsync.class) {
+            if (now != currentSecond) {
+                currentSecond = now;
+                calculationsInCurrentSecond.set(0);
+                rateLimiter.drainPermits();
+                rateLimiter.release(MAX_CALCULATIONS_PER_SECOND);
+            }
             try {
-                if (now != currentSecond) {
-                    currentSecond = now;
-                    calculationsInCurrentSecond.set(0);
-                    rateLimiter.drainPermits();
-                    rateLimiter.release(MAX_CALCULATIONS_PER_SECOND);
-                }
-                try {
-                    rateLimiter.acquire();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            } finally {
-                LOCK.unlock();
+                rateLimiter.acquire();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -157,7 +147,7 @@ public class FactorialCalculatorAsync {
                 writer.flush();
             }
         } catch (IOException | InterruptedException e) {
-            LOGGGER.severe("Error writing output file: " + e.getMessage());
+            System.out.println("Error writing output file: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
@@ -167,11 +157,11 @@ public class FactorialCalculatorAsync {
                                      IntPredicate predicate) {
         int result;
         do {
-            LOGGGER.info(message);
+            System.out.print(message);
             while (!scanner.hasNextInt()) {
-                LOGGGER.warning(VALUE_WARNING);
+                System.out.println(VALUE_WARNING);
                 scanner.next();
-                LOGGGER.info(message);
+                System.out.print(message);
             }
             result = scanner.nextInt();
         } while (predicate.test(result));
