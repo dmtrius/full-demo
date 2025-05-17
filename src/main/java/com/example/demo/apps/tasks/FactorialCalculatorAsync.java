@@ -18,6 +18,7 @@ public class FactorialCalculatorAsync {
     private static final int BATCH_WRITE_SIZE = 1000;
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>(1000);
     private static int resultsCount = 0;
+    private static final boolean SHOW_OUTPUT = false;
     private static final int COUNTS_SHOW = 100;
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
     private static String basePath = "./";
@@ -25,6 +26,7 @@ public class FactorialCalculatorAsync {
     private static final String OUTPUT = "output.txt";
     private static final String VALUE_WARNING = "That's not a valid number!";
     private static final String SEPARATOR = " = ";
+    private static final String PATTERN = "^\\d+$";
 
     private static final Semaphore rateLimiter = new Semaphore(MAX_CALCULATIONS_PER_SECOND);
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -115,11 +117,11 @@ public class FactorialCalculatorAsync {
                     break;
                 }
                 line = line.trim();
-                if (!line.matches("^\\d+$")) {
+                if (!line.matches(PATTERN)) {
                     continue;
                 }
                 inputTasks.add(new InputTask(Integer.parseInt(line), index++));
-                if (index % COUNTS_SHOW == 0) {
+                if (SHOW_OUTPUT && index % COUNTS_SHOW == 0) {
                     System.out.println("Read " + index + " lines...");
                 }
             }
@@ -179,7 +181,7 @@ public class FactorialCalculatorAsync {
                 while (resultMap.containsKey(expectedIndex)) {
                     Result r = resultMap.remove(expectedIndex++);
                     writeBuffer.add(r.number + SEPARATOR + r.factorial);
-                    if (expectedIndex % COUNTS_SHOW == 0) {
+                    if (SHOW_OUTPUT && expectedIndex % COUNTS_SHOW == 0) {
                         System.out.println("Wrote " + expectedIndex + " lines...");
                     }
                     if (writeBuffer.size() >= BATCH_WRITE_SIZE) {
