@@ -81,7 +81,7 @@ public class FactorialCalculatorFixed {
         }
     }
 
-    private static boolean isInteger(String s) {
+    private static boolean isPositiveInteger(String s) {
         return !Objects.isNull(s) && s.matches("^\\d+$");
     }
 
@@ -94,18 +94,12 @@ public class FactorialCalculatorFixed {
                     break;
                 }
                 line = line.trim();
-                if (line.isEmpty() || !isInteger(line)) {
+                if (!isPositiveInteger(line)) {
                     continue;
                 }
                 try {
                     int number = Integer.parseInt(line.trim());
-                    if (number >= 0) {
-                        inputQueue.put(new InputTask(number, index++));
-                    } else {
-                        System.err.println("Skipping negative number: " + number);
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid number format in input: " + line);
+                    inputQueue.put(new InputTask(number, index++));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
