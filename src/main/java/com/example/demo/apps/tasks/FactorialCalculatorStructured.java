@@ -15,7 +15,7 @@ public class FactorialCalculatorStructured {
     private static int resultsCount = 0;
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
 
-    private static final String BASE_PATH = "C:\\work\\full-demo\\src\\main\\java\\com\\example\\demo\\apps\\tasks\\";
+    private static final String BASE_PATH = "/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/";
 
     private record InputTask(int number, int index) {}
     private record Result(int number, int index, BigInteger factorial) {}

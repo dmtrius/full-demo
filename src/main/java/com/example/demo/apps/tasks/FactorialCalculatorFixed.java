@@ -20,7 +20,7 @@ public class FactorialCalculatorFixed {
     private static final InputTask POISON_PILL = new InputTask(-1, -1);
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
 
-    private static final String BASE_PATH = "C:\\work\\full-demo\\src\\main\\java\\com\\example\\demo\\apps\\tasks\\";
+    private static final String BASE_PATH = "/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/";
 
     private record InputTask(
             int number,
@@ -100,7 +100,7 @@ public class FactorialCalculatorFixed {
             String line;
             int index = 0;
             while ((line = reader.readLine()) != null) {
-                if (resultsCount >= 0 && index > resultsCount) {
+                if (resultsCount >= 0 && index >= resultsCount) {
                     break;
                 }
                 line = line.trim();
