@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.IntPredicate;
+import java.util.logging.Logger;
 
 public class FactorialCalculatorAsync {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
@@ -21,13 +22,16 @@ public class FactorialCalculatorAsync {
     private static String basePath = "/";
     private static final String INPUT = "input.txt";
     private static final String OUTPUT = "output.txt";
-    public static final String SEPARATOR = " = ";
+    private static final String VALUE_WARNING = "That's not a valid number!";
+    private static final String SEPARATOR = " = ";
 
     private record InputTask(int number, int index) {
     }
 
     private record Result(int number, int index, BigInteger factorial) {
     }
+
+    private static final Logger LOGGGER = Logger.getLogger(FactorialCalculatorAsync.class.getName());
 
     @SuppressWarnings("unused")
     public static void main(String... args) {
@@ -47,7 +51,7 @@ public class FactorialCalculatorAsync {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        System.out.println("Started...");
+        LOGGGER.info("Started...");
         CompletableFuture<Void> futurePipeline = CompletableFuture
                 .supplyAsync(() -> readInputFile(basePath + INPUT), executor)
                 .thenComposeAsync(inputTasks -> {
@@ -75,7 +79,7 @@ public class FactorialCalculatorAsync {
         futurePipeline.join();
 
         executor.shutdown();
-        System.out.println("Completed.");
+        LOGGGER.info("Completed.");
     }
 
     private static List<InputTask> readInputFile(String filename) {
@@ -88,11 +92,13 @@ public class FactorialCalculatorAsync {
                     break;
                 }
                 line = line.trim();
-                if (!line.matches("^\\d+$")) continue;
+                if (!line.matches("^\\d+$")) {
+                    continue;
+                }
                 inputTasks.add(new InputTask(Integer.parseInt(line), index++));
             }
         } catch (IOException e) {
-            System.err.println("Error reading input file: " + e.getLocalizedMessage());
+            LOGGGER.severe("Error reading input file: " + e.getLocalizedMessage());
         }
         return inputTasks;
     }
@@ -151,7 +157,7 @@ public class FactorialCalculatorAsync {
                 writer.flush();
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Error writing output file: " + e.getMessage());
+            LOGGGER.severe("Error writing output file: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
@@ -161,11 +167,11 @@ public class FactorialCalculatorAsync {
                                      IntPredicate predicate) {
         int result;
         do {
-            System.out.print(message);
+            LOGGGER.info(message);
             while (!scanner.hasNextInt()) {
-                System.out.println("That's not a valid number!");
+                LOGGGER.warning(VALUE_WARNING);
                 scanner.next();
-                System.out.print(message);
+                LOGGGER.info(message);
             }
             result = scanner.nextInt();
         } while (predicate.test(result));
