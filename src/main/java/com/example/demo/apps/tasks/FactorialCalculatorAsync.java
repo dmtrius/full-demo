@@ -27,9 +27,8 @@ public class FactorialCalculatorAsync {
     private record Result(int number, int index, BigInteger factorial) {
     }
 
-    @SuppressWarnings("unused")
     public static void main(String... args) {
-        if (!Objects.isNull(args[0]) && !args[0].isEmpty()) {
+        if (args.length != 0 && !Objects.isNull(args[0]) && !args[0].isEmpty()) {
             basePath = args[0];
         }
         Scanner scanner = new Scanner(System.in);
