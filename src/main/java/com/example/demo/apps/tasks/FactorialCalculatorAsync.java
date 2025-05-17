@@ -15,7 +15,7 @@ public class FactorialCalculatorAsync {
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
     private static int resultsCount = 0;
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
-    private static String basePath = "/";
+    private static String basePath = "./";
     private static final String INPUT = "input.txt";
     private static final String OUTPUT = "output.txt";
     private static final String VALUE_WARNING = "That's not a valid number!";
