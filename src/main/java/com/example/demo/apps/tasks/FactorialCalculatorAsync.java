@@ -28,7 +28,12 @@ public class FactorialCalculatorAsync {
     }
 
     public static void main(String... args) {
-        if (args.length != 0 && !Objects.isNull(args[0]) && !args[0].isEmpty()) {
+        if (args.length == 0) {
+            System.out.println("Usage: java FactorialCalculatorAsync [basePath]");
+            System.out.println("basePath - path to input/output files");
+            System.exit(1);
+        }
+        if (!Objects.isNull(args[0]) && !args[0].isEmpty()) {
             basePath = args[0];
         }
         Scanner scanner = new Scanner(System.in);
