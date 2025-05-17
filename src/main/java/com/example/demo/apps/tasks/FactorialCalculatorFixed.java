@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class FactorialCalculatorFixed {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
@@ -13,9 +15,12 @@ public class FactorialCalculatorFixed {
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
+    private static final Lock lock = new ReentrantLock();
 
     private static final InputTask POISON_PILL = new InputTask(-1, -1);
     private static final Result NAN = new Result(-1, BigInteger.ZERO, -1);
+
+    private static final String BASE_PATH = "/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/";
 
     record InputTask(int number,
                      int index) {}
@@ -25,17 +30,18 @@ public class FactorialCalculatorFixed {
             BigInteger factorial,
             int index) {}
 
-    public static void main(String[] args) {
+    @SuppressWarnings("unused")
+    public static void main(String... args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of calculation threads: ");
         int numThreads = scanner.nextInt();
-        System.out.print("Results count?");
+        System.out.print("Results count: ");
         resultsCount = scanner.nextInt();
         scanner.close();
 
-        Thread readerThread = Thread.ofVirtual().start(() -> readInputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/input.txt", numThreads));
+        Thread readerThread = Thread.ofVirtual().start(() -> readInputFile(BASE_PATH + "input.txt", numThreads));
 
-        Thread writerThread = Thread.ofVirtual().start(() -> writeOutputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/output.txt"));
+        Thread writerThread = Thread.ofVirtual().start(() -> writeOutputFile(BASE_PATH + "output.txt"));
 
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             for (int i = 0; i < numThreads; i++) {
@@ -75,6 +81,7 @@ public class FactorialCalculatorFixed {
 
             try {
                 writerThread.join();
+                System.out.println("Completed.");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -132,27 +139,31 @@ public class FactorialCalculatorFixed {
     }
 
     private static void rateLimit() {
-        synchronized (FactorialCalculatorFixed.class) {
-            long nowSecond = System.currentTimeMillis() / 1000;
-            if (nowSecond != currentSecond) {
-                currentSecond = nowSecond;
-                calculationsInCurrentSecond.set(0);
-            }
-            while (calculationsInCurrentSecond.get() >= MAX_CALCULATIONS_PER_SECOND) {
-                long sleepMillis = 1000 - (System.currentTimeMillis() % 1000);
-                try {
-                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-                nowSecond = System.currentTimeMillis() / 1000;
+        if (lock.tryLock()) {
+            try {
+                long nowSecond = System.currentTimeMillis() / 1000;
                 if (nowSecond != currentSecond) {
                     currentSecond = nowSecond;
                     calculationsInCurrentSecond.set(0);
                 }
+                while (calculationsInCurrentSecond.get() >= MAX_CALCULATIONS_PER_SECOND) {
+                    long sleepMillis = 1000 - (System.currentTimeMillis() % 1000);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(sleepMillis);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                    nowSecond = System.currentTimeMillis() / 1000;
+                    if (nowSecond != currentSecond) {
+                        currentSecond = nowSecond;
+                        calculationsInCurrentSecond.set(0);
+                    }
+                }
+                calculationsInCurrentSecond.incrementAndGet();
+            } finally {
+                lock.unlock();
             }
-            calculationsInCurrentSecond.incrementAndGet();
         }
     }
 
