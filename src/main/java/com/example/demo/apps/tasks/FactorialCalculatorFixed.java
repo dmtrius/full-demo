@@ -6,10 +6,9 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.apache.commons.lang.math.NumberUtils.isNumber;
-
 public class FactorialCalculatorFixed {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
+    private static int resultsCount = 0;
     private static final BlockingQueue<InputTask> inputQueue = new LinkedBlockingQueue<>();
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
@@ -18,18 +17,20 @@ public class FactorialCalculatorFixed {
     private static final InputTask POISON_PILL = new InputTask(-1, -1);
     private static final Result NAN = new Result(-1, BigInteger.ZERO, -1);
 
-    record InputTask(int number, int index) {}
+    record InputTask(int number,
+                     int index) {}
 
     record Result(
             int number,
             BigInteger factorial,
-            int index) {
-    }
+            int index) {}
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of calculation threads: ");
         int numThreads = scanner.nextInt();
+        System.out.print("Results count?");
+        resultsCount = scanner.nextInt();
         scanner.close();
 
         Thread readerThread = Thread.ofVirtual().start(() -> readInputFile("/Users/dmytrogordiienko/Documents/GitHub/demo/src/main/java/com/example/demo/apps/tasks/input.txt", numThreads));
@@ -80,13 +81,20 @@ public class FactorialCalculatorFixed {
         }
     }
 
+    private static boolean isInteger(String s) {
+        return !Objects.isNull(s) && s.matches("^\\d+$");
+    }
+
     private static void readInputFile(String filename, int numThreads) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             int index = 0;
             while ((line = reader.readLine()) != null) {
+                if (resultsCount != 0 && index > resultsCount) {
+                    break;
+                }
                 line = line.trim();
-                if (line.isEmpty() || !isNumber(line)) {
+                if (line.isEmpty() || !isInteger(line)) {
                     continue;
                 }
                 try {
@@ -130,7 +138,7 @@ public class FactorialCalculatorFixed {
     }
 
     private static void rateLimit() {
-        synchronized (FactorialCalculator.class) {
+        synchronized (FactorialCalculatorFixed.class) {
             long nowSecond = System.currentTimeMillis() / 1000;
             if (nowSecond != currentSecond) {
                 currentSecond = nowSecond;
@@ -139,7 +147,7 @@ public class FactorialCalculatorFixed {
             while (calculationsInCurrentSecond.get() >= MAX_CALCULATIONS_PER_SECOND) {
                 long sleepMillis = 1000 - (System.currentTimeMillis() % 1000);
                 try {
-                    Thread.sleep(sleepMillis);
+                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
