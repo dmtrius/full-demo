@@ -14,11 +14,11 @@ import java.util.function.IntPredicate;
 
 public class FactorialCalculatorAsync {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
-    private static final int MAX_NUMBER_OF_THREADS = 10;
-    private static final int BATCH_WRITE_SIZE = 1000;
-    private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>(1000);
+    private static final int MAX_NUMBER_OF_THREADS = 5000;
+    private static final int BATCH_SIZE = 1000;
+    private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>(BATCH_SIZE);
     private static int resultsCount = 0;
-    private static final boolean SHOW_OUTPUT = false;
+    private static boolean SHOW_OUTPUT = false;
     private static final int COUNTS_SHOW = 100;
     private static final Result NAN = new Result(-1, -1, BigInteger.ZERO);
     private static String basePath = "./";
@@ -47,6 +47,7 @@ public class FactorialCalculatorAsync {
 
     public static void main(String... args) {
         if (args.length == 0) {
+            System.out.println("FILES: input.txt & output.txt");
             System.out.println("Usage: java FactorialCalculatorAsync [basePath]");
             System.out.println("basePath - path to input/output files");
             System.exit(1);
@@ -63,6 +64,7 @@ public class FactorialCalculatorAsync {
                 scanner,
                 "Enter results count (0 for all): ",
                 n -> n < 0);
+        SHOW_OUTPUT = getInputValue(scanner, "Show output? (0 - No, 1 - Yes): ", n -> n < 0 || n > 1) == 1;
         scanner.close();
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
@@ -157,7 +159,7 @@ public class FactorialCalculatorAsync {
     private static void writeOutputFile(String filename) {
         Map<Integer, Result> resultMap = new TreeMap<>();
         int expectedIndex = 0;
-        List<String> writeBuffer = new ArrayList<>(BATCH_WRITE_SIZE);
+        List<String> writeBuffer = new ArrayList<>(BATCH_SIZE);
 
         Path outputPath = Paths.get(filename);
         try (AsynchronousFileChannel channel = AsynchronousFileChannel.open(
@@ -184,7 +186,7 @@ public class FactorialCalculatorAsync {
                     if (SHOW_OUTPUT && expectedIndex % COUNTS_SHOW == 0) {
                         System.out.println("Wrote " + expectedIndex + " lines...");
                     }
-                    if (writeBuffer.size() >= BATCH_WRITE_SIZE) {
+                    if (writeBuffer.size() >= BATCH_SIZE) {
                         filePosition = flushBuffer(channel, writeBuffer, filePosition);
                     }
                 }
