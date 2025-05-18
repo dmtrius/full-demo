@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import com.example.demo.apps.tasks.TimeTracker;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ public class App25 {
 
     void main() {
         main5();
+        TimeTracker.track("Operation main4()", this::main4);
     }
 
     void main5() {
