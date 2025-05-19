@@ -3,28 +3,30 @@ package com.example.demo.apps.tasks;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public class NasaApiExample {
     public static void main(String[] args) {
         try {
-            String apiKey = "n4uPn1dZnJNGbHnDrKgeajiZTnhH429DvEj3PHGt"; // Replace with your NASA API key
+            String apiKey = "n4uPn1dZnJNGbHnDrKgeajiZTnhH429DvEj3PHGt";
             String endpoint = "https://api.nasa.gov/planetary/apod?api_key=" + apiKey;
-            URL url = new URL(endpoint);
+            URL url = new URI(endpoint).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
 
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println("Response: " + response.toString());
+                System.out.println("Response: " + response);
             } else {
                 System.out.println("Error: HTTP " + responseCode);
             }
