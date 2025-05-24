@@ -1,8 +1,9 @@
 package com.example.demo.apps.tasks;
 
+import static java.io.IO.println;
+
 public class NoMain {
-    static {
-        System.out.println("HELLO");
-        System.exit(0);
+    void main() {
+
     }
 }
