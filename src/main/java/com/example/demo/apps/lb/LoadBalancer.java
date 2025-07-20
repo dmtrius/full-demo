@@ -1,7 +1,5 @@
 package com.example.demo.apps.lb;
 
-import org.junit.jupiter.api.function.Executable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
