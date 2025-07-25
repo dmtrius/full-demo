@@ -1,5 +1,8 @@
 package com.example.demo.apps.algo;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,17 +16,17 @@ interface Cache<K, V> {
     V get(K key);
     void remove(K key);
     int size();
+    @SuppressWarnings("unused")
     void clear();
 }
 
-// 1. Simple In-Memory Cache using HashMap
 class SimpleCache<K, V> implements Cache<K, V> {
     private final Map<K, V> cache;
     private final int capacity;
 
     public SimpleCache(int capacity) {
         this.capacity = capacity;
-        this.cache = new HashMap<>();
+        this.cache = new HashMap<>(capacity);
     }
 
     @Override
@@ -122,16 +125,15 @@ class LFUCache<K, V> implements Cache<K, V> {
     public LFUCache(int capacity) {
         this.capacity = capacity;
         this.cache = new HashMap<>();
-        this.frequencyQueue = new PriorityQueue<>((a, b) -> {
-            int freqCompare = Integer.compare(a.frequency, b.frequency);
-            return freqCompare != 0 ? freqCompare : Long.compare(a.lastUsed, b.lastUsed);
-        });
+        this.frequencyQueue = new PriorityQueue<>(Comparator.comparingInt((CacheEntry<K, V> a) -> a.frequency).thenComparingLong(a -> a.lastUsed));
         this.timestamp = new AtomicLong();
     }
 
     @Override
     public void put(K key, V value) {
-        if (capacity <= 0) return;
+        if (capacity <= 0) {
+            return;
+        }
 
         synchronized (this) {
             CacheEntry<K, V> entry = cache.get(key);
@@ -267,7 +269,9 @@ class TTLCache<K, V> implements Cache<K, V> {
 }
 
 // Main class to demonstrate usage
+@Slf4j
 public class CacheImplementations {
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         // Simple Cache Demo
         System.out.println("Simple Cache Demo:");
@@ -309,7 +313,7 @@ public class CacheImplementations {
         try {
             Thread.sleep(1500); // Wait for expiration
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         System.out.println("Get 1 (after TTL): " + ttlCache.get("1"));
     }
