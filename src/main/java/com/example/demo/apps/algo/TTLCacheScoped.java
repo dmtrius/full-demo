@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class TTLCacheScoped<K, V> {
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
@@ -79,7 +80,7 @@ public class TTLCacheScoped<K, V> {
         cache.clear();
     }
 
-    // Get current size of the cache (may include expired entries before cleanup)
+    // Get a current size of the cache (may include expired entries before cleanup)
     public int size() {
         cleanupIfNeeded();
         return cache.size();

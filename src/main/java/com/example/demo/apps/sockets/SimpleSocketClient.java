@@ -1,24 +1,29 @@
 package com.example.demo.apps.sockets;
 
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+@Slf4j
 public class SimpleSocketClient {
+    private static final int PORT = SimpleSocketServer.PORT;
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         try {
-            // Connect to server at localhost:8888
-            Socket socket = new Socket("localhost", 8888);
+            // Connect to server at localhost:PORT
+            Socket socket = new Socket("localhost", PORT);
             System.out.println("Connected to server");
 
             // Set up input and output streams
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // Send message to server
+            // Send a message to server
             out.println("Hello from client!");
 
             // Read response from server
@@ -31,8 +36,7 @@ public class SimpleSocketClient {
             socket.close();
 
         } catch (IOException e) {
-            System.out.println("Exception occurred: " + e.getMessage());
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 }
