@@ -6,6 +6,8 @@ import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static io.vavr.API.println;
 
@@ -17,7 +19,13 @@ public class App26 {
         Mono<String> result = primaryMono.switchIfEmpty(Mono.defer(this::getFallbackValue));
         println(result.block());
 //        UnaryOperator
+//        AtomicStampedReference
         TimeTracker.track("Operation >> ", () -> directMemory());
+        Function<Integer, Integer> multiplyBy2 = x -> x * 2;
+        UnaryOperator<Integer> mBy2 = x -> x * 2;
+        println(">>> " +multiplyBy2.equals(mBy2));
+        println(multiplyBy2.apply(5));
+        println(mBy2.apply(5));
     }
 
     @SneakyThrows
