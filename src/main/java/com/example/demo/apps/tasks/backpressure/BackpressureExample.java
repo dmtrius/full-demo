@@ -71,7 +71,7 @@ public class BackpressureExample {
                     .forEach(publisher::publish);
 
             // Wait for subscriber to finish processing and close the publisher
-            Thread.sleep(15000);
+            Thread.sleep(5000);
         }
     }
 }
