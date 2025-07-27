@@ -2,8 +2,10 @@ package com.example.demo.apps.tasks.backpressure;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.SecureRandom;
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
+import java.util.stream.IntStream;
 
 import static java.io.IO.println;
 
@@ -24,7 +26,7 @@ public class BackpressureExample {
                 @Override
                 public void onSubscribe(Subscription subscription) {
                     this.subscription = subscription;
-                    subscription.request(1);
+                    this.subscription.request(2);
                 }
 
                 @SuppressWarnings("preview")
@@ -34,17 +36,18 @@ public class BackpressureExample {
                     executorService.submit(() -> {
                         try {
                             Thread.sleep(1000); // Simulate slow processing
-                            println("Processed: " + item);
+                            println("Processed:: " + item);
                         } catch (InterruptedException e) {
                             log.error(e.getMessage());
                         }
-                        subscription.request(1);
+                        subscription.request(2);
                     });
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
                     log.error("Error: {}", throwable.getMessage());
+                    subscription.cancel();
                     executorService.shutdown();
                 }
 
@@ -59,9 +62,13 @@ public class BackpressureExample {
             publisher.subscribe(subscriber);
 
             // Publish items
-            for (int i = 1; i <= 10; i++) {
-                publisher.publish(i);
-            }
+//            for (int i = 1; i <= 10; i++) {
+//                publisher.publish(i);
+//            }
+            SecureRandom random = new SecureRandom();
+            IntStream.generate(() -> random.nextInt(1, 42))
+                    .limit(20)
+                    .forEach(publisher::publish);
 
             // Wait for subscriber to finish processing and close the publisher
             Thread.sleep(15000);
