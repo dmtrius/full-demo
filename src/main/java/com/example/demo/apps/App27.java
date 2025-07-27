@@ -3,7 +3,6 @@ package com.example.demo.apps;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
@@ -31,7 +30,7 @@ public class App27 {
                 .forEach(System.out::println);
     }
 
-    @SuppressWarnings("preview")
+    @SuppressWarnings({"preview", "unused"})
     void parallel() {
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // Sequential
@@ -48,6 +47,7 @@ public class App27 {
         numbers.parallelStream().forEach(System.out::println);
     }
 
+    @SuppressWarnings("unused")
     void ft2() {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
             throw new CustomException("Custom exception occurred");
@@ -64,6 +64,7 @@ public class App27 {
         handledFuture.thenAccept(result -> System.out.println("Result: " + result));
     }
 
+    @SuppressWarnings("unused")
     void ft1() {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
             throw new RuntimeException("Something went wrong");
