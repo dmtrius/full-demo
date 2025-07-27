@@ -25,6 +25,10 @@ public class App27 {
         println("Sequential Stream:");
         numbers.stream().forEach(System.out::println);
 
+        // Sequential Parallel Stream
+        println("Sequential Parallel Stream:");
+        numbers.stream().parallel().forEach(System.out::println);
+
         // Parallel Stream
         println("Parallel Stream:");
         numbers.parallelStream().forEach(System.out::println);
