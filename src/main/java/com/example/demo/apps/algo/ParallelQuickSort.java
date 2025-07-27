@@ -37,7 +37,7 @@ public class ParallelQuickSort extends RecursiveAction {
             leftTask.fork();
             rightTask.compute();
 
-            // Wait for left task to complete
+            // Wait for a left task to complete
             leftTask.join();
         }
     }
@@ -85,17 +85,15 @@ public class ParallelQuickSort extends RecursiveAction {
      * Public method to sort an array using parallel quicksort
      */
     public static void sort(int[] array) {
-        ForkJoinPool pool = new ForkJoinPool();
-        try {
+        try (ForkJoinPool pool = new ForkJoinPool()) {
             pool.invoke(new ParallelQuickSort(array, 0, array.length - 1));
-        } finally {
-            pool.shutdown();
         }
     }
 
     /**
      * Demo and testing
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         // Test with different array sizes
         int[] sizes = {1000, 10000, 100000, 1000000};
@@ -103,7 +101,7 @@ public class ParallelQuickSort extends RecursiveAction {
         for (int size : sizes) {
             System.out.println("Testing with array size: " + size);
 
-            // Generate random array
+            // Generate a random array
             int[] originalArray = generateRandomArray(size);
 
             // Test parallel quicksort
