@@ -12,7 +12,9 @@ public class TCO {
     }
 
     private TailCall<Integer> factorialTail(int n, int acc) {
-        if (n == 0) return TailCall.done(acc);
+        if (n == 0) {
+            return TailCall.done(acc);
+        }
         return TailCall.call(() -> factorialTail(n - 1, acc * n));
     }
 }
@@ -41,16 +43,40 @@ interface TailCall<T> {
 
 class Done<T> implements TailCall<T> {
     private final T value;
-    Done(T value) { this.value = value; }
-    public TailCall<T> next() { throw new UnsupportedOperationException(); }
-    public boolean isComplete() { return true; }
-    public T result() { return value; }
+
+    Done(T value) {
+        this.value = value;
+    }
+    @Override
+    public TailCall<T> next() {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public boolean isComplete() {
+        return true;
+    }
+    @Override
+    public T result() {
+        return value;
+    }
 }
 
 class Call<T> implements TailCall<T> {
     private final Supplier<TailCall<T>> next;
-    Call(Supplier<TailCall<T>> next) { this.next = next; }
-    public TailCall<T> next() { return next.get(); }
-    public boolean isComplete() { return false; }
-    public T result() { throw new UnsupportedOperationException(); }
+
+    Call(Supplier<TailCall<T>> next) {
+        this.next = next;
+    }
+    @Override
+    public TailCall<T> next() {
+        return next.get();
+    }
+    @Override
+    public boolean isComplete() {
+        return false;
+    }
+    @Override
+    public T result() {
+        throw new UnsupportedOperationException();
+    }
 }
