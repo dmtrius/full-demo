@@ -1,34 +1,48 @@
 package com.example.demo.apps;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.IntStream;
 
 import static java.io.IO.println;
 
 public class App27 {
     void main() {
-        ft1();
-        ft2();
-        parallel();
+//        ft1();
+//        ft2();
+//        parallel();
+        streams();
+    }
+
+    @SuppressWarnings("preview")
+    void streams() {
+        // Create an IntStream from 1 to 5 (inclusive)
+        IntStream intStream = IntStream.rangeClosed(1, 5);
+        // Print the elements of the IntStream
+        intStream.forEach(System.out::println);
+        println("-----");
+        // random stream
+        SecureRandom random = new SecureRandom();
+        IntStream.generate(() -> random.nextInt(1, 42))
+                .limit(10)
+                .forEach(System.out::println);
     }
 
     @SuppressWarnings("preview")
     void parallel() {
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
         // Sequential
         println("Sequential Stream:");
         numbers.forEach(System.out::println);
-
         // Sequential Stream
         println("Sequential Stream:");
         numbers.stream().forEach(System.out::println);
-
         // Sequential Parallel Stream
         println("Sequential Parallel Stream:");
         numbers.stream().parallel().forEach(System.out::println);
-
         // Parallel Stream
         println("Parallel Stream:");
         numbers.parallelStream().forEach(System.out::println);
