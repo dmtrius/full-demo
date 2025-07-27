@@ -13,7 +13,7 @@ public class SimpleKafkaProducer {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaConfig.getProducerConfig());
-             Scanner scanner = new Scanner(System.in)) {
+             /*Scanner scanner = new Scanner(System.in)*/) {
 //            println("Enter messages to send to Kafka (type 'exit' to quit):");
 //            while (true) {
 //                String line = scanner.nextLine();
@@ -40,8 +40,8 @@ public class SimpleKafkaProducer {
 
     private static void sendRandomMessages(KafkaProducer<String, String> producer, int numMessages) {
         for (int i = 0; i < numMessages; ++i) {
-            String message = Faker.instance().animal().name();
-            send(producer, message);
+            send(producer, Faker.instance().animal().name());
+            send(producer, Faker.instance().backToTheFuture().quote());
         }
     }
 }
