@@ -10,7 +10,7 @@ import java.util.Collections;
 public class SimpleKafkaConsumer {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        String topic = KafkaConfig.TOPIC;
+        String topic = WordCountExample.OUTPUT_TOPIC;//KafkaConfig.TOPIC;
         String groupId = KafkaConfig.GROUP;
 
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaConfig.getConsumerConfig(groupId))) {

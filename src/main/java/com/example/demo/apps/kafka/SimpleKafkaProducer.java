@@ -22,12 +22,13 @@ public class SimpleKafkaProducer {
 //                }
 //                send(producer, line);
 //            }
-            sendRandomMessages(producer, 20);
+            sendRandomMessages(producer, 50, WordCountExample.INPUT_TOPIC);
         }
     }
 
-    private static void send(KafkaProducer<String, String> producer, String line) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.TOPIC, line);
+    private static void send(KafkaProducer<String, String> producer, String line, String topic) {
+        ProducerRecord<String, String> record = new ProducerRecord<>(
+                Objects.isNull(topic) ? KafkaConfig.TOPIC : topic, "KS", line);
         producer.send(record, (metadata, exception) -> {
             if (Objects.isNull(exception)) {
                 log.info("Sent message to topic {} partition {} offset {}",
@@ -38,10 +39,10 @@ public class SimpleKafkaProducer {
         });
     }
 
-    private static void sendRandomMessages(KafkaProducer<String, String> producer, int numMessages) {
+    private static void sendRandomMessages(KafkaProducer<String, String> producer, int numMessages, String topic) {
         for (int i = 0; i < numMessages; ++i) {
-            send(producer, Faker.instance().animal().name());
-            send(producer, Faker.instance().backToTheFuture().quote());
+            //send(producer, Faker.instance().animal().name(), topic);
+            send(producer, Faker.instance().backToTheFuture().quote(), topic);
         }
     }
 }

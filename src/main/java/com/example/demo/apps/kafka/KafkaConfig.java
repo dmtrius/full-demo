@@ -1,5 +1,7 @@
 package com.example.demo.apps.kafka;
 
+import org.apache.kafka.clients.producer.ProducerConfig;
+
 import java.util.Properties;
 
 public class KafkaConfig {
