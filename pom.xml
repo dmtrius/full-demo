@@ -237,6 +237,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.vmlens</groupId>
+            <artifactId>api</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.gavlyukovskiy</groupId>
             <artifactId>datasource-proxy-spring-boot-starter</artifactId>
             <version>1.10.0</version>
@@ -382,6 +388,19 @@
                         -Xshare:off
                     </argLine>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.vmlens</groupId>
+                <artifactId>vmlens-maven-plugin</artifactId>
+                <version>1.2.6</version>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
