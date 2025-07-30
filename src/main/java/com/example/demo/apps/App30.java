@@ -1,9 +1,9 @@
 package com.example.demo.apps;
 
-import static io.vavr.API.println;
+import static java.io.IO.println;
 
 public class App30 {
     void main() {
-        println();
+
     }
 }

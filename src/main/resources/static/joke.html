@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>HTMX Joke App</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 2rem;
+            background: #f4f4f4;
+        }
+        #joke-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div id="joke-box">
+    <div id="joke" hx-get="/joke" hx-target="#joke" hx-trigger="load">
+        <em>Loading joke...</em>
+    </div>
+    <button hx-get="/joke" hx-target="#joke" hx-swap="outerHTML">Tell me another joke</button>
+</div>
+
+<!-- Fake backend using htmx-ext for demonstration -->
+<script type="text/javascript">
+    document.addEventListener('htmx:configRequest', (evt) => {
+        const path = evt.detail.path;
+        if (path === '/joke') {
+            evt.preventDefault();
+            fetch('https://official-joke-api.appspot.com/random_joke')
+                .then(res => res.json())
+                .then(joke => {
+                    const html = `<div id="joke"><strong>${joke.setup}</strong><br/>${joke.punchline}</div>`;
+                    evt.detail.xhr = {
+                        response: html,
+                        getResponseHeader: () => 'text/html'
+                    };
+                    evt.detail.hasConfig = true;
+                    evt.detail.settleInfo = {
+                        target: document.querySelector("#joke"),
+                        swapSpec: { swapStyle: "outerHTML" },
+                        content: html
+                    };
+                    document.body.dispatchEvent(new CustomEvent('htmx:afterOnLoad', { detail: evt.detail }));
+                });
+        }
+    });
+</script>
+
+</body>
+</html>
