@@ -14,9 +14,9 @@
     <name>demo</name>
     <description>demo</description>
     <properties>
-        <java.version>23</java.version>
-        <maven.compiler.target>23</maven.compiler.target>
-        <maven.compiler.source>23</maven.compiler.source>
+        <java.version>24</java.version>
+        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.source>24</maven.compiler.source>
         <keycloak.springboot.version>25.0.3</keycloak.springboot.version>
         <lombok.version>1.18.38</lombok.version>
     </properties>
@@ -354,8 +354,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>23</source>
-                    <target>23</target>
+                    <source>24</source>
+                    <target>24</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
