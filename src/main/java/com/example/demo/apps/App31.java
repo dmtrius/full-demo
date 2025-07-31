@@ -15,6 +15,7 @@ public class App31 {
         toMap2();
     }
 
+    @SuppressWarnings({"preview", "unused"})
     void toMap() {
         List<String> names = List.of("q","w","e","r","e");
         Map<String, Integer> nameCount = names.
@@ -26,6 +27,7 @@ public class App31 {
         println(nameCount);
     }
 
+    @SuppressWarnings("preview")
     void toMap2() {
         List<User> users = List.of(new User(1, "q", 20), new User(2, "w", 30), new User(3, "e", 40));
         Map<Integer, User> userMap = users.
@@ -39,6 +41,7 @@ public class App31 {
 
     record User(int id, String name, int age) {}
 
+    @SuppressWarnings("preview")
     void t1(Object obj) {
         if (obj instanceof String str) {
             System.out.println(str.toLowerCase());
