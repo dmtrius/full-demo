@@ -1,0 +1,154 @@
+server:
+    port: 8843
+    ssl:
+        bundle: server
+        enabled: true
+        key-alias: mydemoapplication
+        key-store: classpath:keystore.p12
+        key-store-password: password
+        key-store-type: PKCS12
+    tomcat:
+        max-connections: 1000
+        threads:
+            max: 1000
+spring:
+    application:
+        name: demo
+    data:
+        redis:
+            host: ${SPRING_REDIS_URL}
+            port: 6379
+    datasource:
+        hikari:
+            auto-commit: false
+            data-source-properties:
+                cachePrepStmts: true
+                cacheResultSetMetadata: true
+                connectionTimeout: 30000
+                idleTimeout: 60000
+                prepStmtCacheSize: 500
+                prepStmtCacheSqlLimit: 1024
+                rewriteBatchedStatements: true
+                useLocalSessionState: true
+                useServerPrepStmts: false
+            maxLifetime: 900000
+            maximum-pool-size: 40
+            minimumIdle: 0
+            transaction-isolation: TRANSACTION_READ_COMMITTED
+        password: enter
+        url: jdbc:postgresql://localhost:5432/demo
+        username: dmytrogordiienko
+    devtools:
+        livereload:
+            enabled: true
+    jpa:
+        defer-datasource-initialization: true
+        hibernate:
+            ddl-auto: none
+        open-in-view: true
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                format_sql: true
+                show_sql: true
+                use_sql_comments: true
+    kafka:
+        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+        consumer:
+            auto-offset-reset: earliest
+            enable-auto-commit: false
+            group-id: my-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            max-poll-records: 10
+            topic: my-topic
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        listener:
+            ack-mode: manual
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    main:
+        allow-bean-definition-overriding: true
+    output:
+        ansi:
+            enabled: ALWAYS
+    security:
+        oauth2:
+            client:
+                provider:
+                    keycloak:
+                        issuer-uri: ${SPRING_KEYCLOAK_URL}/realms/dmtrius
+                        user-name-attribute: preferred_username
+                registration:
+                    keycloak:
+                        authorization-grant-type: authorization_code
+                        client-id: mydemoapplication
+                        client-secret: fePRbpYUlLGE2q7XBxrqSA1q1188ZtKD
+                        redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+                        scope: openid, profile, email
+            resourceserver:
+                jwt:
+                    issuer-uri: ${SPRING_KEYCLOAK_URL}/realms/dmtrius
+    sql:
+        init:
+            continue-on-error: true
+            data-locations: classpath:/data/data.sql
+            mode: always
+            schema-locations: classpath:/data/schema.sql
+    ssl:
+        bundle:
+            jks:
+                server:
+                    key:
+                        alias: mydemoapplication
+                    keystore:
+                        location: classpath:keystore.p12
+                        password: password
+                        type: PKCS12
+zuul:
+    routes:
+        judges:
+            path: '''/api/judges/**'''
+            url: '''https://cmap.jud11.flcourts.org/jisws/jisService/v100/schedulingDivisions'''
+
+
+logging:
+    level:
+        net:
+            ttddyy:
+                dsproxy:
+                    listener: debug
+        org:
+            hibernate:
+                type: trace
+            springframework:
+                cache:
+                    '*': trace
+                data:
+                    '*': trace
+                orm:
+                    jpa: DEBUG
+                    jpa.JpaTransactionManager: debug
+                transaction: DEBUG
+        root: INFO
+
+management:
+    endpoint:
+        health:
+            db:
+                enabled: true
+                validation-query: SELECT 1
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+    info:
+        git:
+            mode: full
+    security:
+        enabled: true
+        roles: ADMIN
+        user:
+            name: admin
+            password: admin

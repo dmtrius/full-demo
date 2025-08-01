@@ -4,15 +4,29 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.io.IO.println;
 
 public class App31 {
     void main() {
         t1(1);
+        t2();
         toMap();
         toMap2();
+    }
+
+    @SuppressWarnings("preview")
+    void t2() {
+        Collector<CharSequence, ?, Object> fancyJoiner = Collectors.collectingAndThen(
+                Collectors.joining(", "),
+                joined -> "<<< " + joined + " >>>"
+        );
+        String result = Stream.of("Alice", "Bob", "Charlie").
+                collect(fancyJoiner).toString(); // <<< Alice, Bob, Charlie >>>
+        println(result);
     }
 
     @SuppressWarnings({"preview", "unused"})
