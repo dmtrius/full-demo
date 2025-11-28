@@ -13,7 +13,7 @@ import org.apache.kafka.streams.kstream.Produced;
 import java.util.Arrays;
 import java.util.Properties;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 @Slf4j
 public class WordCountExample {
@@ -35,7 +35,7 @@ public class WordCountExample {
         // Word count logic
         KTable<String, Long> wordCounts = textLines
                 .peek((key, word) -> println("### Received key: " + key + ", word: " + word))
-                .flatMapValues(value -> Arrays.asList(value.toLowerCase().split("\\W+")))
+                //.flatMapValues(value -> Arrays.asList(value.toLowerCase().split("\\W+")))
                 .groupBy((key, word) -> word)
                 .count();
 

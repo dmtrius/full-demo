@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class App27 {
     void main() {

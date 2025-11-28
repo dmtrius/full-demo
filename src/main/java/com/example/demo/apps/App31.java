@@ -8,7 +8,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class App31 {
     void main() {

@@ -1,6 +1,6 @@
 package com.example.demo.apps.tasks;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class EitherExamples {
     void main() {
@@ -21,7 +21,7 @@ public class EitherExamples {
                 () -> Integer.parseInt("123")
         );
 
-        result.ifRight(value -> println("Parsed number: " + value));
+        //result.ifRight(value -> println("Parsed number: " + value));
         result.ifLeft(error -> println("Error: " + error));
     }
 }

@@ -1,6 +1,6 @@
 package com.example.demo.apps.algo;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class SubsetSum {
     public static boolean isSubsetSum(int[] set, int n, int sum) {

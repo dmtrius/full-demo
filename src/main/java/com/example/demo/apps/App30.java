@@ -17,7 +17,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.time.Duration;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class App30 {
     static {

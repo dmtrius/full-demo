@@ -7,7 +7,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;
 import java.util.stream.IntStream;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 @Slf4j
 public class BackpressureExample {

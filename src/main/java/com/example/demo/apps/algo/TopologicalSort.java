@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.util.*;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class TopologicalSort {
 

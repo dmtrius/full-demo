@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.concurrent.StructuredTaskScope;
-import java.util.concurrent.StructuredTaskScope.Subtask;
 
 public class TTLCacheStructuredConcurrency<K, V> {
     private final ConcurrentMap<K, CacheEntry<V>> cache;
@@ -80,7 +79,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
     @SneakyThrows
     public void batchPut(Map<K, V> entries) {
         String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             entries.entrySet().stream()
                     .map(entry -> scope.fork(() -> {
                         put(entry.getKey(), entry.getValue());
@@ -93,14 +92,14 @@ public class TTLCacheStructuredConcurrency<K, V> {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Batch put interrupted", e);
-        }
+        }*/
     }
 
     // Batch get operation using Structured Concurrency
     @SneakyThrows
     public Map<K, V> batchGet(List<K> keys) {
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            List<Subtask<V>> tasks = keys.stream()
+        /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+            List<StructuredTaskScope.Subtask<V>> tasks = keys.stream()
                     .map(key -> scope.fork(() -> get(key)))
                     .collect(Collectors.toList());
 
@@ -117,7 +116,8 @@ public class TTLCacheStructuredConcurrency<K, V> {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Batch get interrupted", e);
-        }
+        }*/
+        return Map.of();
     }
 
     // Remove a specific key from the cache
@@ -130,7 +130,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
         cache.clear();
     }
 
-    // Get current size of the cache (may include expired entries before cleanup)
+    // Get a current size of the cache (may include expired entries before cleanup)
     public int size() {
         cleanupIfNeeded();
         return cache.size();

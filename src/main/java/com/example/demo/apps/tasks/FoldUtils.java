@@ -3,7 +3,7 @@ package com.example.demo.apps.tasks;
 import java.util.*;
 import java.util.function.BiFunction;
 
-import static java.io.IO.println;
+import static java.lang.IO.println;
 
 public class FoldUtils {
 

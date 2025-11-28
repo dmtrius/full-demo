@@ -30,7 +30,7 @@ public class FactorialCalculatorStructured {
 
         List<InputTask> tasks = readInputFile(BASE_PATH + "input.txt");
 
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             List<StructuredTaskScope.Subtask<Result>> futures = new ArrayList<>();
 
             Semaphore rateLimiter = new Semaphore(MAX_CALCULATIONS_PER_SECOND);
@@ -57,7 +57,7 @@ public class FactorialCalculatorStructured {
             });
 
             scope.join();  // Wait for writer to finish
-        }
+        }*/
 
         System.out.println("Completed.");
     }
