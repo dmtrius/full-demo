@@ -1,10 +1,6 @@
 package com.example.demo.apps;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,56 +12,69 @@ public class App32 {
         println(isViolated);
     }
 
+    public static final int LIMITED_VOLUME = 100_000;
+    public static final int UNLIMITED_VOLUME = 200_000;
+
     private static String validateOrder(List<Product> order) {
-        Map<String, Integer> result = new HashMap<>() {{
-            put("limited", 0);
-            put("unlimited", 0);
-            put("isEmbargo", 0);
-        }};
-        for (int i = 0; i < order.size(); ++i) {
-            Product product = order.get(i);
-            if (embargoCountris.contains(product.getSourceCountry())) {
-                return "VIOLATION";
+        var result = initResult();
+        for (Product product : order) {
+            if (embargoCountries.contains(product.sourceCountry())) {
+                return OrderValidity.VIOLATION.name();
             }
-            if (unlimitedTypes.contains(product.getOilType())) {
-                result.put("unlimited", result.get("unlimited") + product.getVolume());
+            if (unlimitedTypes.contains(product.oilType())) {
+                result.put(ProductType.unlimited, result.get(ProductType.unlimited) + product.volume());
             } else {
-                result.put("limited", result.get("limited") + product.getVolume());
+                result.put(ProductType.limited, result.get(ProductType.limited) + product.volume());
             }
         }
-        if (result.get("limited") > 100_000) {
-            return "VIOLATION";
+        if (result.get(ProductType.limited) > LIMITED_VOLUME) {
+            return OrderValidity.VIOLATION.name();
         }
-        if (result.get("unlimited") > 200_000) {
-            return "VIOLATION";
+        if (result.get(ProductType.unlimited) > UNLIMITED_VOLUME) {
+            return OrderValidity.VIOLATION.name();
         }
-        return "COMPLAINT";
+        return OrderValidity.COMPLAINT.name();
     }
 
-    private static List<String> unlimitedTypes = List.of("Crude Oil", "Heavy Crude", "Light Crude");
-    private static List<String> embargoCountris = List.of("China");
+    private enum OrderValidity {
+        VIOLATION,
+        COMPLAINT
+    }
+
+    private enum ProductType {
+        limited,
+        unlimited,
+        embargo
+    }
+
+    private static final List<String> unlimitedTypes = List.of("Crude Oil", "Heavy Crude", "Light Crude");
+    private static final List<String> embargoCountries = List.of("China");
+
+    private static Map<ProductType, Integer> initResult() {
+        return new HashMap<>() {{
+            put(ProductType.limited, 0);
+            put(ProductType.unlimited, 0);
+            put(ProductType.embargo, 0);
+        }};
+    }
 
     private static List<Product> generateOrder() {
-        List<Product> order = new LinkedList<>();
-        order = List.of(
+        return List.of(
                 new Product(101, "Crude Oil", 250000, "Norway"),
                 new Product(102, "Heavy Crude", 5000, "Canada"),
                 new Product(103, "Light Crude", 75000, "USA"),
                 new Product(104, "Refined Gasoline", 15000, "UAE"),
                 new Product(104, "Refined Gasoline", 15000, "USA")
         );
-        return order;
     }
 }
 
-@Data
-@AllArgsConstructor
-class Product {
-    private Integer productId;
-    private String oilType;
-    private Integer volume;
-    private String sourceCountry;
-}
+record Product(
+        Integer productId,
+        String oilType,
+        Integer volume,
+        String sourceCountry
+){}
 
 /*
 * Product-1: productId=101, oilType="Crude Oil", volume=50000, sourceCountry="Norway"
