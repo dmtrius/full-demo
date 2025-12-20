@@ -15,7 +15,7 @@ public class App35 {
                 .formatted(sumUniqueCharsInSubstrings(input)));
     }
 
-    public static int countUniqueSubstrings(String s) {
+    private static int countUniqueSubstrings(String s) {
         TrieNode root = new TrieNode(new HashMap<>());
         int count = 0;
 
@@ -34,7 +34,7 @@ public class App35 {
         return count;
     }
 
-    public static int sumUniqueCharsInSubstrings(String s) {
+    private static int sumUniqueCharsInSubstrings(String s) {
         Set<String> uniqueSubstrings = new HashSet<>();
         int total = 0;
 
