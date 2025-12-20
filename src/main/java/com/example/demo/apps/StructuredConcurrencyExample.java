@@ -1,12 +1,11 @@
 package com.example.demo.apps;
 
-import java.util.concurrent.StructuredTaskScope;
+//import java.util.concurrent.StructuredTaskScope;
 import java.util.function.Supplier;
 
 public class StructuredConcurrencyExample {
     void main() {
-
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             Supplier<String> result1 = scope.fork(() -> {
                 if (Math.random() > 0.6)  {
                     throw new RuntimeException("Task 1 failed");
@@ -24,6 +23,6 @@ public class StructuredConcurrencyExample {
 
         } catch (Exception e) {
             System.out.println("Error in one of the tasks: " + e.getMessage());
-        }
+        }*/
     }
 }

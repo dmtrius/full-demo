@@ -14,9 +14,9 @@
     <name>demo</name>
     <description>demo</description>
     <properties>
-        <java.version>23</java.version>
-        <maven.compiler.target>23</maven.compiler.target>
-        <maven.compiler.source>23</maven.compiler.source>
+        <java.version>25</java.version>
+        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.source>25</maven.compiler.source>
         <keycloak.springboot.version>25.0.3</keycloak.springboot.version>
     </properties>
     <dependencies>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.42</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -282,12 +282,12 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>23</source>
-                    <target>23</target>
+                    <source>25</source>
+                    <target>25</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgs>
-                        <compilerArg>--enable-preview</compilerArg>
-                    </compilerArgs>
+<!--                    <compilerArgs>-->
+<!--                        <compilerArg>&#45;&#45;enable-preview</compilerArg>-->
+<!--                    </compilerArgs>-->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
