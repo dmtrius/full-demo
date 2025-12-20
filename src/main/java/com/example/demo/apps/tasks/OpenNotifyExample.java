@@ -4,13 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 public class OpenNotifyExample {
     public static void main(String[] args) {
         try {
             String endpoint = "http://api.open-notify.org/iss-now.json";
-            URL url = new URL(endpoint);
+            URL url = new URI(endpoint).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
