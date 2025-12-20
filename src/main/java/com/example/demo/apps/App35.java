@@ -1,7 +1,5 @@
 package com.example.demo.apps;
 
-import lombok.Data;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,18 +15,18 @@ public class App35 {
     }
 
     public static int countUniqueSubstrings(String s) {
-        TrieNode root = new TrieNode();
+        TrieNode root = new TrieNode(new HashMap<>());
         int count = 0;
 
         for (int i = 0; i < s.length(); i++) {
             TrieNode current = root;
             for (int j = i; j < s.length(); j++) {
                 char c = s.charAt(j);
-                if (!current.getChildren().containsKey(c)) {
-                    current.getChildren().put(c, new TrieNode());
-                    count++;
+                if (!current.children().containsKey(c)) {
+                    current.children().put(c, new TrieNode(new HashMap<>()));
+                    ++count;
                 }
-                current = current.getChildren().get(c);
+                current = current.children().get(c);
             }
         }
 
@@ -63,11 +61,4 @@ public class App35 {
     }
 }
 
-@Data
-class TrieNode {
-    private final Map<Character, TrieNode> children;
-
-    public TrieNode() {
-        this.children = new HashMap<>();
-    }
-}
+record TrieNode(Map<Character, TrieNode> children) {}
