@@ -24,7 +24,7 @@ public class AlternatePrinterBarrier {
                 try {
                     barrier.await();
                     print(number);
-                    if (number != 26) {
+                    if (number < 26) {
                         print(", ");
                     }
                     number++;
