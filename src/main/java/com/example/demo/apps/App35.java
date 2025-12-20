@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,11 +24,11 @@ public class App35 {
             TrieNode current = root;
             for (int j = i; j < s.length(); j++) {
                 char c = s.charAt(j);
-                if (!current.children.containsKey(c)) {
-                    current.children.put(c, new TrieNode());
+                if (!current.getChildren().containsKey(c)) {
+                    current.getChildren().put(c, new TrieNode());
                     count++;
                 }
-                current = current.children.get(c);
+                current = current.getChildren().get(c);
             }
         }
 
@@ -55,12 +57,15 @@ public class App35 {
             total += uniqueChars.size();
         }
 
+        println(uniqueSubstrings);
+
         return total;
     }
 }
 
+@Data
 class TrieNode {
-    Map<Character, TrieNode> children;
+    private final Map<Character, TrieNode> children;
 
     public TrieNode() {
         this.children = new HashMap<>();
