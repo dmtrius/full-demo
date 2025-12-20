@@ -10,8 +10,9 @@ import static java.lang.IO.println;
 public class App35 {
     void main() {
         String input = "ABC";
-        println("Number of unique substrings: " + countUniqueSubstrings(input));
-        println("Sum of unique chars in all unique substrings: " + sumUniqueCharsInSubstrings(input));
+        println("Number of unique substrings: %s".formatted(countUniqueSubstrings(input)));
+        println("Sum of unique chars in all unique substrings: %s"
+                .formatted(sumUniqueCharsInSubstrings(input)));
     }
 
     public static int countUniqueSubstrings(String s) {
