@@ -3,6 +3,8 @@ package com.example.demo.apps;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.IO.println;
+
 public class App22 {
     void main() {
         List<Subscriber> subscribers = new ArrayList<>();
@@ -11,15 +13,15 @@ public class App22 {
         subscribers.add(new Subscriber(2, "name_2", NotificationType.PUSH));
         subscribers.add(new Subscriber(3, "name_4", NotificationType.SMS));
 
-        subscribers.forEach(s -> sendNotification(s));
+        subscribers.forEach(this::sendNotification);
     }
 
-    private static Message getMessage(Subscriber subscriber) {
+    private Message getMessage(Subscriber subscriber) {
         return new Message(1, "Hello, " + subscriber.name());
     }
 
-    private static void sendNotification(Subscriber subscriber) {
-        // implement subs bu type
+    private void sendNotification(Subscriber subscriber) {
+        // implement subs by type
         List<Subscription> subscribers = new ArrayList<>();
         switch (subscriber.type()) {
             case SMS:
@@ -34,61 +36,36 @@ public class App22 {
             default:
                 throw new IllegalArgumentException("Unsupported notification type");
         }
-        subscribers.forEach(s -> s.send(getMessage(s.getSubscriber())));
+        subscribers.forEach(s -> s.send(getMessage(s.subscriber())));
     }
 }
 
 interface Subscription {
     void send(Message message);
-    Subscriber getSubscriber();
+    Subscriber subscriber();
 }
 
-class SMS implements Subscription {
-    private final Subscriber subscriber;
-    SMS(Subscriber subscriber) {
-        this.subscriber = subscriber;
-    }
+record SMS(Subscriber subscriber) implements Subscription {
     @Override
     public void send(Message message) {
-        System.out.println("SMS: " + message);
-    }
-
-    @Override
-    public Subscriber getSubscriber() {
-        return subscriber;
+        println("SMS: " + message);
     }
 }
-class Email implements Subscription {
-    private final Subscriber subscriber;
-    Email(Subscriber subscriber) {
-        this.subscriber = subscriber;
-    }
+
+record Email(Subscriber subscriber) implements Subscription {
     @Override
     public void send(Message message) {
-        System.out.println("EMAIL: " + message);
+        println("EMAIL: " + message);
     }
+}
 
-    @Override
-    public Subscriber getSubscriber() {
-        return subscriber;
-    }
-};
-class Push implements Subscription {
-    private final Subscriber subscriber;
-    Push(Subscriber subscriber) {
-        this.subscriber = subscriber;
-    }
+record Push(Subscriber subscriber) implements Subscription {
 
     @Override
     public void send(Message message) {
-        System.out.println("PUSH: " + message);
+        println("PUSH: " + message);
     }
-
-    @Override
-    public Subscriber getSubscriber() {
-        return subscriber;
-    }
-};
+}
 
 record Subscriber (
     int id,
