@@ -1,14 +1,18 @@
 package com.example.demo.apps.algo;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static java.lang.IO.println;
 
 // Interface for all cache implementations
 interface Cache<K, V> {
@@ -20,13 +24,16 @@ interface Cache<K, V> {
     void clear();
 }
 
+/**
+ * <b>SIMPLE CACHE</b>
+ */
 class SimpleCache<K, V> implements Cache<K, V> {
     private final Map<K, V> cache;
     private final int capacity;
 
     public SimpleCache(int capacity) {
         this.capacity = capacity;
-        this.cache = new HashMap<>(capacity);
+        this.cache = HashMap.newHashMap(capacity);
     }
 
     @Override
@@ -59,7 +66,9 @@ class SimpleCache<K, V> implements Cache<K, V> {
     }
 }
 
-// 2. LRU Cache using LinkedHashMap
+/**
+ * <b>LRU Cache</b> using <i>LinkedHashMap</i>
+ */
 class LRUCache<K, V> implements Cache<K, V> {
     private final Map<K, V> cache;
     private final int capacity;
@@ -101,7 +110,9 @@ class LRUCache<K, V> implements Cache<K, V> {
     }
 }
 
-// 3. LFU Cache using PriorityQueue and HashMaps
+/**
+ * <b>LFU Cache</b> using <i>PriorityQueue</i> and <i>HashMaps</i>
+ */
 class LFUCache<K, V> implements Cache<K, V> {
     private static class CacheEntry<K, V> {
         K key;
@@ -125,7 +136,9 @@ class LFUCache<K, V> implements Cache<K, V> {
     public LFUCache(int capacity) {
         this.capacity = capacity;
         this.cache = new HashMap<>();
-        this.frequencyQueue = new PriorityQueue<>(Comparator.comparingInt((CacheEntry<K, V> a) -> a.frequency).thenComparingLong(a -> a.lastUsed));
+        this.frequencyQueue = new PriorityQueue<>(
+                Comparator.comparingInt((CacheEntry<K, V> a) -> a.frequency)
+                        .thenComparingLong(a -> a.lastUsed));
         this.timestamp = new AtomicLong();
     }
 
@@ -137,7 +150,7 @@ class LFUCache<K, V> implements Cache<K, V> {
 
         synchronized (this) {
             CacheEntry<K, V> entry = cache.get(key);
-            if (entry != null) {
+            if (!Objects.isNull(entry)) {
                 // Update existing entry
                 entry.value = value;
                 entry.frequency++;
@@ -148,7 +161,7 @@ class LFUCache<K, V> implements Cache<K, V> {
                 // Evict if necessary
                 if (cache.size() >= capacity) {
                     CacheEntry<K, V> lfu = frequencyQueue.poll();
-                    if (lfu != null) {
+                    if (!Objects.isNull(lfu)) {
                         cache.remove(lfu.key);
                     }
                 }
@@ -164,7 +177,7 @@ class LFUCache<K, V> implements Cache<K, V> {
     public V get(K key) {
         synchronized (this) {
             CacheEntry<K, V> entry = cache.get(key);
-            if (entry != null) {
+            if (!Objects.isNull(entry)) {
                 // Update frequency and timestamp
                 entry.frequency++;
                 entry.lastUsed = timestamp.incrementAndGet();
@@ -180,7 +193,7 @@ class LFUCache<K, V> implements Cache<K, V> {
     public void remove(K key) {
         synchronized (this) {
             CacheEntry<K, V> entry = cache.remove(key);
-            if (entry != null) {
+            if (!Objects.isNull(entry)) {
                 frequencyQueue.remove(entry);
             }
         }
@@ -200,7 +213,9 @@ class LFUCache<K, V> implements Cache<K, V> {
     }
 }
 
-// 4. TTL Cache with ConcurrentHashMap
+/**
+ * <b>TTL Cache</b> with <i>ConcurrentHashMap</i>
+  */
 class TTLCache<K, V> implements Cache<K, V> {
     private static class CacheEntry<V> {
         V value;
@@ -219,22 +234,25 @@ class TTLCache<K, V> implements Cache<K, V> {
     private final ConcurrentHashMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
 
-    public TTLCache(long ttlMillis) {
+    public TTLCache(long ttlMillis, boolean isAutoClean) {
         this.cache = new ConcurrentHashMap<>();
         this.ttlMillis = ttlMillis;
 
         // Optional: Periodic cleanup
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(ttlMillis);
-                    cache.entrySet().removeIf(entry -> entry.getValue().isExpired());
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
+        if (isAutoClean) {
+            new Thread(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(ttlMillis);
+                        cache.entrySet().removeIf(
+                                entry -> entry.getValue().isExpired());
+                    } catch (InterruptedException _) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     @Override
@@ -245,7 +263,7 @@ class TTLCache<K, V> implements Cache<K, V> {
     @Override
     public V get(K key) {
         CacheEntry<V> entry = cache.get(key);
-        if (entry != null && !entry.isExpired()) {
+        if (!Objects.isNull(entry) && !entry.isExpired()) {
             return entry.value;
         }
         cache.remove(key);
@@ -271,50 +289,48 @@ class TTLCache<K, V> implements Cache<K, V> {
 // Main class to demonstrate usage
 @Slf4j
 public class CacheImplementations {
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    @SneakyThrows
+    void main() {
         // Simple Cache Demo
-        System.out.println("Simple Cache Demo:");
+        println("Simple Cache Demo:");
         Cache<String, String> simpleCache = new SimpleCache<>(2);
         simpleCache.put("1", "One");
         simpleCache.put("2", "Two");
         simpleCache.put("3", "Three"); // This should evict an entry
-        System.out.println("Get 1: " + simpleCache.get("1"));
-        System.out.println("Get 2: " + simpleCache.get("2"));
-        System.out.println("Get 3: " + simpleCache.get("3"));
+        println("Get 1: " + simpleCache.get("1"));
+        println("Get 2: " + simpleCache.get("2"));
+        println("Get 3: " + simpleCache.get("3"));
 
         // LRU Cache Demo
-        System.out.println("\nLRU Cache Demo:");
+        println("\nLRU Cache Demo:");
         Cache<String, String> lruCache = new LRUCache<>(2);
         lruCache.put("1", "One");
         lruCache.put("2", "Two");
         lruCache.get("1"); // Make "1" recently used
         lruCache.put("3", "Three"); // Should evict "2"
-        System.out.println("Get 1: " + lruCache.get("1"));
-        System.out.println("Get 2: " + lruCache.get("2"));
-        System.out.println("Get 3: " + lruCache.get("3"));
+        println("Get 1: " + lruCache.get("1"));
+        println("Get 2: " + lruCache.get("2"));
+        println("Get 3: " + lruCache.get("3"));
 
         // LFU Cache Demo
-        System.out.println("\nLFU Cache Demo:");
+        println("\nLFU Cache Demo:");
         Cache<String, String> lfuCache = new LFUCache<>(2);
         lfuCache.put("1", "One");
         lfuCache.get("1"); // freq=2
         lfuCache.put("2", "Two"); // freq=1
         lfuCache.put("3", "Three"); // Should evict "2" (lower frequency)
-        System.out.println("Get 1: " + lfuCache.get("1"));
-        System.out.println("Get 2: " + lfuCache.get("2"));
-        System.out.println("Get 3: " + lfuCache.get("3"));
+        println("Get 1: " + lfuCache.get("1"));
+        println("Get 2: " + lfuCache.get("2"));
+        println("Get 3: " + lfuCache.get("3"));
 
         // TTL Cache Demo
-        System.out.println("\nTTL Cache Demo:");
-        Cache<String, String> ttlCache = new TTLCache<>(1000); // 1 second TTL
+        println("\nTTL Cache Demo:");
+        Cache<String, String> ttlCache = new TTLCache<>(1000, false); // 1 second TTL
         ttlCache.put("1", "One");
-        System.out.println("Get 1 (immediate): " + ttlCache.get("1"));
-        try {
-            Thread.sleep(1500); // Wait for expiration
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-        }
-        System.out.println("Get 1 (after TTL): " + ttlCache.get("1"));
+        println("Get 1 (immediate): " + ttlCache.get("1"));
+
+        Thread.sleep(1500); // Wait for expiration
+
+        println("Get 1 (after TTL): " + ttlCache.get("1"));
     }
 }
