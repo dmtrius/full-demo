@@ -240,7 +240,7 @@ class TTLCache<K, V> implements Cache<K, V> {
 
         // Optional: Periodic cleanup
         if (isAutoClean) {
-            new Thread(() -> {
+            Thread.ofPlatform().start(() -> {
                 while (true) {
                     try {
                         Thread.sleep(ttlMillis);
@@ -251,7 +251,7 @@ class TTLCache<K, V> implements Cache<K, V> {
                         break;
                     }
                 }
-            }).start();
+            });
         }
     }
 
@@ -289,48 +289,59 @@ class TTLCache<K, V> implements Cache<K, V> {
 // Main class to demonstrate usage
 @Slf4j
 public class CacheImplementations {
+    public static final String KEY_ONE = "1";
+    public static final String KEY_TWO = "2";
+    public static final String KEY_THREE = "3";
+    public static final String VALUE_ONE = "One";
+    public static final String VALUE_TWO = "Two";
+    public static final String VALUE_THREE = "Three";
+    public static final String GET_ONE = "Get 1: ";
+    public static final String GET_TWO = "Get 2: ";
+    public static final String GET_THREE = "Get 3: ";
+
     @SneakyThrows
     void main() {
         // Simple Cache Demo
         println("Simple Cache Demo:");
         Cache<String, String> simpleCache = new SimpleCache<>(2);
-        simpleCache.put("1", "One");
-        simpleCache.put("2", "Two");
-        simpleCache.put("3", "Three"); // This should evict an entry
-        println("Get 1: " + simpleCache.get("1"));
-        println("Get 2: " + simpleCache.get("2"));
-        println("Get 3: " + simpleCache.get("3"));
+        simpleCache.put(KEY_ONE, VALUE_ONE);
+        simpleCache.put(KEY_TWO, VALUE_TWO);
+        simpleCache.put(KEY_THREE, VALUE_THREE); // This should evict an entry
+        println(GET_ONE + simpleCache.get(KEY_ONE));
+        println(GET_TWO + simpleCache.get(VALUE_TWO));
+        println(GET_THREE + simpleCache.get(VALUE_THREE));
 
         // LRU Cache Demo
         println("\nLRU Cache Demo:");
         Cache<String, String> lruCache = new LRUCache<>(2);
-        lruCache.put("1", "One");
-        lruCache.put("2", "Two");
-        lruCache.get("1"); // Make "1" recently used
-        lruCache.put("3", "Three"); // Should evict "2"
-        println("Get 1: " + lruCache.get("1"));
-        println("Get 2: " + lruCache.get("2"));
-        println("Get 3: " + lruCache.get("3"));
+        lruCache.put(KEY_ONE, VALUE_ONE);
+        lruCache.put(KEY_TWO, VALUE_TWO);
+        lruCache.get(KEY_ONE); // Make "1" recently used
+        lruCache.put(KEY_THREE, VALUE_THREE); // Should evict "2"
+        println(GET_ONE + lruCache.get(KEY_ONE));
+        println(GET_TWO + lruCache.get(KEY_TWO));
+        println(GET_THREE + lruCache.get(KEY_THREE));
 
         // LFU Cache Demo
         println("\nLFU Cache Demo:");
         Cache<String, String> lfuCache = new LFUCache<>(2);
-        lfuCache.put("1", "One");
-        lfuCache.get("1"); // freq=2
-        lfuCache.put("2", "Two"); // freq=1
-        lfuCache.put("3", "Three"); // Should evict "2" (lower frequency)
-        println("Get 1: " + lfuCache.get("1"));
-        println("Get 2: " + lfuCache.get("2"));
-        println("Get 3: " + lfuCache.get("3"));
+        lfuCache.put(KEY_ONE, VALUE_ONE);
+        lfuCache.get(KEY_ONE); // freq=2
+        lfuCache.put(KEY_TWO, VALUE_TWO); // freq=1
+        lfuCache.put(KEY_THREE, VALUE_THREE); // Should evict "2" (lower frequency)
+        println(GET_ONE + lfuCache.get(KEY_ONE));
+        println(GET_TWO + lfuCache.get(KEY_TWO));
+        println(GET_THREE + lfuCache.get(KEY_THREE));
 
         // TTL Cache Demo
         println("\nTTL Cache Demo:");
-        Cache<String, String> ttlCache = new TTLCache<>(1000, false); // 1 second TTL
-        ttlCache.put("1", "One");
-        println("Get 1 (immediate): " + ttlCache.get("1"));
-
-        Thread.sleep(1500); // Wait for expiration
-
-        println("Get 1 (after TTL): " + ttlCache.get("1"));
+        Cache<String, String> ttlCache = new TTLCache<>(
+                1000, false); // 1 second TTL
+        ttlCache.put(KEY_ONE, VALUE_ONE);
+        println("Get 1 (immediate): " + ttlCache.get(KEY_ONE));
+        println("Get 2 (immediate): " + ttlCache.get(KEY_TWO));
+        // Wait for expiration
+        Thread.sleep(1500);
+        println("Get 1 (after TTL): " + ttlCache.get(KEY_ONE));
     }
 }
