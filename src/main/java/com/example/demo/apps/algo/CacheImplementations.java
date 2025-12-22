@@ -113,6 +113,9 @@ class LRUCache<K, V> implements Cache<K, V> {
     }
 }
 
+/**
+ * <b>Concurrent LRU Cache</b> using <i>LinkedHashMap</i> and <i>ConcurrentLinkedDeque</i>
+ */
 class ConcurrentLRUCache<K, V> implements Cache<K, V> {
 
     private final int capacity;
