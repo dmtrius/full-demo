@@ -3,6 +3,7 @@ package com.example.demo.apps.algo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.IO.println;
 
@@ -305,6 +307,7 @@ class TTLCache<K, V> implements Cache<K, V> {
 
         // Optional: Periodic cleanup
         if (isAutoClean) {
+            println("start cleaner...");
             try (var exc = Executors.newSingleThreadScheduledExecutor()) {
                 exc.scheduleAtFixedRate(() -> cache.entrySet().removeIf(
                         entry -> entry.getValue().isExpired()),
@@ -341,6 +344,144 @@ class TTLCache<K, V> implements Cache<K, V> {
     @Override
     public void clear() {
         cache.clear();
+    }
+}
+
+/**
+ * <b>Lock Free RLU-TTL Cache</b>
+ */
+class LockFreeTTLCache<K, V> {
+
+    private final int maxSize;
+    private final long ttlMillis;
+
+    private final ConcurrentHashMap<K, Node<K, V>> map = new ConcurrentHashMap<>();
+
+    // LRU list (lock-free)
+    private final AtomicReference<Node<K, V>> head = new AtomicReference<>();
+    private final AtomicReference<Node<K, V>> tail = new AtomicReference<>();
+
+    public LockFreeTTLCache(int maxSize, Duration ttl, boolean isAutoClean) {
+        this.maxSize = maxSize;
+        this.ttlMillis = ttl.toMillis();
+        if (isAutoClean) {
+            startExpiryCleaner();
+        }
+    }
+
+    static final class Node<K, V> {
+        final K key;
+        final V value;
+        final long expiryTime;
+
+        final AtomicReference<Node<K, V>> prev = new AtomicReference<>();
+        final AtomicReference<Node<K, V>> next = new AtomicReference<>();
+
+        Node(K key, V value, long expiryTime) {
+            this.key = key;
+            this.value = value;
+            this.expiryTime = expiryTime;
+        }
+
+        boolean isExpired() {
+            return System.currentTimeMillis() > expiryTime;
+        }
+    }
+
+    public V get(K key) {
+        Node<K, V> node = map.get(key);
+        if (Objects.isNull(node)) {
+            return null;
+        }
+
+        if (node.isExpired()) {
+            removeNode(node);
+            map.remove(key, node);
+            return null;
+        }
+
+        moveToTail(node); // LRU update
+        return node.value;
+    }
+
+    public void put(K key, V value) {
+        long expiry = System.currentTimeMillis() + ttlMillis;
+        Node<K, V> newNode = new Node<>(key, value, expiry);
+
+        Node<K, V> existing = map.put(key, newNode);
+        if (!Objects.isNull(existing)) {
+            removeNode(existing);
+        }
+
+        appendToTail(newNode);
+        evictIfNeeded();
+    }
+
+    private void appendToTail(Node<K, V> node) {
+        while (true) {
+            Node<K, V> currentTail = tail.get();
+            node.prev.set(currentTail);
+            node.next.set(null);
+
+            if (tail.compareAndSet(currentTail, node)) {
+                if (currentTail == null) {
+                    head.set(node);
+                } else {
+                    currentTail.next.set(node);
+                }
+                return;
+            }
+        }
+    }
+
+    private void moveToTail(Node<K, V> node) {
+        removeNode(node);
+        appendToTail(node);
+    }
+
+    private void removeNode(Node<K, V> node) {
+        Node<K, V> prev = node.prev.get();
+        Node<K, V> next = node.next.get();
+
+        if (prev != null) {
+            prev.next.compareAndSet(node, next);
+        } else {
+            head.compareAndSet(node, next);
+        }
+
+        if (next != null) {
+            next.prev.compareAndSet(node, prev);
+        } else {
+            tail.compareAndSet(node, prev);
+        }
+
+        node.prev.set(null);
+        node.next.set(null);
+    }
+
+    private void evictIfNeeded() {
+        while (map.size() > maxSize) {
+            Node<K, V> lru = head.get();
+            if (lru == null) return;
+
+            if (map.remove(lru.key, lru)) {
+                removeNode(lru);
+            }
+        }
+    }
+
+    public void startExpiryCleaner() {
+        try(var exc = Executors.newSingleThreadScheduledExecutor()) {
+            println("start cleaner...");
+            exc.scheduleAtFixedRate(() -> {
+                for (var entry : map.values()) {
+                    if (entry.isExpired()) {
+                        map.remove(entry.key, entry);
+                        removeNode(entry);
+                    }
+                }
+            }, 1, 1, TimeUnit.SECONDS);
+        }
     }
 }
 
@@ -382,7 +523,7 @@ public class CacheImplementations {
         println(GET_TWO + lruCache.get(KEY_TWO));
         println(GET_THREE + lruCache.get(KEY_THREE));
 
-        //LRU Concurrent Cache Demo
+        //Concurrent LRU Cache Demo
         println("\nConcurrent LRU Cache Demo:");
         Cache<String, String> clruCache = new ConcurrentLRUCache<>(CAPACITY);
         clruCache.put(KEY_ONE, VALUE_ONE);
@@ -414,5 +555,16 @@ public class CacheImplementations {
         // Wait for expiration
         Thread.sleep(1500);
         println("Get 1 (after TTL): " + ttlCache.get(KEY_ONE));
+
+        // Lock free LRU-TTL Cache Demo
+        println("\nLock Free LRU-TTL Cache Demo:");
+        LockFreeTTLCache<String, String> lfCache = new LockFreeTTLCache<>(CAPACITY,
+                Duration.ofMillis(1000), true);
+        lfCache.put(KEY_ONE, VALUE_ONE);
+        println("Get 1 (immediate): " + lfCache.get(KEY_ONE));
+        println("Get 2 (immediate): " + lfCache.get(KEY_TWO));
+        // Wait for expiration
+        Thread.sleep(1500);
+        println("Get 1 (after TTL): " + lfCache.get(KEY_ONE));
     }
 }

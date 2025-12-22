@@ -17,6 +17,7 @@ public class App36 {
 //        println(System.identityHashCode(this));
 //        m3();
         m4();
+        
     }
 
     private static void m4() {
