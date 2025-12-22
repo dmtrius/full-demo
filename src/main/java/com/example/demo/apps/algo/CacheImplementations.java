@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.IO.println;
@@ -300,18 +302,11 @@ class TTLCache<K, V> implements Cache<K, V> {
 
         // Optional: Periodic cleanup
         if (isAutoClean) {
-            Thread.ofPlatform().start(() -> {
-                while (true) {
-                    try {
-                        Thread.sleep(ttlMillis);
-                        cache.entrySet().removeIf(
-                                entry -> entry.getValue().isExpired());
-                    } catch (InterruptedException _) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                }
-            });
+            try (var exc = Executors.newSingleThreadScheduledExecutor()) {
+                exc.scheduleAtFixedRate(() -> cache.entrySet().removeIf(
+                        entry -> entry.getValue().isExpired()),
+                        ttlMillis, ttlMillis, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
@@ -359,11 +354,13 @@ public class CacheImplementations {
     private static final String GET_TWO = "Get 2: ";
     private static final String GET_THREE = "Get 3: ";
 
+    private static final int CAPACITY = 2;
+
     @SneakyThrows
     void main() {
         // Simple Cache Demo
         println("Simple Cache Demo:");
-        Cache<String, String> simpleCache = new SimpleCache<>(2);
+        Cache<String, String> simpleCache = new SimpleCache<>(CAPACITY);
         simpleCache.put(KEY_ONE, VALUE_ONE);
         simpleCache.put(KEY_TWO, VALUE_TWO);
         simpleCache.put(KEY_THREE, VALUE_THREE); // This should evict an entry
@@ -373,7 +370,7 @@ public class CacheImplementations {
 
         // LRU Cache Demo
         println("\nLRU Cache Demo:");
-        Cache<String, String> lruCache = new LRUCache<>(2);
+        Cache<String, String> lruCache = new LRUCache<>(CAPACITY);
         lruCache.put(KEY_ONE, VALUE_ONE);
         lruCache.put(KEY_TWO, VALUE_TWO);
         lruCache.get(KEY_ONE); // Make "1" recently used
@@ -384,7 +381,7 @@ public class CacheImplementations {
 
         //LRU Concurrent Cache Demo
         println("\nConcurrent LRU Cache Demo:");
-        Cache<String, String> clruCache = new ConcurrentLRUCache<>(2);
+        Cache<String, String> clruCache = new ConcurrentLRUCache<>(CAPACITY);
         clruCache.put(KEY_ONE, VALUE_ONE);
         clruCache.put(KEY_TWO, VALUE_TWO);
         clruCache.get(KEY_ONE); // Make "1" recently used
@@ -395,7 +392,7 @@ public class CacheImplementations {
 
         // LFU Cache Demo
         println("\nLFU Cache Demo:");
-        Cache<String, String> lfuCache = new LFUCache<>(2);
+        Cache<String, String> lfuCache = new LFUCache<>(CAPACITY);
         lfuCache.put(KEY_ONE, VALUE_ONE);
         lfuCache.get(KEY_ONE); // freq=2
         lfuCache.put(KEY_TWO, VALUE_TWO); // freq=1
@@ -407,7 +404,7 @@ public class CacheImplementations {
         // TTL Cache Demo
         println("\nTTL Cache Demo:");
         Cache<String, String> ttlCache = new TTLCache<>(
-                1000, false); // 1 second TTL
+                1000, true); // 1 second TTL
         ttlCache.put(KEY_ONE, VALUE_ONE);
         println("Get 1 (immediate): " + ttlCache.get(KEY_ONE));
         println("Get 2 (immediate): " + ttlCache.get(KEY_TWO));
