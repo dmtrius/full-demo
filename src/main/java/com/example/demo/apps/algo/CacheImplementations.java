@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.IO.println;
@@ -107,6 +108,65 @@ class LRUCache<K, V> implements Cache<K, V> {
     @Override
     public void clear() {
         cache.clear();
+    }
+}
+
+class ConcurrentLRUCache<K, V> implements Cache<K, V> {
+
+    private final int capacity;
+    private final ConcurrentHashMap<K, V> map = new ConcurrentHashMap<>();
+    private final ConcurrentLinkedDeque<K> deque = new ConcurrentLinkedDeque<>();
+
+    public ConcurrentLRUCache(int capacity) {
+        this.capacity = capacity;
+    }
+
+    @Override
+    public V get(K key) {
+        V value = map.get(key);
+        if (!Objects.isNull(value)) {
+            deque.remove(key);
+            deque.addLast(key);
+        }
+        return value;
+    }
+
+    @Override
+    public void put(K key, V value) {
+        if (map.put(key, value) == null) {
+            deque.addLast(key);
+        } else {
+            deque.remove(key);
+            deque.addLast(key);
+        }
+
+        evictIfNeeded();
+    }
+
+    private void evictIfNeeded() {
+        while (map.size() > capacity) {
+            K eldest = deque.pollFirst();
+            if (!Objects.isNull(eldest)) {
+                map.remove(eldest);
+            }
+        }
+    }
+
+    @Override
+    public void remove(K key) {
+        map.remove(key);
+        deque.remove(key);
+    }
+
+    @Override
+    public int size() {
+        return map.size();
+    }
+
+    @Override
+    public void clear() {
+        map.clear();
+        deque.clear();
     }
 }
 
@@ -289,15 +349,15 @@ class TTLCache<K, V> implements Cache<K, V> {
 // Main class to demonstrate usage
 @Slf4j
 public class CacheImplementations {
-    public static final String KEY_ONE = "1";
-    public static final String KEY_TWO = "2";
-    public static final String KEY_THREE = "3";
-    public static final String VALUE_ONE = "One";
-    public static final String VALUE_TWO = "Two";
-    public static final String VALUE_THREE = "Three";
-    public static final String GET_ONE = "Get 1: ";
-    public static final String GET_TWO = "Get 2: ";
-    public static final String GET_THREE = "Get 3: ";
+    private static final String KEY_ONE = "1";
+    private static final String KEY_TWO = "2";
+    private static final String KEY_THREE = "3";
+    private static final String VALUE_ONE = "One";
+    private static final String VALUE_TWO = "Two";
+    private static final String VALUE_THREE = "Three";
+    private static final String GET_ONE = "Get 1: ";
+    private static final String GET_TWO = "Get 2: ";
+    private static final String GET_THREE = "Get 3: ";
 
     @SneakyThrows
     void main() {
@@ -321,6 +381,17 @@ public class CacheImplementations {
         println(GET_ONE + lruCache.get(KEY_ONE));
         println(GET_TWO + lruCache.get(KEY_TWO));
         println(GET_THREE + lruCache.get(KEY_THREE));
+
+        //LRU Concurrent Cache Demo
+        println("\nConcurrent LRU Cache Demo:");
+        Cache<String, String> clruCache = new ConcurrentLRUCache<>(2);
+        clruCache.put(KEY_ONE, VALUE_ONE);
+        clruCache.put(KEY_TWO, VALUE_TWO);
+        clruCache.get(KEY_ONE); // Make "1" recently used
+        clruCache.put(KEY_THREE, VALUE_THREE); // Should evict "2"
+        println(GET_ONE + clruCache.get(KEY_ONE));
+        println(GET_TWO + clruCache.get(KEY_TWO));
+        println(GET_THREE + clruCache.get(KEY_THREE));
 
         // LFU Cache Demo
         println("\nLFU Cache Demo:");
