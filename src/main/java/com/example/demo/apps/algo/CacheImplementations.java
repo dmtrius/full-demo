@@ -25,7 +25,6 @@ interface Cache<K, V> {
     V get(K key);
     void remove(K key);
     int size();
-    @SuppressWarnings("unused")
     void clear();
 }
 
