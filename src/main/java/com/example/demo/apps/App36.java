@@ -1,6 +1,8 @@
 package com.example.demo.apps;
 
 import lombok.SneakyThrows;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -11,13 +13,14 @@ import java.util.stream.Collectors;
 import static java.lang.IO.println;
 
 public class App36 {
+    private static final Log LOG = LogFactory.getLog(App36.class);
     void main() {
-//        m1();
-//        m2();
-//        println(System.identityHashCode(this));
-//        m3();
+        m1();
+        m2();
+        println(System.identityHashCode(this));
+        m3();
         m4();
-        
+        LOG.info("LOGGING");
     }
 
     private static void m4() {

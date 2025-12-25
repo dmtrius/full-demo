@@ -1,6 +1,8 @@
 package com.example.demo.apps;
 
-import java.util.HashMap;
+import org.apache.groovy.util.Maps;
+
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +24,15 @@ public class App32 {
                 return OrderValidity.VIOLATION.name();
             }
             if (unlimitedTypes.contains(product.oilType())) {
-                result.put(ProductType.unlimited, result.get(ProductType.unlimited) + product.volume());
+                result.merge(ProductType.UNLIMITED, 1, Integer::sum);
             } else {
-                result.put(ProductType.limited, result.get(ProductType.limited) + product.volume());
+                result.merge(ProductType.LIMITED, 1, Integer::sum);
             }
         }
-        if (result.get(ProductType.limited) > LIMITED_VOLUME) {
+        if (result.get(ProductType.LIMITED) > LIMITED_VOLUME) {
             return OrderValidity.VIOLATION.name();
         }
-        if (result.get(ProductType.unlimited) > UNLIMITED_VOLUME) {
+        if (result.get(ProductType.UNLIMITED) > UNLIMITED_VOLUME) {
             return OrderValidity.VIOLATION.name();
         }
         return OrderValidity.COMPLAINT.name();
@@ -42,20 +44,20 @@ public class App32 {
     }
 
     private enum ProductType {
-        limited,
-        unlimited,
-        embargo
+        LIMITED,
+        UNLIMITED,
+        EMBARGO
     }
 
     private static final List<String> unlimitedTypes = List.of("Crude Oil", "Heavy Crude", "Light Crude");
     private static final List<String> embargoCountries = List.of("China");
 
     private static Map<ProductType, Integer> initResult() {
-        return new HashMap<>() {{
-            put(ProductType.limited, 0);
-            put(ProductType.unlimited, 0);
-            put(ProductType.embargo, 0);
-        }};
+        return new EnumMap<>(Maps.of(
+                ProductType.LIMITED, 0,
+                ProductType.UNLIMITED, 0,
+                ProductType.EMBARGO, 0
+        ));
     }
 
     private static List<Product> generateOrder() {
@@ -74,7 +76,8 @@ record Product(
         String oilType,
         Integer volume,
         String sourceCountry
-){}
+) {
+}
 
 /*
 * Product-1: productId=101, oilType="Crude Oil", volume=50000, sourceCountry="Norway"
