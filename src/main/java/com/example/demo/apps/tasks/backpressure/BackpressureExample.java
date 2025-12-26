@@ -14,14 +14,14 @@ public class BackpressureExample {
 
     private static final int NUM_THREADS = 4;
 
-    @SuppressWarnings("unused")
-    public static void main(String[] args) throws InterruptedException {
+    void main() throws InterruptedException {
         // Create a custom publisher
         try (CustomPublisher<Integer> publisher = new CustomPublisher<>()) {
             // Create a subscriber and register it with the publisher
-            Subscriber<Integer> subscriber = new Subscriber<>() {
+            var subscriber = new Subscriber<Integer>() {
                 private Subscription subscription;
-                private final ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+                private final ExecutorService executorService
+                        = Executors.newFixedThreadPool(NUM_THREADS);
 
                 @Override
                 public void onSubscribe(Subscription subscription) {
@@ -29,7 +29,6 @@ public class BackpressureExample {
                     this.subscription.request(2);
                 }
 
-                @SuppressWarnings("preview")
                 @Override
                 public void onNext(Integer item) {
                     println("Received: " + item);
@@ -39,6 +38,8 @@ public class BackpressureExample {
                             println("Processed:: " + item);
                         } catch (InterruptedException e) {
                             log.error(e.getMessage());
+                            onError(e);
+                            Thread.currentThread().interrupt();
                         }
                         subscription.request(2);
                     });
@@ -51,7 +52,6 @@ public class BackpressureExample {
                     executorService.shutdown();
                 }
 
-                @SuppressWarnings("preview")
                 @Override
                 public void onComplete() {
                     println("Completed");
@@ -62,9 +62,6 @@ public class BackpressureExample {
             publisher.subscribe(subscriber);
 
             // Publish items
-//            for (int i = 1; i <= 10; i++) {
-//                publisher.publish(i);
-//            }
             SecureRandom random = new SecureRandom();
             IntStream.generate(() -> random.nextInt(1, 42))
                     .limit(20)
