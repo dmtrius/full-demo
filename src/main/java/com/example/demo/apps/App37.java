@@ -25,6 +25,7 @@ public class App37 {
         m2();
         println((LocalDate.of(2000, 1, 1).getYear() - 1) / 100 + 1);
         println((LocalDate.of(2001, 1, 1).getYear() - 1) / 100 + 1);
+
     }
 
     @SuppressWarnings("unused")
