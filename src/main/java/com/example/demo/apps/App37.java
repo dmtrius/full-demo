@@ -25,9 +25,29 @@ public class App37 {
         m2();
         println((LocalDate.of(2000, 1, 1).getYear() - 1) / 100 + 1);
         println((LocalDate.of(2001, 1, 1).getYear() - 1) / 100 + 1);
+        m3(List.of("1"));
 
     }
 
+    void m3(List<String> s, Void... v) {
+        println(s);
+        println(Arrays.toString(v));
+    }
+
+    /**
+     * A telemeter with laser ranging from 0 to 60 ft including
+     * calculation of surfaces and volumes with high-precision
+     *
+     * <pre>{@code
+     * Telemeter.Calibrate.at(0.00001); // @highlight region
+     * Telemeter telemeter = new Telemeter(0.15, 2, "IP54"); // @end
+     * }</pre>
+     *
+     * <pre>{@snippet lang = "properties":
+     *     telemeter.precision.default=42
+     *     telemeter.clazz.default=2
+     * }</pre>
+     */
     @SuppressWarnings("unused")
     static void m2() {
         RandomGenerator.SplittableGenerator splittableRndL64X256
