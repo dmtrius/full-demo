@@ -7,24 +7,24 @@ import java.util.Scanner;
 import static java.lang.IO.print;
 import static java.lang.IO.println;
 
-public class PolishNotationCalculator {
-    private final Deque<Double> stack = new LinkedList<>();
+public class RPNCalculator {
+    public static double evaluate(String input) {
+        Deque<Double> stack = new LinkedList<>();
+        String[] tokens = input.trim().split("\\s+");
 
-    public double evaluate(String[] tokens) {
-        for (int i = tokens.length - 1; i >= 0; i--) {
-            String token = tokens[i];
+        for (String token : tokens) {
             if (isNumber(token)) {
                 stack.push(Double.parseDouble(token));
             } else {
                 double op2 = stack.pop();
                 double op1 = stack.pop();
-                stack.push(applyOperator(token.charAt(0), op1, op2));
+                stack.push(apply(token.charAt(0), op1, op2));
             }
         }
         return stack.pop();
     }
 
-    private boolean isNumber(String token) {
+    private static boolean isNumber(String token) {
         try {
             Double.parseDouble(token);
             return true;
@@ -33,7 +33,7 @@ public class PolishNotationCalculator {
         }
     }
 
-    private double applyOperator(char op, double op1, double op2) {
+    private static double apply(char op, double op1, double op2) {
         return switch (op) {
             case '+' -> op1 + op2;
             case '-' -> op1 - op2;
@@ -45,13 +45,10 @@ public class PolishNotationCalculator {
 
     void main() {
         Scanner scanner = new Scanner(System.in);
-        print("Enter Polish notation expression (space-separated): ");
+        print("Enter RPN expression (space-separated): ");
         String line = scanner.nextLine();
-        String[] tokens = line.split("\\s+");
-
-        PolishNotationCalculator calc = new PolishNotationCalculator();
         try {
-            double result = calc.evaluate(tokens);
+            double result = evaluate(line);
             println("Result: " + result);
         } catch (Exception e) {
             println("Error: " + e.getMessage());
