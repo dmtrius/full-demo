@@ -41,12 +41,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking book(int start, int end, int personCount, Set<Feature> features) {
-        var availableRooms = rooms.values().stream()
-                .filter(room -> room.capacity() >= personCount)
-                .filter(room -> room.openHour() <= start
-                        && room.closeHour() >= end)
-                .filter(room -> room.features().containsAll(features))
-                .toList();
+        var availableRooms = getAvailableRooms(start, end, personCount, features);
         if (!availableRooms.isEmpty()) {
             Room room = availableRooms.getFirst();
             Booking booking = new Booking(start, end, personCount, features, room);
@@ -56,10 +51,19 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
+    private List<Room> getAvailableRooms(int start, int end, int personCount, Set<Feature> features) {
+        return rooms.values().stream()
+            .filter(room -> room.capacity() >= personCount)
+            .filter(room -> room.openHour() <= start
+                && room.closeHour() >= end)
+            .filter(room -> room.features().containsAll(features))
+            .toList();
+    }
+
     @Override
     public List<Booking> getRoomSchedule(String roomName) {
         return bookings.entrySet().stream()
-                .filter(es -> es.getKey().name().equals(roomName))
-                .map(Map.Entry::getValue).toList();
+            .filter(es -> es.getKey().name().equals(roomName))
+            .map(Map.Entry::getValue).toList();
     }
 }
