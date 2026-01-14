@@ -1,11 +1,9 @@
 package com.example.demo.apps;
 
+import static java.lang.IO.println;
+
 public class App38 {
     void main() {
-        m1();
-    }
-
-    void m1() {
 
     }
 }
