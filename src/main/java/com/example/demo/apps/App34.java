@@ -2,31 +2,24 @@ package com.example.demo.apps;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 
 import static java.lang.IO.println;
 
 public class App34 {
     void main() {
-        println(find1stNunDuplicate("aabbccddeeef"));
+        find1stNunDuplicate("aabbccdhdeeeff")
+                .ifPresent(c -> println("First non-duplicate: " + c));
     }
 
-    Character find1stNunDuplicate(String str) {
-        if (Objects.isNull(str) || str.isEmpty()) {
-            return null;
-        }
+    Optional<Character> find1stNunDuplicate(String str) {
         Map<Character, Integer> result = new LinkedHashMap<>();
-        for (int i = 0; i < str.length(); ++i) {
-            if (!result.containsKey(str.charAt(i))) {
-                result.put(str.charAt(i), 1);
-            } else {
-                result.put(str.charAt(i), result.get(str.charAt(i)) + 1);
-            }
+        for (char c : str.toCharArray()) {
+            result.merge(c, 1, Integer::sum);
         }
         return result.entrySet().stream()
                 .filter(es -> es.getValue().equals(1))
                 .findFirst()
-                .map(Map.Entry::getKey)
-                .orElse(null);
+                .map(Map.Entry::getKey);
     }
 }
