@@ -8,7 +8,7 @@ import static java.lang.IO.println;
 
 public class App33 {
     void main() {
-        CacheImpl<Integer, String> cacheInstance = new CacheImpl<>(3);
+        MyCache<Integer, String> cacheInstance = new CacheImpl<>(3);
         cacheInstance.put(1, "one");
         cacheInstance.put(3, "three");
         cacheInstance.put(2, "two");
@@ -18,7 +18,7 @@ public class App33 {
     }
 }
 
-class CacheImpl<K, V> {
+class CacheImpl<K, V> implements MyCache<K, V> {
     private final int SIZE;
     private final List<Entry<K, V>> cache = new LinkedList<>();
 
@@ -59,3 +59,8 @@ class CacheImpl<K, V> {
 }
 
 record Entry<K, V> (K key, V value) {}
+
+interface MyCache<K, V> {
+    void put(K key, V value);
+    V get(K key);
+}
