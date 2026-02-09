@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +14,7 @@ public class App34 {
                 .ifPresent(c -> println("First non-duplicate: " + c));
     }
 
-    Optional<Character> find1stNunDuplicate(String str) {
+    public static Optional<Character> find1stNunDuplicate(@NonNull String str) {
         Map<Character, Integer> result = new LinkedHashMap<>();
         for (char c : str.toCharArray()) {
             result.merge(c, 1, Integer::sum);
