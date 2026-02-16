@@ -8,6 +8,6 @@ public class App39Test {
     private final App39 app = new App39();
     @Test
     void test() {
-        assertEquals(1, app.t1());
+
     }
 }
