@@ -6,4 +6,7 @@ public class App39 {
     void main() {
 
     }
+    public int t1() {
+        return 1;
+    }
 }
