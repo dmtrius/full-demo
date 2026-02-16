@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import static java.lang.IO.println;
+
 public class NumbersInWords {
     private static String convertLessThanOneThousand(long number) {
         if (number == 0) {
@@ -39,24 +41,24 @@ public class NumbersInWords {
         }
 
         int thousandCounter = 0;
-        String current = "";
+        StringBuilder current = new StringBuilder();
 
         while (number > 0) {
             if (number % 1000 != 0) {
-                current = convertLessThanOneThousand(
+                current.insert(0, convertLessThanOneThousand(
                         number % 1000) + " " + NumberToWords.thousands[thousandCounter] +
-                        " " + current;
+                        " ");
             }
             number /= 1000;
             thousandCounter++;
         }
 
-        return current.trim();
+        return current.toString().trim();
     }
 
-    public static void main(String[] args) {
+    void main() {
         long number = 7_123_456_789L;
-        System.out.println(numberToWords(number));
+        println(numberToWords(number));
     }
 }
 
@@ -76,4 +78,5 @@ class NumberToWords {
     static final String[] thousands = {
             "", "Thousand", "Million", "Billion"
     };
+    private NumberToWords(){}
 }
