@@ -3,28 +3,20 @@ package com.example.demo.apps.algo;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Duration;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import module java.base;
 
 import static java.lang.IO.println;
 
 // Interface for all cache implementations
 interface Cache<K, V> {
     void put(K key, V value);
+
     V get(K key);
+
     void remove(K key);
+
     int size();
+
     void clear();
 }
 
@@ -203,8 +195,8 @@ class LFUCache<K, V> implements Cache<K, V> {
         this.capacity = capacity;
         this.cache = new HashMap<>();
         this.frequencyQueue = new PriorityQueue<>(
-                Comparator.comparingInt((CacheEntry<K, V> a) -> a.frequency)
-                        .thenComparingLong(a -> a.lastUsed));
+            Comparator.comparingInt((CacheEntry<K, V> a) -> a.frequency)
+                .thenComparingLong(a -> a.lastUsed));
         this.timestamp = new AtomicLong();
     }
 
@@ -281,7 +273,7 @@ class LFUCache<K, V> implements Cache<K, V> {
 
 /**
  * <b>TTL Cache</b> with <i>ConcurrentHashMap</i>
-  */
+ */
 class TTLCache<K, V> implements Cache<K, V> {
     private static class CacheEntry<V> {
         V value;
@@ -310,7 +302,7 @@ class TTLCache<K, V> implements Cache<K, V> {
             try (var exc = Executors.newSingleThreadScheduledExecutor()) {
                 exc.scheduleAtFixedRate(() -> cache.entrySet().removeIf(
                         entry -> entry.getValue().isExpired()),
-                        ttlMillis, ttlMillis, TimeUnit.MILLISECONDS);
+                    ttlMillis, ttlMillis, TimeUnit.MILLISECONDS);
             }
         }
     }
@@ -470,7 +462,7 @@ class LockFreeTTLCache<K, V> {
     }
 
     public void startExpiryCleaner() {
-        try(var exc = Executors.newSingleThreadScheduledExecutor()) {
+        try (var exc = Executors.newSingleThreadScheduledExecutor()) {
             println("start cleaner...");
             exc.scheduleAtFixedRate(() -> {
                 for (var entry : map.values()) {
@@ -547,7 +539,7 @@ public class CacheImplementations {
         // TTL Cache Demo
         println("\nTTL Cache Demo:");
         Cache<String, String> ttlCache = new TTLCache<>(
-                1000, true); // 1 second TTL
+            1000, true); // 1 second TTL
         ttlCache.put(KEY_ONE, VALUE_ONE);
         println("Get 1 (immediate): " + ttlCache.get(KEY_ONE));
         println("Get 2 (immediate): " + ttlCache.get(KEY_TWO));
@@ -558,7 +550,7 @@ public class CacheImplementations {
         // Lock free LRU-TTL Cache Demo
         println("\nLock Free LRU-TTL Cache Demo:");
         LockFreeTTLCache<String, String> lfCache = new LockFreeTTLCache<>(CAPACITY,
-                Duration.ofMillis(1000), true);
+            Duration.ofMillis(1000), true);
         lfCache.put(KEY_ONE, VALUE_ONE);
         println("Get 1 (immediate): " + lfCache.get(KEY_ONE));
         println("Get 2 (immediate): " + lfCache.get(KEY_TWO));
