@@ -6,14 +6,7 @@ import lombok.SneakyThrows;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.concurrent.TimeUnit;
+import module java.base;
 
 public class DijkstraAlgorithm {
     // Graph represented as adjacency list using HashMap
@@ -108,17 +101,17 @@ public class DijkstraAlgorithm {
         int current = endVertex;
 
         while (current != startVertex) {
-            path.add(0, current);
+            path.addFirst(current);
             current = previousVertices.get(current);
         }
-        path.add(0, startVertex);
+        path.addFirst(startVertex);
 
         return path;
     }
 
     // Example usage
     @SneakyThrows
-    public static void main(String[] args) {
+    void main() {
         DijkstraAlgorithm graph = new DijkstraAlgorithm();
 
         // Add vertices
