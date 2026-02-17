@@ -2,6 +2,7 @@ package com.example.demo.apps.leetcode.matrix_traversal;
 
 import java.util.Arrays;
 
+import static com.example.demo.apps.leetcode.Utils.printMatrix;
 import static java.lang.IO.println;
 
 /**
@@ -43,9 +44,11 @@ import static java.lang.IO.println;
 public class FloodFill {
     void main() {
         int [][] image = {{1, 1, 1},{1, 1, 0},{1, 0, 1}};
+        printMatrix(image);
+        println();
         int sr = 1, sc = 1, color = 2;
         var result = floodFill(image, sr, sc, color);
-        println(Arrays.deepToString(result));
+        printMatrix(result);
     }
 
     public int[][] floodFill(int[][] image, int sr, int sc, int color) {

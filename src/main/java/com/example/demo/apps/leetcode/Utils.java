@@ -1,6 +1,24 @@
 package com.example.demo.apps.leetcode;
 
 public class Utils {
+    public static void printMatrix(int[][] arr) {
+        for (int[] ints : arr) {
+            for (int anInt : ints) {
+                System.out.printf("%4d", anInt);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void printMatrix(String[][] arr) {
+        for (String[] strings : arr) {
+            for (String string : strings) {
+                System.out.printf("%4s", string);
+            }
+            System.out.println();
+        }
+    }
+
     public static ListNode createList(int[] values) {
         if (values == null || values.length == 0) {
             return null;

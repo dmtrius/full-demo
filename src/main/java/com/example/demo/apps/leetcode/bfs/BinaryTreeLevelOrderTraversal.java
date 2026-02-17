@@ -2,10 +2,7 @@ package com.example.demo.apps.leetcode.bfs;
 
 import com.example.demo.apps.leetcode.TreeNode;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import module java.base;
 
 import static java.lang.IO.println;
 
