@@ -1,11 +1,8 @@
 package com.example.demo.apps.algo;
 
 
-import lombok.Data;
 import lombok.SneakyThrows;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.MemorySegment;
 import module java.base;
 
 public class DijkstraAlgorithm {
@@ -43,7 +40,7 @@ public class DijkstraAlgorithm {
     public Map<Integer, Integer> findShortestPaths(int startVertex) {
         // Priority queue to store vertices and their current distances
         PriorityQueue<Node> pq = new PriorityQueue<>(
-                Comparator.comparingInt(Node::getWeight)
+                Comparator.comparingInt(Node::weight)
         );
 
         // Map to store final shortest distances
@@ -65,8 +62,8 @@ public class DijkstraAlgorithm {
         while (!pq.isEmpty()) {
             // Get vertex with minimum distance
             Node current = pq.poll();
-            int currentVertex = current.vertex;
-            int currentWeight = current.weight;
+            int currentVertex = current.vertex();
+            int currentWeight = current.weight();
 
             // Skip if we've found a better path already
             if (currentWeight > distances.get(currentVertex)) {
@@ -75,13 +72,13 @@ public class DijkstraAlgorithm {
 
             // Process all adjacent vertices
             for (Node neighbor : adjacencyList.get(currentVertex)) {
-                int distance = currentWeight + neighbor.weight;
+                int distance = currentWeight + neighbor.weight();
 
                 // Update distance if we found a shorter path
-                if (distance < distances.get(neighbor.vertex)) {
-                    distances.put(neighbor.vertex, distance);
-                    previousVertices.put(neighbor.vertex, currentVertex);
-                    pq.offer(new Node(neighbor.vertex, distance));
+                if (distance < distances.get(neighbor.vertex())) {
+                    distances.put(neighbor.vertex(), distance);
+                    previousVertices.put(neighbor.vertex(), currentVertex);
+                    pq.offer(new Node(neighbor.vertex(), distance));
                 }
             }
         }
@@ -139,24 +136,9 @@ public class DijkstraAlgorithm {
                 System.out.println("To vertex " + vertex + ": " + distance));
         // Get a specific path
         List<Integer> path = graph.getPath(0, 5);
-//        TimeUnit.MINUTES.sleep(2);
         System.out.println("\nShortest path from 0 to 5: " + path);
-        String pattern = "***********";
-
-        try (Arena arena = Arena.ofConfined()) {
-            MemorySegment nativeString = arena.allocateFrom(pattern);
-        }
     }
 }
 
 // Node class to represent vertices and their weights
-@Data
-class Node {
-    int vertex;
-    int weight;
-
-    Node(int vertex, int weight) {
-        this.vertex = vertex;
-        this.weight = weight;
-    }
-}
+record Node(int vertex, int weight) {}
