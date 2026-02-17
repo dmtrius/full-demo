@@ -29,7 +29,6 @@ public class DijkstraAlgorithm {
         adjacencyList.putIfAbsent(source, new ArrayList<>());
         // Add destination vertex if it doesn't exist
         adjacencyList.putIfAbsent(destination, new ArrayList<>());
-
         // Add edge from source to destination
         adjacencyList.get(source).add(new Node(destination, weight));
         // For undirected graph, add reverse-edge
@@ -55,9 +54,6 @@ public class DijkstraAlgorithm {
         // Add start vertex to priority queue
         pq.offer(new Node(startVertex, 0));
 
-//        // Map to store the shortest path tree
-//        Map<Integer, Integer> previousVertices = new HashMap<>();
-
         // Process vertices in priority queue
         while (!pq.isEmpty()) {
             // Get vertex with minimum distance
@@ -73,7 +69,6 @@ public class DijkstraAlgorithm {
             // Process all adjacent vertices
             for (Node neighbor : adjacencyList.get(currentVertex)) {
                 int distance = currentWeight + neighbor.weight();
-
                 // Update distance if we found a shorter path
                 if (distance < distances.get(neighbor.vertex())) {
                     distances.put(neighbor.vertex(), distance);
@@ -91,7 +86,7 @@ public class DijkstraAlgorithm {
         Map<Integer, Integer> distances = findShortestPaths(startVertex);
 
         if (distances.get(endVertex) == Integer.MAX_VALUE) {
-            return Collections.emptyList(); // No path exists
+            return List.of(); // No path exists
         }
 
         List<Integer> path = new ArrayList<>();
@@ -129,7 +124,6 @@ public class DijkstraAlgorithm {
 
         // Find the shortest paths from vertex 0
         Map<Integer, Integer> distances = graph.findShortestPaths(0);
-
         // Print results
         System.out.println("Shortest distances from vertex 0:");
         distances.forEach((vertex, distance) ->
