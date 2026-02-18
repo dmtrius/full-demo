@@ -10,9 +10,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService;
-import org.springframework.web.reactive.socket.server.upgrade.TomcatRequestUpgradeStrategy;
+import org.springframework.web.reactive.socket.server.upgrade.StandardWebSocketUpgradeStrategy;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
@@ -48,10 +49,11 @@ public class ReactiveWebSocketConfiguration {
 
     @Bean
     public WebSocketService webSocketService() {
-        TomcatRequestUpgradeStrategy tomcatRequestUpgradeStrategy = new TomcatRequestUpgradeStrategy();
-        tomcatRequestUpgradeStrategy.setMaxSessionIdleTimeout(10000L);
-        tomcatRequestUpgradeStrategy.setAsyncSendTimeout(10000L);
-        return new HandshakeWebSocketService(tomcatRequestUpgradeStrategy);
+        RequestUpgradeStrategy requestUpgradeStrategy = new StandardWebSocketUpgradeStrategy();
+//        requestUpgradeStrategy.upgrade();
+//        requestUpgradeStrategy.setMaxSessionIdleTimeout(10000L);
+//        requestUpgradeStrategy.setAsyncSendTimeout(10000L);
+        return new HandshakeWebSocketService(requestUpgradeStrategy);
     }
 
     @Bean

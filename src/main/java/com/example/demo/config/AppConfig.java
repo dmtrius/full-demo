@@ -1,13 +1,16 @@
 package com.example.demo.config;
 
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.text.SimpleDateFormat;
 
 @Configuration
 public class AppConfig {
-    public Jackson2ObjectMapperBuilderCustomizer dateCustomizer() {
+    @Bean
+    public JsonMapperBuilderCustomizer dateCustomizer() {
         return builder -> builder
-                .simpleDateFormat("yyyy-MM-dd")
-                .failOnUnknownProperties(false);
+                .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
     }
 }

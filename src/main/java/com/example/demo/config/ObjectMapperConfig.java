@@ -2,7 +2,7 @@ package com.example.demo.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
+import com.fasterxml.jackson.datatype.hibernate7.Hibernate7Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +23,11 @@ public class ObjectMapperConfig {
     }
 
     @Bean
-    public Hibernate6Module hibernateModule() {
-        Hibernate6Module module = new Hibernate6Module();
-        module.disable(Hibernate6Module.Feature.USE_TRANSIENT_ANNOTATION);
-        module.enable(Hibernate6Module.Feature.FORCE_LAZY_LOADING);
-        module.enable(Hibernate6Module.Feature.REPLACE_PERSISTENT_COLLECTIONS);
+    public Hibernate7Module hibernateModule() {
+        Hibernate7Module module = new Hibernate7Module();
+        module.disable(Hibernate7Module.Feature.USE_TRANSIENT_ANNOTATION);
+        module.enable(Hibernate7Module.Feature.FORCE_LAZY_LOADING);
+        module.enable(Hibernate7Module.Feature.REPLACE_PERSISTENT_COLLECTIONS);
         return module;
     }
 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>4.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -17,11 +17,28 @@
         <java.version>25</java.version>
         <maven.compiler.target>25</maven.compiler.target>
         <maven.compiler.source>25</maven.compiler.source>
+        <hibernate.version>7.2.4.Final</hibernate.version>
         <keycloak.springboot.version>25.0.3</keycloak.springboot.version>
         <lombok.version>1.18.42</lombok.version>
         <resilience4j.version>2.3.0</resilience4j.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2025.1.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -89,7 +106,7 @@
         <dependency>
             <groupId>com.webauthn4j</groupId>
             <artifactId>webauthn4j-spring-security-core</artifactId>
-            <version>0.11.0.RELEASE</version>
+            <version>0.12.0.RELEASE</version>
         </dependency>
         <!--<dependency>
             <groupId>org.apache.spark</groupId>
@@ -101,6 +118,10 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -147,8 +168,9 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate6</artifactId>
-            <version>2.18.2</version>
+            <artifactId>jackson-datatype-hibernate7</artifactId>
+            <version>2.21.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jdbi.jackson-contrib</groupId> <!-- Temporary group ID, this will change! -->
@@ -166,7 +188,7 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-            <version>3.8.1</version> <!-- Adjust to your Kafka version -->
+            <version>4.1.1</version> <!-- Adjust to your Kafka version -->
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -182,7 +204,7 @@
         <dependency>
             <groupId>io.reactivex.rxjava3</groupId>
             <artifactId>rxjava</artifactId>
-            <version>3.1.10</version>
+            <version>3.1.12</version>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
@@ -208,6 +230,10 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -399,7 +425,6 @@
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>--enable-preview</arg>
-                        <arg>--add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED</arg>
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
@@ -432,7 +457,7 @@
                     </argLine>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>com.vmlens</groupId>
                 <artifactId>vmlens-maven-plugin</artifactId>
                 <version>1.2.6</version>
@@ -444,17 +469,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>24</source>-->
-<!--                    <target>24</target>-->
-<!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-            <!--<plugin>
+            </plugin>-->
+           <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>

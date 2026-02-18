@@ -2,6 +2,7 @@ package com.example.demo.beans;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -31,7 +32,7 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
             .zipWith(eventFlux, (time, event) -> event);
 
     @Override
-    public Mono<Void> handle(WebSocketSession webSocketSession) {
+    public @NonNull Mono<Void> handle(WebSocketSession webSocketSession) {
         return webSocketSession.send(intervalFlux
                         .map(webSocketSession::textMessage))
                 .and(webSocketSession.receive()

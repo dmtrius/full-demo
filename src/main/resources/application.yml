@@ -13,10 +13,15 @@ server:
             max: 1000
 spring:
     application:
-        name: demo
+      name: demo
+    cloud:
+      config:
+        enabled: false
+        import-check:
+          enabled: false
     data:
         redis:
-            host: ${SPRING_REDIS_URL}
+            host: ${SPRING_REDIS_URL:localhost}
             port: 6379
     datasource:
         hikari:
@@ -35,13 +40,15 @@ spring:
             maximum-pool-size: 40
             minimumIdle: 0
             transaction-isolation: TRANSACTION_READ_COMMITTED
-        password: enter
+        password: postgres
+        driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://localhost:5432/demo
-        username: dmytrogordiienko
+        username: postgres
     devtools:
         livereload:
             enabled: true
     jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
         defer-datasource-initialization: true
         hibernate:
             ddl-auto: none
@@ -53,7 +60,7 @@ spring:
                 show_sql: true
                 use_sql_comments: true
     kafka:
-        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
         consumer:
             auto-offset-reset: earliest
             enable-auto-commit: false
@@ -88,7 +95,7 @@ spring:
                         scope: openid, profile, email
             resourceserver:
                 jwt:
-                    issuer-uri: ${SPRING_KEYCLOAK_URL}/realms/dmtrius
+                    issuer-uri: ${SPRING_KEYCLOAK_URL:localhost}/realms/dmtrius
     sql:
         init:
             continue-on-error: true
