@@ -9,7 +9,7 @@ public class DijkstraAlgorithm {
     // Graph represented as adjacency list using HashMap
     private final Map<Integer, List<Node>> adjacencyList;
     // Map to store the shortest path tree
-    Map<Integer, Integer> previousVertices;
+    private final Map<Integer, Integer> previousVertices;
 
 
     // Constructor initializes an empty adjacency list
