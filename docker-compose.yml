@@ -4,9 +4,8 @@ services:
     build: .
     ports:
       - "8843:8843"
-    platform: linux/arm64
     environment:
-      - JAVA_HOME=/usr/lib/jvm/java-23-openjdk-amd64
+      - JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/demo
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
@@ -14,20 +13,20 @@ services:
       - SPRING_KEYCLOAK_URL=http://keycloak:8080
       - SPRING_REDIS_URL=redis
     depends_on:
-      - redis
+#      - redis
       - postgres
       - broker
       - keycloak
     networks:
       - app-network
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
+#  redis:
+#    image: redis:latest
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - app-network
 
   postgres:
     image: postgres:latest
