@@ -1,15 +1,8 @@
 package com.example.demo.apps.algo;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.Random;
+import lombok.SneakyThrows;
+
+import module java.base;
 
 /**
  * High-performance thread-safe LRU Cache implementation in Java
@@ -17,7 +10,6 @@ import java.util.Random;
  * and read-write locks for thread-safe LRU ordering.
  */
 public class LRUCacheHP<K, V> {
-
     /**
      * Internal node class for the doubly linked list
      */
@@ -71,10 +63,12 @@ public class LRUCacheHP<K, V> {
      * @return The value associated with the key, or null if not found
      */
     public V get(K key) {
-        if (key == null) return null;
+        if (Objects.isNull(key)) {
+            return null;
+        }
 
         Node<K, V> node = cache.get(key);
-        if (node == null) {
+        if (Objects.isNull(node)) {
             return null;
         }
 
@@ -89,10 +83,12 @@ public class LRUCacheHP<K, V> {
      * @param value The value
      */
     public void put(K key, V value) {
-        if (key == null) return;
+        if (Objects.isNull(key)) {
+            return;
+        }
 
         Node<K, V> existing = cache.get(key);
-        if (existing != null) {
+        if (Objects.nonNull(existing)) {
             // Update existing node
             existing.value = value;
             moveToHead(existing);
@@ -119,7 +115,9 @@ public class LRUCacheHP<K, V> {
      * @return The value which was removed, or null if key wasn't present
      */
     public V remove(K key) {
-        if (key == null) return null;
+        if (Objects.isNull(key)) {
+            return null;
+        }
 
         Node<K, V> node = cache.remove(key);
         if (node != null) {
@@ -181,7 +179,6 @@ public class LRUCacheHP<K, V> {
     }
 
     // Private helper methods for list manipulation
-
     private void addToHead(Node<K, V> node) {
         writeLock.lock();
         try {
@@ -226,8 +223,8 @@ public class LRUCacheHP<K, V> {
     }
 
     // Example usage and performance testing
-    @SuppressWarnings("unused")
-    public static void main(String[] args) throws InterruptedException {
+    @SneakyThrows
+    static void main(){
         // Basic functionality test
         LRUCacheHP<String, Integer> cache = new LRUCacheHP<>(3);
 
