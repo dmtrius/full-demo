@@ -11,7 +11,6 @@ public class DijkstraAlgorithm {
     // Map to store the shortest path tree
     private final Map<Integer, Integer> previousVertices;
 
-
     // Constructor initializes an empty adjacency list
     public DijkstraAlgorithm() {
         this.adjacencyList = new HashMap<>();
