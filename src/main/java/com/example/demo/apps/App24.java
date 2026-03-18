@@ -11,12 +11,16 @@ import java.util.Locale;
 
 @Slf4j
 public class App24 {
-    @SneakyThrows
+//    @SneakyThrows
     void main() {
         log.info("hello");
         Thread vThread = Thread.ofVirtual().start(()
                 -> log.info("hello from virtual thread"));
-        vThread.join();
+        try {
+            vThread.join();
+        } catch (InterruptedException _) {
+
+        }
 
         ZoneId zoneId = ZoneId.of("America/New_York");
         ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);

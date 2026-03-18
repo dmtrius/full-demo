@@ -76,7 +76,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
     }
 
     // Batch put operation using Structured Concurrency
-    @SneakyThrows
+//    @SneakyThrows
     public void batchPut(Map<K, V> entries) {
         String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
         /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
@@ -96,7 +96,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
     }
 
     // Batch get operation using Structured Concurrency
-    @SneakyThrows
+//    @SneakyThrows
     public Map<K, V> batchGet(List<K> keys) {
         /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             List<StructuredTaskScope.Subtask<V>> tasks = keys.stream()

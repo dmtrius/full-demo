@@ -1,17 +1,19 @@
 package com.example.demo.apps.algo;
 
 import de.biomedical_imaging.edu.wlu.cs.levy.CG.KDTree;
+import de.biomedical_imaging.edu.wlu.cs.levy.CG.KeyDuplicateException;
+import de.biomedical_imaging.edu.wlu.cs.levy.CG.KeySizeException;
 import lombok.SneakyThrows;
 
 import static java.lang.IO.println;
 
 public class KDtree1 {
-    void main() {
+    void main() throws KeyDuplicateException, KeySizeException {
         m1();
     }
 
-    @SneakyThrows
-    void m1() {
+//    @SneakyThrows
+    void m1() throws KeyDuplicateException, KeySizeException {
         KDTree<String> tree = new KDTree<>(3);
 
         tree.insert(new double[]{2, 3, 4}, "A");

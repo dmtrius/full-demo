@@ -1,7 +1,5 @@
 package com.example.demo.apps;
 
-import io.github.resilience4j.ratelimiter.RateLimiter;
-import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -24,7 +22,7 @@ public class App30 {
         println("START");
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     void main() {
         println("brrr");
         processInfo();
@@ -39,20 +37,25 @@ public class App30 {
         }));
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     void tryMethodHandler() {
-        MethodHandle handle = MethodHandles.
-                lookup().
-                findVirtual(String.class, "toUpperCase",
-                        MethodType.methodType(String.class));
-        System.out.println(handle.invoke("hello")); // "HELLO"
+        MethodHandle handle = null;
+        try {
+            handle = MethodHandles.
+                    lookup().
+                    findVirtual(String.class, "toUpperCase",
+                            MethodType.methodType(String.class));
+            System.out.println(handle.invoke("hello")); // "HELLO"
+        } catch (Throwable _) {
+
+        }
     }
 
     void processInfo() {
         ProcessHandle.current().info().command().ifPresent(System.out::println);
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     void tryLinker1() {
         Linker linker = Linker.nativeLinker();
 
@@ -69,10 +72,12 @@ public class App30 {
 
             long length = (long) strlen.invoke(cStr);
             System.out.println("Length: " + length);  // Outputs: Length: 11
+        } catch (Throwable _) {
+
         }
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     void tryLinker2() {
         Linker linker = Linker.nativeLinker();
         SymbolLookup stdlib = linker.defaultLookup();
@@ -87,6 +92,8 @@ public class App30 {
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment msg = arena.allocateFrom("Hello from native puts!");
             puts.invoke(msg);
+        } catch (Throwable _) {
+
         }
     }
 }

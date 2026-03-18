@@ -2,6 +2,7 @@ package com.example.demo.apps;
 
 import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class App39 {
 
     }
 
-    @SneakyThrows
+    //@SneakyThrows
     void streamProcessing() {
         int[] input = {-1, -2, 2};
         List<Integer> output = processArray(input);
@@ -26,6 +27,8 @@ public class App39 {
         try (var lines = Files.lines(Path.of("input.txt"))) {
             List<Integer> result =
                     processStream(lines.mapToInt(Integer::parseInt));
+        } catch (IOException _) {
+
         }
     }
 
@@ -48,11 +51,11 @@ public class App39 {
     public static List<Integer> processStream(IntStream stream) {
         List<Integer> result = new ArrayList<>();
 
-        stream.forEach(value -> {
-            if (value < 0) {
-                result.add(value);
-            } else if (value > 0) {
-                int index = value - 1;
+        stream.forEach(i -> {
+            if (i < 0) {
+                result.add(i);
+            } else if (i > 0) {
+                int index = i - 1;
                 if (index < result.size()) {
                     result.remove(index);
                 }

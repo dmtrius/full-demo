@@ -1,6 +1,5 @@
 package com.example.demo.apps;
 
-import lombok.SneakyThrows;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.util.Arrays;
@@ -8,8 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class App12 {
-    @SneakyThrows
-    public static void main(String... args) {
+    void main() {
         String baseString = "${third}: String ${first} in ${second} with some ${second} examples.";
         String first = "Interpolation";
         String second = "Java";

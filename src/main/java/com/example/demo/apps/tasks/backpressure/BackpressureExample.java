@@ -6,7 +6,7 @@ import java.security.SecureRandom;
 import java.util.stream.IntStream;
 
 public class BackpressureExample {
-    @SneakyThrows
+    //@SneakyThrows
     void main() {
         try (final CustomPublisher<Integer> publisher = new CustomPublisher<>()) {
             var subscriber = new CustomSubscriber<Integer>();
@@ -18,6 +18,8 @@ public class BackpressureExample {
                     .forEach(publisher::publish);
 
             Thread.sleep(5000);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
         }
     }
 }

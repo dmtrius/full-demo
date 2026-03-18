@@ -1,5 +1,6 @@
 package com.example.demo.apps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import lombok.SneakyThrows;
@@ -20,7 +21,7 @@ public class KafkaProducerWithKey {
 
     private static final String TOPIC = "my-super-topic";
 
-    @SneakyThrows
+//    @SneakyThrows
     public static void main(String... args) {
         Properties props = getProperties();
         try (KafkaProducer<String, PrivateUser> producer = new KafkaProducer<>(props)) {
@@ -31,6 +32,8 @@ public class KafkaProducerWithKey {
                 String jsonUser = mapper.writeValueAsString(user);
                 createAndSendMessage(key, user, producer);
             }
+        } catch (JsonProcessingException _) {
+
         }
     }
 

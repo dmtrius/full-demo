@@ -223,7 +223,7 @@ public class LRUCacheHP<K, V> {
     }
 
     // Example usage and performance testing
-    @SneakyThrows
+//    @SneakyThrows
     static void main(){
         // Basic functionality test
         LRUCacheHP<String, Integer> cache = new LRUCacheHP<>(3);
@@ -272,7 +272,11 @@ public class LRUCacheHP<K, V> {
         System.out.println("Final cache size: " + concurrentCache.size());
 
         executor.shutdown();
-        executor.awaitTermination(5, TimeUnit.SECONDS);
+        try {
+            executor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException _) {
+            Thread.currentThread().interrupt();
+        }
 
         // Memory usage statistics
         Runtime runtime = Runtime.getRuntime();

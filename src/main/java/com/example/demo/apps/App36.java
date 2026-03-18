@@ -31,7 +31,7 @@ public class App36 {
 
     private static final AtomicInteger counter = new AtomicInteger(0);
 
-    @SneakyThrows
+//    @SneakyThrows
     private static void m3() {
         Runnable r = () -> {
             for (int i = 0; i < 100; ++i) {
@@ -42,17 +42,25 @@ public class App36 {
         Thread tt2 = new Thread(r);
         tt1.start();
         tt2.start();
-        tt1.join();
-        tt2.join();
+        try {
+            tt1.join();
+            tt2.join();
+        } catch (InterruptedException _) {
+
+        }
         println(counter.get());
         counter.set(0);
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     private static void m2() {
         Thread t1 = new Thread(() -> println(Thread.currentThread().getName()));
         t1.start();
-        t1.join();
+        try {
+            t1.join();
+        } catch (InterruptedException _) {
+
+        }
         Thread.yield();
         println("MT");
     }

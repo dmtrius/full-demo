@@ -4,6 +4,7 @@ import com.example.demo.apps.update.EventCategoryType;
 import com.example.demo.apps.update.EventStatusType;
 import com.example.demo.apps.update.JudgeEventRequest;
 import com.example.demo.apps.update.JudgeEventResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -80,7 +81,7 @@ public class App23 {
         return result;
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     public static List<JudgeEventResponse> getCalendar(String id, EventCategoryType categoryType) {
         JudgeEventRequest request = new JudgeEventRequest();
         JudgeEventRequest.Division division = new JudgeEventRequest.Division();
@@ -93,7 +94,12 @@ public class App23 {
         request.setEnd(Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli());
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonRequest = objectMapper.writeValueAsString(request);
+        String jsonRequest = null;
+        try {
+            jsonRequest = objectMapper.writeValueAsString(request);
+        } catch (JsonProcessingException _) {
+
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));

@@ -1,8 +1,5 @@
 package com.example.demo.apps.algo;
 
-
-import lombok.SneakyThrows;
-
 import module java.base;
 
 public class DijkstraAlgorithm {
@@ -100,8 +97,6 @@ public class DijkstraAlgorithm {
         return path;
     }
 
-    // Example usage
-    @SneakyThrows
     void main() {
         DijkstraAlgorithm graph = new DijkstraAlgorithm();
 
@@ -134,4 +129,5 @@ public class DijkstraAlgorithm {
 }
 
 // Node class to represent vertices and their weights
-record Node(int vertex, int weight) {}
+record Node(int vertex, int weight) {
+}

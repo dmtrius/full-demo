@@ -66,23 +66,27 @@ public class App18 {
         }.startThread();
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     private static void testCache() {
         final int N = 3;
-        for (int i = 0; i < N; ++i) {
-            var cachedData = fetchData();
-            System.out.println("NO CACHE: " + cachedData.block());
-            TimeUnit.MILLISECONDS.sleep(1);
-        }
-        for (int i = 0; i < N; ++i) {
-            var cachedData = fetchData().cache();
-            System.out.println("CACHED: " + cachedData.block());
-            TimeUnit.MILLISECONDS.sleep(100);
-        }
-        for (int i = 0; i < N; ++i) {
-            var cachedDataWithDuration = fetchData().cache(Duration.ofSeconds(1));
-            System.out.println("CACHED DURATION: " + cachedDataWithDuration.block());
-            TimeUnit.MILLISECONDS.sleep(100);
+        try {
+            for (int i = 0; i < N; ++i) {
+                var cachedData = fetchData();
+                System.out.println("NO CACHE: " + cachedData.block());
+                TimeUnit.MILLISECONDS.sleep(1);
+            }
+            for (int i = 0; i < N; ++i) {
+                var cachedData = fetchData().cache();
+                System.out.println("CACHED: " + cachedData.block());
+                TimeUnit.MILLISECONDS.sleep(100);
+            }
+            for (int i = 0; i < N; ++i) {
+                var cachedDataWithDuration = fetchData().cache(Duration.ofSeconds(1));
+                System.out.println("CACHED DURATION: " + cachedDataWithDuration.block());
+                TimeUnit.MILLISECONDS.sleep(100);
+            }
+        } catch (InterruptedException _) {
+
         }
     }
 

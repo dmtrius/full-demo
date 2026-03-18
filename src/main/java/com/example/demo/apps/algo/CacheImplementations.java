@@ -491,7 +491,7 @@ public class CacheImplementations {
 
     private static final int CAPACITY = 2;
 
-    @SneakyThrows
+//    @SneakyThrows
     void main() {
         // Simple Cache Demo
         println("Simple Cache Demo:");
@@ -544,7 +544,11 @@ public class CacheImplementations {
         println("Get 1 (immediate): " + ttlCache.get(KEY_ONE));
         println("Get 2 (immediate): " + ttlCache.get(KEY_TWO));
         // Wait for expiration
-        Thread.sleep(1500);
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException _) {
+
+        }
         println("Get 1 (after TTL): " + ttlCache.get(KEY_ONE));
 
         // Lock free LRU-TTL Cache Demo
@@ -555,7 +559,11 @@ public class CacheImplementations {
         println("Get 1 (immediate): " + lfCache.get(KEY_ONE));
         println("Get 2 (immediate): " + lfCache.get(KEY_TWO));
         // Wait for expiration
-        Thread.sleep(1500);
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException _) {
+
+        }
         println("Get 1 (after TTL): " + lfCache.get(KEY_ONE));
     }
 }

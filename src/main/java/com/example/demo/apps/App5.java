@@ -12,12 +12,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class App5 {
 
-    @SneakyThrows
-    public static void main(String... args) {
+    void main() {
         testVirtualThreads();
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     private static void testVirtualThreads() {
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
@@ -33,7 +32,11 @@ public class App5 {
             }
 
             executor.shutdown();
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException _) {
+
+            }
         }
     }
 

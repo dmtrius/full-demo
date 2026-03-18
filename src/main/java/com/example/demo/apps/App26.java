@@ -28,13 +28,16 @@ public class App26 {
         println(mBy2.apply(5));
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     private Mono<String> getFallbackValue() {
-        TimeUnit.SECONDS.sleep(2);
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException _) {
+
+        }
         return Mono.just("Fallback value");
     }
 
-    @SneakyThrows
     private static void directMemory() {
         int[] heapArray = new int[1024];
         heapArray[0] = 42;

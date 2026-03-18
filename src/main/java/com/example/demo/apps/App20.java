@@ -43,7 +43,7 @@ public class App20 {
         log.info("Main thread continues to execute other tasks...");
     }
 
-    @SneakyThrows
+//    @SneakyThrows
     private static void testFutures() {
         // Create an ExecutorService with a single thread
         try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
@@ -54,7 +54,11 @@ public class App20 {
             });
             // Continue with other tasks while the above task is running
             log.info("working...");
-            Thread.currentThread().join(2000);
+            try {
+                Thread.currentThread().join(2000);
+            } catch (InterruptedException _) {
+
+            }
             // Check if the task is done
             if (future.isDone()) {
                 try {
@@ -72,6 +76,8 @@ public class App20 {
 
             // Shutdown the ExecutorService when done
             executorService.shutdown();
+        } catch (ExecutionException | InterruptedException _) {
+
         }
     }
 
