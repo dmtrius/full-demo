@@ -3,24 +3,22 @@ package com.example.demo.apps.algo;
 import java.util.BitSet;
 import java.util.Random;
 
+import static java.lang.IO.println;
+
 public class DuplicateDetector {
 
     private final BloomFilter bloomFilter;
-    private final BitSet seenDefinitely; // To reduce false positives (optional)
+    private final BitSet seenDefinitely;
 
-    // Constructor
-    public DuplicateDetector(int expectedElements, double falsePositiveRate) {
+    private DuplicateDetector(int expectedElements, double falsePositiveRate) {
         this.bloomFilter = new BloomFilter(expectedElements, falsePositiveRate);
-        // Optional: Use a small hash set to store elements that triggered bloom filter
-        // This helps reduce false positives. Only store elements we've seen for sure.
         this.seenDefinitely = new BitSet();
     }
 
-    // Detect if number is duplicate
-    public boolean isDuplicate(int number) {
+    private boolean isDuplicate(int number) {
         if (!bloomFilter.mightContain(number)) {
             bloomFilter.add(number);
-            return false; // Not a duplicate
+            return false;
         } else {
             // Bloom filter says "might be duplicate"
             // Check if we've seen it for sure
@@ -76,18 +74,16 @@ public class DuplicateDetector {
         }
     }
 
-    // Example usage
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    static void main() {
         // Assume we expect ~1 million elements, with 1% false positive rate
         DuplicateDetector detector = new DuplicateDetector(1_000_000, 0.01);
 
         int[] stream = {1, 2, 3, 4, 2, 5, 3, 6, 1, 7};
 
-        System.out.println("Duplicate numbers:");
+        println("Duplicate numbers:");
         for (int num : stream) {
             if (detector.isDuplicate(num)) {
-                System.out.println(num + " (duplicate)");
+                println(num + " (duplicate)");
             }
         }
     }
