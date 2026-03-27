@@ -16,7 +16,6 @@ public class TTLCacheStructuredConcurrency<K, V> {
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
     private final AtomicLong lastCleanup;
-    // ScopedValue for thread-local context (e.g., request ID or user context)
     private static final ScopedValue<String> OPERATION_CONTEXT = ScopedValue.newInstance();
 
     /**
@@ -79,7 +78,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
 //    @SneakyThrows
     public void batchPut(Map<K, V> entries) {
         String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
-        /*try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+        try (var scope = StructuredTaskScope.open()) {
             entries.entrySet().stream()
                     .map(entry -> scope.fork(() -> {
                         put(entry.getKey(), entry.getValue());
@@ -87,12 +86,11 @@ public class TTLCacheStructuredConcurrency<K, V> {
                     }))
                     .toList();
 
-            scope.join(); // Wait for all tasks to complete
-            scope.throwIfFailed(); // Throw if any task fails
+            scope.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Batch put interrupted", e);
-        }*/
+        }
     }
 
     // Batch get operation using Structured Concurrency

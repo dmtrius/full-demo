@@ -423,9 +423,9 @@
                     <source>26</source>
                     <target>26</target>
                     <encoding>UTF-8</encoding>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
+                    <!--<compilerArgs>
+                        <arg>- -enable-preview</arg>
+                    </compilerArgs>-->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
