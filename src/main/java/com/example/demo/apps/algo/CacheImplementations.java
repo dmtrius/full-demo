@@ -1,6 +1,5 @@
 package com.example.demo.apps.algo;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import module java.base;
@@ -491,7 +490,6 @@ public class CacheImplementations {
 
     private static final int CAPACITY = 2;
 
-//    @SneakyThrows
     void main() {
         // Simple Cache Demo
         println("Simple Cache Demo:");
@@ -546,9 +544,7 @@ public class CacheImplementations {
         // Wait for expiration
         try {
             Thread.sleep(1500);
-        } catch (InterruptedException _) {
-
-        }
+        } catch (InterruptedException _) {}
         println("Get 1 (after TTL): " + ttlCache.get(KEY_ONE));
 
         // Lock free LRU-TTL Cache Demo
@@ -561,9 +557,7 @@ public class CacheImplementations {
         // Wait for expiration
         try {
             Thread.sleep(1500);
-        } catch (InterruptedException _) {
-
-        }
+        } catch (InterruptedException _) {}
         println("Get 1 (after TTL): " + lfCache.get(KEY_ONE));
     }
 }
