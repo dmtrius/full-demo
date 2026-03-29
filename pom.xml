@@ -12,7 +12,7 @@
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>mydemoapplication</name>
-    <description>mydemoapplication using Spring Boot and other libs</description>
+    <description>My Demo Application using Spring Boot and other libs</description>
     <properties>
         <java.version>26</java.version>
         <maven.compiler.target>26</maven.compiler.target>
@@ -423,9 +423,9 @@
                     <source>26</source>
                     <target>26</target>
                     <encoding>UTF-8</encoding>
-                    <!--<compilerArgs>
-                        <arg>- -enable-preview</arg>
-                    </compilerArgs>-->
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
