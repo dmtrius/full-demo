@@ -1,21 +1,24 @@
 package com.example.demo.apps;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.invoke.MethodHandles;
-import java.util.logging.Logger;
+public class App44 implements Loggable {
 
-import static java.lang.IO.println;
-
-@Slf4j
-public class App44 {
-
-    private static final Logger LOGGER = Logger.getLogger(
-            MethodHandles.lookup().lookupClass().getName());
+    private static final Logger log = LoggerFactory.getLogger(App44.class.getName());
 
     void main() {
-        println("Arghhhh");
-        log.info("lombok: Whooo");
-        LOGGER.info("LOGGER: blyaaa");
+        LOGGER.info("WTF?");
+        m1();
+        m2();
+        log.info("SLF4J - WTF?");
+    }
+
+    void m1() {
+        LOGGER.info("m1() - WTF?");
+    }
+
+    static void m2() {
+        LOGGER.info("m2() - WTF?");
     }
 }
