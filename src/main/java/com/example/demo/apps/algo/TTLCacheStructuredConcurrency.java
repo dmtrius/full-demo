@@ -1,5 +1,7 @@
 package com.example.demo.apps.algo;
 
+import com.example.demo.apps.SCException;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,7 +13,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.lang.IO.println;
+
+@SuppressWarnings("unused")
 public class TTLCacheStructuredConcurrency<K, V> {
+    private static final String DEFAULT = "default";
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
     private final AtomicLong lastCleanup;
@@ -30,11 +36,12 @@ public class TTLCacheStructuredConcurrency<K, V> {
     }
 
     public void put(K key, V value) {
-        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
+        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : DEFAULT;
         cleanupIfNeeded();
         cache.put(key, new CacheEntry<>(value, System.currentTimeMillis() + ttlMillis, context));
     }
 
+    @SuppressWarnings("Duplicates")
     public V get(K key) {
         cleanupIfNeeded();
         CacheEntry<V> entry = cache.get(key);
@@ -45,15 +52,16 @@ public class TTLCacheStructuredConcurrency<K, V> {
             cache.remove(key);
             return null;
         }
-        String currentContext = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
-        System.out.println("Accessing key " + key + " with context: " + entry.context +
+        String currentContext = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : DEFAULT;
+        println("Accessing key " + key + " with context: " + entry.context +
                 ", current context: " + currentContext);
         return entry.value;
     }
 
+    @SuppressWarnings("Duplicates")
     public V computeIfAbsent(K key, Function<K, V> mappingFunction) {
         cleanupIfNeeded();
-        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
+        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : DEFAULT;
         CacheEntry<V> entry = cache.get(key);
         if (Objects.isNull(entry) || entry.expiryTime < System.currentTimeMillis()) {
             V newValue = mappingFunction.apply(key);
@@ -67,22 +75,19 @@ public class TTLCacheStructuredConcurrency<K, V> {
         return ScopedValue.where(OPERATION_CONTEXT, context).call(operation::get);
     }
 
+    @SuppressWarnings({"preview", "ignored"})
     public void batchPut(Map<K, V> entries) {
-        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
+        String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : DEFAULT;
         try (var scope = StructuredTaskScope.open()) {
-            entries.entrySet().stream()
-                    .map(entry -> scope.fork(() -> {
-                        put(entry.getKey(), entry.getValue());
-                        return null;
-                    }))
-                    .toList();
+            entries.forEach((key, val) -> scope.fork(() -> put(key, val)));
             scope.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Batch put interrupted", e);
+            throw new SCException("Batch put interrupted", e);
         }
     }
 
+    @SuppressWarnings("preview")
     public Map<K, V> batchGet(List<K> keys) {
         try (var scope = StructuredTaskScope.open()) {
             List<StructuredTaskScope.Subtask<V>> tasks = keys.stream()
@@ -98,7 +103,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
                     ));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Batch get interrupted", e);
+            throw new SCException("Batch get interrupted", e);
         }
     }
 
@@ -118,10 +123,9 @@ public class TTLCacheStructuredConcurrency<K, V> {
     private void cleanupIfNeeded() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastCleanup.get() > ttlMillis / 10) {
-            if (lastCleanup.compareAndSet(lastCleanup.get(), currentTime)) {
-                cache.entrySet().removeIf(entry ->
-                        entry.getValue().expiryTime < currentTime);
-            }
+            cache.entrySet().removeIf(entry ->
+                    lastCleanup.compareAndSet(lastCleanup.get(), currentTime) &&
+                    entry.getValue().expiryTime < currentTime);
         }
     }
 }
