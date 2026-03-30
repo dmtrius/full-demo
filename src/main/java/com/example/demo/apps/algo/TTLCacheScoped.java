@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import static java.lang.IO.println;
 
+@SuppressWarnings("unused")
 public class TTLCacheScoped<K, V> {
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
@@ -49,6 +50,7 @@ public class TTLCacheScoped<K, V> {
         return entry.value;
     }
 
+    @SuppressWarnings("Duplicates")
     public V computeIfAbsent(K key, Function<K, V> mappingFunction) {
         cleanupIfNeeded();
         String context = OPERATION_CONTEXT.isBound() ? OPERATION_CONTEXT.get() : "default";
