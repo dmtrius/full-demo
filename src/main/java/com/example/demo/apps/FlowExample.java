@@ -1,11 +1,16 @@
 package com.example.demo.apps;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.stream.IntStream;
 
+import static java.lang.IO.println;
+
+@Slf4j
 public class FlowExample {
-    public static void main(String[] args) throws InterruptedException {
+    void main() throws InterruptedException {
         // Create a publisher
         SubmissionPublisher<String> publisher = new SubmissionPublisher<>();
 
@@ -21,18 +26,18 @@ public class FlowExample {
 
             @Override
             public void onNext(String item) {
-                System.out.println("Received: " + item);
+                println("Received: " + item);
                 subscription.request(1); // Request the next item
             }
 
             @Override
-            public void onError(Throwable throwable) {
-                throwable.printStackTrace();
+            public void onError(Throwable t) {
+                log.error(t.getMessage());
             }
 
             @Override
             public void onComplete() {
-                System.out.println("Done");
+                println("Done");
             }
         };
 

@@ -7,9 +7,12 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+
+import static java.lang.IO.println;
 
 public class SimpleHttpServer {
-    public static void main(String[] args) throws IOException {
+    void main() throws IOException {
         // Create an HttpServer instance
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
@@ -20,13 +23,16 @@ public class SimpleHttpServer {
         server.setExecutor(null); // Use the default executor
         server.start();
 
-        System.out.println("Server is running on port 8000");
+        println("Server is running on port 8000");
     }
 
     // Define a custom HttpHandler
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            String request = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+            println("Received request: " + request);
+
             // Handle the request
             String response = "Hello, this is a simple HTTP server response!";
             exchange.sendResponseHeaders(200, response.length()); // Send HTTP status code and response length
