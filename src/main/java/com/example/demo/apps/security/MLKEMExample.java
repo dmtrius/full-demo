@@ -1,6 +1,4 @@
-package com.example.demo;
-
-//import module java.base;
+package com.example.demo.apps.security;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -8,10 +6,10 @@ import java.security.KeyPairGenerator;
 import static java.lang.IO.println;
 
 public class MLKEMExample {
-    public static void main(String[] args) throws Exception {
+    void main() throws Exception {
         // Generate a key pair using ML-KEM
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ML-KEM");
-//        keyPairGenerator.initialize(512); // Use ML-KEM-512 parameter set
+//        keyPairGenerator.initialize(1024, new SecureRandom());
 
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
