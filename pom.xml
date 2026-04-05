@@ -363,6 +363,11 @@
             <artifactId>resilience4j-ratelimiter</artifactId>
             <version>${resilience4j.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>9.0</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
