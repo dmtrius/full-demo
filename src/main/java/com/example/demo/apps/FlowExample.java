@@ -15,31 +15,7 @@ public class FlowExample {
         SubmissionPublisher<String> publisher = new SubmissionPublisher<>();
 
         // Create a subscriber
-        Flow.Subscriber<String> subscriber = new Flow.Subscriber<>() {
-            private Flow.Subscription subscription;
-
-            @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                this.subscription = subscription;
-                subscription.request(1); // Request the first item
-            }
-
-            @Override
-            public void onNext(String item) {
-                println("Received: " + item);
-                subscription.request(1); // Request the next item
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                log.error(t.getMessage());
-            }
-
-            @Override
-            public void onComplete() {
-                println("Done");
-            }
-        };
+        Flow.Subscriber<String> subscriber = new MySubscriber<>();
 
         // Subscribe the subscriber to the publisher
         publisher.subscribe(subscriber);
@@ -55,5 +31,32 @@ public class FlowExample {
 
         // Allow some time for the subscriber to process the items
         Thread.sleep(1000);
+    }
+}
+
+@Slf4j
+class MySubscriber<T> implements Flow.Subscriber<T> {
+    private Flow.Subscription subscription;
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+        this.subscription = subscription;
+        subscription.request(1);
+    }
+
+    @Override
+    public void onNext(T item) {
+        println("Received: " + item);
+        subscription.request(1);
+    }
+
+    @Override
+    public void onError(Throwable t) {
+        log.error(t.getMessage());
+    }
+
+    @Override
+    public void onComplete() {
+        println("Done");
     }
 }
