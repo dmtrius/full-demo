@@ -368,6 +368,18 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>9.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.f4b6a3</groupId>
+            <artifactId>uuid-creator</artifactId>
+            <version>6.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.f4b6a3</groupId>
+            <artifactId>ulid-creator</artifactId>
+            <version>5.2.4</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
