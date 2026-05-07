@@ -36,3 +36,4 @@ build/
 /.fastRequest/config/fastRequestCurrentProjectConfig.json
 /*-snapshot.json
 **/node_modules/**
+.myollamaenhancer/**
