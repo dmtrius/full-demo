@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import com.github.javafaker.Faker;
+
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -16,18 +18,31 @@ public class AdvancedJava8Collector {
     }
 
     void main() {
-        List<Order> orders = getOrders();
+        List<Order> orders = getOrders(10);
         Analytics result = orders.parallelStream()
+            .collect(new OrderAnalyticsCollector());
+        println(result);
+        orders = getOrders(20);
+        result = orders.parallelStream()
             .collect(new OrderAnalyticsCollector());
         println(result);
     }
 
-    private static List<Order> getOrders() {
-        return List.of(
-            new Order("1", "Alice", 100.0, "Widget", new Date()),
-            new Order("2", "Bob", 150.0, "Gadget", new Date()),
-            new Order("3", "Charlie", 200.0, "Widget", new Date())
-        );
+    private static List<Order> getOrders(int n) {
+        List<Order> result = new ArrayList<>(n);
+        Faker faker = new Faker();
+        for (int i = 0; i < n; i++) {
+            result.add(
+                new Order(
+                    faker.random().hex(),
+                    faker.name().fullName(),
+                    faker.random().nextDouble() * 1000,
+                    faker.commerce().productName(),
+                    faker.date().past(365, java.util.concurrent.TimeUnit.DAYS)
+                )
+            );
+        }
+        return result;
     }
 
     static class OrderAnalyticsCollector
