@@ -2,7 +2,10 @@ package com.example.demo.apps;
 
 import com.github.javafaker.Faker;
 
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -33,11 +36,14 @@ public class AdvancedJava8Collector {
         List<Order> result = new ArrayList<>(n);
         Faker faker = new Faker();
         for (int i = 0; i < n; ++i) {
+            double price = BigDecimal.valueOf(faker.random().nextDouble() * 1000)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
             result.add(
                 new Order(
                     faker.idNumber().valid(),
                     faker.name().fullName(),
-                    faker.random().nextDouble() * 1000,
+                    price,
                     faker.commerce().productName(),
                     faker.date().past(365, java.util.concurrent.TimeUnit.DAYS)
                 )
@@ -46,8 +52,7 @@ public class AdvancedJava8Collector {
         return result;
     }
 
-    static class OrderAnalyticsCollector
-        implements Collector<Order, OrderAnalyticsCollector.Acc, Analytics> {
+    static class OrderAnalyticsCollector implements Collector<Order, OrderAnalyticsCollector.Acc, Analytics> {
 
         protected static class Acc {
             double revenue = 0;
@@ -61,14 +66,15 @@ public class AdvancedJava8Collector {
             return Acc::new;
         }
 
+        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM");
+
         @Override
         public BiConsumer<Acc, Order> accumulator() {
             return (acc, o) -> {
                 acc.revenue += o.amount();
                 acc.count++;
                 acc.productCount.merge(o.product(), 1L, Long::sum);
-                String month = new SimpleDateFormat("yyyy-MM")
-                    .format(o.date());
+                String month = o.date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(FORMATTER);
                 acc.monthly.merge(month, o.amount(), Double::sum);
             };
         }
@@ -87,8 +93,12 @@ public class AdvancedJava8Collector {
         @Override
         public Function<Acc, Analytics> finisher() {
             return acc -> new Analytics(
-                acc.revenue / acc.count,
-                acc.revenue,
+                BigDecimal.valueOf(acc.revenue / acc.count)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue(),
+                BigDecimal.valueOf(acc.revenue)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue(),
                 acc.productCount.entrySet().stream()
                     .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
                     .orElse("N/A"),
