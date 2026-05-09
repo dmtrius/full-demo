@@ -2,6 +2,7 @@ package com.example.demo.apps;
 
 import com.github.javafaker.Faker;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -66,8 +67,7 @@ public class AdvancedJava8Collector {
                 acc.revenue += o.amount();
                 acc.count++;
                 acc.productCount.merge(o.product(), 1L, Long::sum);
-
-                String month = new java.text.SimpleDateFormat("yyyy-MM")
+                String month = new SimpleDateFormat("yyyy-MM")
                     .format(o.date());
                 acc.monthly.merge(month, o.amount(), Double::sum);
             };
