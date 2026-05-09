@@ -19,8 +19,8 @@ public class AdvancedJava8Collector {
     }
 
     void main() {
-        List<Order> orders = getOrders(10);
-        Analytics result = orders.parallelStream()
+        var orders = getOrders(10);
+        var result = orders.parallelStream()
             .collect(new OrderAnalyticsCollector());
         println(result);
         orders = getOrders(20);
@@ -32,10 +32,10 @@ public class AdvancedJava8Collector {
     private static List<Order> getOrders(int n) {
         List<Order> result = new ArrayList<>(n);
         Faker faker = new Faker();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; ++i) {
             result.add(
                 new Order(
-                    faker.random().hex(),
+                    faker.idNumber().valid(),
                     faker.name().fullName(),
                     faker.random().nextDouble() * 1000,
                     faker.commerce().productName(),
@@ -49,7 +49,7 @@ public class AdvancedJava8Collector {
     static class OrderAnalyticsCollector
         implements Collector<Order, OrderAnalyticsCollector.Acc, Analytics> {
 
-        static class Acc {
+        protected static class Acc {
             double revenue = 0;
             int count = 0;
             Map<String, Long> productCount = new HashMap<>();
