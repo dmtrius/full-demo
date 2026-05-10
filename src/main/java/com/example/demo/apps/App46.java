@@ -11,7 +11,9 @@ import static java.lang.IO.println;
 public class App46 {
     void main() {
         m1(UUID.randomUUID().toString());
-        m2(UUID.randomUUID().toString());
+        m2();
+        m3();
+        m4();
     }
 
     /// m1() for practise some code
@@ -27,17 +29,31 @@ public class App46 {
         println(param);
         List<Integer> list = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         var windows = list.stream()
-                .gather(Gatherers.windowSliding(3))
-                .toList();
+            .gather(Gatherers.windowSliding(3))
+            .toList();
         windows.forEach(IO::println);
     }
 
-    void m2(@NonNull String param) {
-        println(param);
+    void m2() {
         List<Integer> list = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         var windows = list.stream()
             .gather(Gatherers.windowFixed(3))
             .toList();
         windows.forEach(IO::println);
+    }
+
+    void m3() {
+        List<Integer> list = List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        list.stream()
+            .gather(Gatherers.scan(() -> 0, Integer::sum))
+            .forEach(IO::println);
+    }
+
+    void m4() {
+        List<String> list = List.of("A", "A", "B", "B", "B", "C");
+        var result = list.stream()
+            .gather(Gatherers.mapConcurrent(4, String::toLowerCase))
+            .toList();
+        println(result);
     }
 }
