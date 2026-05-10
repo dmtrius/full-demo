@@ -14,6 +14,7 @@ public class App46 {
         m2();
         m3();
         m4();
+        m5();
     }
 
     /// m1() for practise some code
@@ -55,5 +56,13 @@ public class App46 {
             .gather(Gatherers.mapConcurrent(4, String::toLowerCase))
             .toList();
         println(result);
+    }
+
+    void m5() {
+        List<Integer> list = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        var result = list.stream()
+            .gather(Gatherers.fold(() -> 1, (n1, n2) -> n1 * n2))
+            .findFirst();
+        println(result.orElse(-1));
     }
 }
