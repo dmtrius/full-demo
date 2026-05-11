@@ -51,30 +51,33 @@ public class App47 {
         Map<Boolean, List<Integer>> passedFailedMap
                 = Stream.of(49, 58, 76, 82, 88, 90)
                 .collect(Collectors.partitioningBy(i -> i > 60));
+        IO.println(passedFailedMap);
 
         // 7. Fetch and Parse an XML web service
         Document parse = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
-                .parse(URI.create("https://www.omdbapi.com/?i=tt0121765&plot=short&r=xml").toURL().openStream());
+                .parse(
+                        URI.create("https://doi.crossref.org/search/doi?pid=email@address.com&doi=10.1577/H02-043&format=unixsd")
+                                .toURL().openStream());
         IO.println(parse.toString());
 
         // 8. Find minimum (or maximum) in a List
         var min = IntStream.of(14, 35, -7, 46, 98).min();
         IO.println(min.orElse(Integer.MIN_VALUE));
         var comp = Stream.of(14, 35, -7, 46, 98).min(Integer::compare);
-        IO.println(comp);
+        IO.println(comp.orElse(Integer.MIN_VALUE));
         var reduce = Stream.of(14, 35, -7, 46, 98).reduce(Integer::min);
-        IO.println(reduce);
+        IO.println(reduce.orElse(Integer.MIN_VALUE));
         var min2 = Collections.min(Arrays.asList(14, 35, -7, 46, 98));
         IO.println(min2);
 
         // 9. Parallel Processing
         List<String> dataList = List.of("1", "2", "3");
         var result = dataList.parallelStream().map(App47::processItem);
-        IO.println(result);
+        result.forEach(IO::println);
 
         // 10. Sieve of Eratosthenes
-        List<Integer> nums = IntStream.rangeClosed(2, 1000).boxed().collect(Collectors.toCollection(LinkedList::new));
+        List<Integer> nums = IntStream.rangeClosed(2, 100).boxed().collect(Collectors.toCollection(LinkedList::new));
         IntStream.rangeClosed(2, Double.valueOf(Math.sqrt(nums.getLast())).intValue()).forEach(n -> nums.removeIf(i -> i % n == 0 && n != i));
         nums.forEach(IO::println);
 
