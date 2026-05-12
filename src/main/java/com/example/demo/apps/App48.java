@@ -14,13 +14,11 @@ public class App48 {
                 .from("Acme <onboarding@resend.dev>")
                 .to("dmitry.gordienko@gmail.com")
                 .subject("it works!")
-                .html("<strong>hello world</strong>")
+                .html("<strong>Hello world</strong>")
                 .build();
         try {
             CreateEmailResponse data = resend.emails().send(params);
             IO.println(data.getId());
-        } catch (ResendException e) {
-            e.printStackTrace();
-        }
+        } catch (ResendException _) {}
     }
 }
