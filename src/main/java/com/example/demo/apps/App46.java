@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Gatherers;
+import java.util.stream.Stream;
 
 import static java.lang.IO.println;
 
@@ -15,6 +16,7 @@ public class App46 {
         m3();
         m4();
         m5();
+        Stream.of(1, 2, 3, 4, 5).limit(2).forEach(IO::println);
     }
 
     /// m1() for practise some code
