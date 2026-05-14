@@ -10,28 +10,18 @@ import static java.lang.IO.println;
 
 public class App50 {
 
-    private static final String SEPARATOR = " | ";
-
     void main() {
         createDeck();
-        sortByRankSuit();
-        println("--- Rank -> Suit ---");
-        printDeck(sortByRankSuit(), CARDS_PER_RANKS);
-        println("--- Suit -> Rank ---");
-        sortBySuitRank();
-        printDeck(sortBySuitRank(), CARDS_PER_SUIT);
+        printDeck("--- Rank -> Suit ---", sortBy(rankThenSuit), CARDS_PER_RANKS);
+        printDeck("--- Suit -> Rank ---", sortBy(suitThenRank), CARDS_PER_SUIT);
     }
 
-    private static final Comparator<Card> rankSuit = Comparator.comparing(Card::rank).thenComparing(Card::suit);
-    private static final Comparator<Card> suitRank = Comparator.comparing(Card::suit).thenComparing(Card::rank);
-
-    private static List<Card> sortByRankSuit() {
-        return deck.stream().sorted(rankSuit).toList();
+    private List<Card> sortBy(Comparator<Card> comparator) {
+        return deck.stream().sorted(comparator).toList();
     }
 
-    private static List<Card> sortBySuitRank() {
-        return deck.stream().sorted(suitRank).toList();
-    }
+    private static final Comparator<Card> rankThenSuit = Comparator.comparing(Card::rank).thenComparing(Card::suit);
+    private static final Comparator<Card> suitThenRank = Comparator.comparing(Card::suit).thenComparing(Card::rank);
 
     void createDeck() {
         for (Ranks rank : Ranks.values()) {
@@ -43,8 +33,13 @@ public class App50 {
 
     private static final int CARDS_PER_RANKS = 4;
     private static final int CARDS_PER_SUIT = 13;
+    private static final String SEPARATOR = " | ";
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
 
-    void printDeck(List<Card> list, int lineLength) {
+    void printDeck(String header, List<Card> list, int lineLength) {
+        println(RED + header + RESET + GREEN);
         int n = 0;
         for (Card card : list) {
             print(card.rank() + " of " + card.suit());
