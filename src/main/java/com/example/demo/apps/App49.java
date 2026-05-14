@@ -21,8 +21,8 @@ public class App49 {
     void m2() {
         RestClient rc = RestClient.builder().build();
         var result = rc.get().uri("https://jsonplaceholder.typicode.com/posts/2")
-            .retrieve().toEntity(Message.class);
-        IO.println(result.getBody());
+            .retrieve();
+        IO.println(result.body(Message.class));
     }
 
     record Message(Integer id, Integer userId, String title, String body){}
