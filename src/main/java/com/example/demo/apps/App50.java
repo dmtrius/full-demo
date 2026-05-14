@@ -13,12 +13,13 @@ public class App50 {
     void main() {
         Deck deck = new Deck();
         deck.printDeck("--- Initial ---", deck.cards(), Deck.CARDS_PER_RANKS);
-        deck.printDeck("--- Rank -> Suit ---", sortBy(deck, rankThenSuit), Deck.CARDS_PER_RANKS);
-        deck.printDeck("--- Suit -> Rank ---", sortBy(deck, suitThenRank), Deck.CARDS_PER_SUIT);
+        deck.printDeck("--- Rank -> Suit ---", sortBy(deck.cards(), rankThenSuit), Deck.CARDS_PER_RANKS);
+        deck.printDeck("--- Suit -> Rank ---", sortBy(deck.cards(), suitThenRank), Deck.CARDS_PER_SUIT);
     }
 
-    private List<Deck.Card> sortBy(@NonNull Deck deck, @NonNull Comparator<Deck.Card> comparator) {
-        return deck.cards().stream().sorted(comparator).toList();
+    private List<Deck.Card> sortBy(@NonNull Set<Deck.Card> cards,
+                                   @NonNull Comparator<Deck.Card> comparator) {
+        return cards.stream().sorted(comparator).toList();
     }
 
     private static final Comparator<Deck.Card> rankThenSuit = Comparator
@@ -27,13 +28,13 @@ public class App50 {
         .comparing(Deck.Card::suit).thenComparing(Deck.Card::rank);
 
     static class Deck {
-        public record Card(Ranks rank, Suits suit) {
+        public record Card(Rank rank, Suit suit) {
         }
 
         private final Set<Card> cards;
 
         public Deck() {
-            this.cards = new HashSet<>(52);
+            this.cards = new HashSet<>(Suit.values().length * Rank.values().length);
             createDeck();
         }
 
@@ -42,8 +43,8 @@ public class App50 {
         }
 
         private void createDeck() {
-            for (Ranks rank : Ranks.values()) {
-                for (Suits suit : Suits.values()) {
+            for (Rank rank : Rank.values()) {
+                for (Suit suit : Suit.values()) {
                     this.cards.add(new Card(rank, suit));
                 }
             }
@@ -63,11 +64,11 @@ public class App50 {
          * @param list       - list of cards
          * @param lineLength - number of cards per line
          */
-        public void printDeck(String header, Collection<Card> list, int lineLength) {
+        public void printDeck(String header, @NonNull Collection<Card> list, int lineLength) {
             IO.println(RED + header + RESET + GREEN);
             int n = 0;
             for (Card card : list) {
-                IO.print(card.rank() + " of " + card.suit());
+                IO.print("%2s".formatted(card.rank()) + " of " + card.suit());
                 if (++n % lineLength == 0) {
                     IO.println();
                     n = 0;
@@ -77,14 +78,49 @@ public class App50 {
             }
         }
 
-        enum Suits {
-            HEARTS, DIAMONDS, SPADES, CLUBS
+        enum Suit {
+            SPADES("♠"),
+            HEARTS("♥"),
+            CLUBS("♣"),
+            DIAMONDS("♦");
+
+            private final String symbol;
+
+            Suit(String symbol) {
+                this.symbol = symbol;
+            }
+
+            @Override
+            public String toString() {
+                return symbol;
+            }
         }
 
-        enum Ranks {
-            TWO, THREE, FOUR, FIVE, SIX,
-            SEVEN, EIGHT, NINE, TEN, JACK,
-            QUEEN, KING, ACE
+        enum Rank {
+            ACE("A"),
+            TWO("2"),
+            THREE("3"),
+            FOUR("4"),
+            FIVE("5"),
+            SIX("6"),
+            SEVEN("7"),
+            EIGHT("8"),
+            NINE("9"),
+            TEN("10"),
+            JACK("J"),
+            QUEEN("Q"),
+            KING("K");
+
+            private final String symbol;
+
+            Rank(String symbol) {
+                this.symbol = symbol;
+            }
+
+            @Override
+            public String toString() {
+                return symbol;
+            }
         }
     }
 }
