@@ -1,5 +1,6 @@
 package com.example.demo.apps;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ public class App50 {
 
     void main() {
         createDeck();
+        printDeck("--- Initial ---", new ArrayList<>(deck), CARDS_PER_RANKS);
         printDeck("--- Rank -> Suit ---", sortBy(rankThenSuit), CARDS_PER_RANKS);
         printDeck("--- Suit -> Rank ---", sortBy(suitThenRank), CARDS_PER_SUIT);
     }
