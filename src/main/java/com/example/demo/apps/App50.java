@@ -62,14 +62,14 @@ public class App50 {
          *
          * @param header     - text
          * @param list       - list of cards
-         * @param lineLength - number of cards per line
+         * @param cardsInLine - number of cards per line
          */
-        public void printDeck(String header, @NonNull Collection<Card> list, int lineLength) {
+        public void printDeck(String header, @NonNull Collection<Card> list, int cardsInLine) {
             IO.println(RED + header + RESET + GREEN);
             int n = 0;
             for (Card card : list) {
-                IO.print("%2s".formatted(card.rank()) + " of " + card.suit());
-                if (++n % lineLength == 0) {
+                IO.print("%2s of %s".formatted(card.rank(), card.suit()));
+                if (++n % cardsInLine == 0) {
                     IO.println();
                     n = 0;
                 } else {
