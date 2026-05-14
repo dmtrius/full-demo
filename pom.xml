@@ -225,7 +225,7 @@
         <dependency>
             <groupId>com.resend</groupId>
             <artifactId>resend-java</artifactId>
-            <version>LATEST</version>
+            <version>4.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -438,6 +438,9 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <jvmArguments>
+                        --enable-native-access=ALL-UNNAMED
+                    </jvmArguments>
                 </configuration>
             </plugin>
             <plugin>
