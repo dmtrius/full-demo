@@ -2,6 +2,7 @@ package com.example.demo.apps;
 
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ public class App50 {
         deck.printDeck("--- Suit -> Rank ---", sortBy(deck.cards(), suitThenRank), Deck.CARDS_PER_SUIT);
     }
 
-    private List<Deck.Card> sortBy(@NonNull Set<Deck.Card> cards,
+    private List<Deck.Card> sortBy(@NonNull List<Deck.Card> cards,
                                    @NonNull Comparator<Deck.Card> comparator) {
         return cards.stream().sorted(comparator).toList();
     }
@@ -38,8 +39,8 @@ public class App50 {
             createDeck();
         }
 
-        public Set<Card> cards() {
-            return this.cards;
+        public List<Card> cards() {
+            return new ArrayList<>(this.cards);
         }
 
         private void createDeck() {
