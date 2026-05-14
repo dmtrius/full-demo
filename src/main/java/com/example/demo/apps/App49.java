@@ -25,5 +25,5 @@ public class App49 {
         IO.println(result.getBody());
     }
 
-    record Message(Integer id, Integer userId, String title, String body){};
+    record Message(Integer id, Integer userId, String title, String body){}
 }
