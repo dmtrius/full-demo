@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -18,12 +20,14 @@ public class App50 {
         printDeck("--- Suit -> Rank ---", sortBy(suitThenRank), CARDS_PER_SUIT);
     }
 
-    private List<Card> sortBy(Comparator<Card> comparator) {
+    private List<Card> sortBy(@NonNull Comparator<Card> comparator) {
         return deck.stream().sorted(comparator).toList();
     }
 
-    private static final Comparator<Card> rankThenSuit = Comparator.comparing(Card::rank).thenComparing(Card::suit);
-    private static final Comparator<Card> suitThenRank = Comparator.comparing(Card::suit).thenComparing(Card::rank);
+    private static final Comparator<Card> rankThenSuit = Comparator
+        .comparing(Card::rank).thenComparing(Card::suit);
+    private static final Comparator<Card> suitThenRank = Comparator
+        .comparing(Card::suit).thenComparing(Card::rank);
 
     void createDeck() {
         for (Ranks rank : Ranks.values()) {
