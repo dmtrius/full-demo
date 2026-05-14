@@ -9,14 +9,17 @@ import static java.lang.IO.print;
 import static java.lang.IO.println;
 
 public class App50 {
+
+    private static final String SEPARATOR = " | ";
+
     void main() {
         createDeck();
         sortByRankSuit();
-        println("-- RankSuit ---");
-        printDeck(sortByRankSuit());
-        println("-- SuitRank ---");
+        println("--- Rank -> Suit ---");
+        printDeck(sortByRankSuit(), CARDS_PER_RANKS);
+        println("--- Suit -> Rank ---");
         sortBySuitRank();
-        printDeck(sortBySuitRank());
+        printDeck(sortBySuitRank(), CARDS_PER_SUIT);
     }
 
     private static final Comparator<Card> rankSuit = Comparator.comparing(Card::rank).thenComparing(Card::suit);
@@ -31,45 +34,40 @@ public class App50 {
     }
 
     void createDeck() {
-        for (Ranks rank : ranks) {
-            for (Suits suit : suits) {
+        for (Ranks rank : Ranks.values()) {
+            for (Suits suit : Suits.values()) {
                 deck.add(new Card(rank, suit));
             }
         }
     }
 
-    void printDeck(List<Card> list) {
+    private static final int CARDS_PER_RANKS = 4;
+    private static final int CARDS_PER_SUIT = 13;
+
+    void printDeck(List<Card> list, int lineLength) {
         int n = 0;
         for (Card card : list) {
-            print(card.rank() + " of " + card.suit() + " ");
-            if (++n % 4 == 0) {
+            print(card.rank() + " of " + card.suit());
+            if (++n % lineLength == 0) {
                 println();
                 n = 0;
+            } else {
+                print(SEPARATOR);
             }
         }
     }
-    private static final List<Ranks> ranks = List.of(
-            Ranks.TWO, Ranks.THREE, Ranks.FOUR, Ranks.FIVE, Ranks.SIX, Ranks.SEVEN, Ranks.EIGHT, Ranks.NINE,
-            Ranks.TEN, Ranks.JACK, Ranks.QUEEN, Ranks.KING, Ranks.ACE);
-    private static final List<Suits> suits = List.of(Suits.Karo, Suits.Kier, Suits.Pik, Suits.Trefl);
 
     record Card(Ranks rank, Suits suit) {}
 
+    private static final Set<Card> deck = new HashSet<>(52);
+
     enum Suits {
-        Kier, Karo, Pik, Trefl
+        HEARTS, DIAMONDS, SPADES, CLUBS
     }
 
     enum Ranks {
-        TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6),
-        SEVEN(7), EIGHT(8), NINE(9), TEN(10), JACK(11),
-        QUEEN(12), KING(13), ACE(14);
-
-        final int value;
-
-        Ranks(int value) {
-            this.value = value;
-        }
+        TWO, THREE, FOUR, FIVE, SIX,
+        SEVEN, EIGHT, NINE, TEN, JACK,
+        QUEEN, KING, ACE
     }
-
-    private static final Set<Card> deck = new HashSet<>(52);
 }
