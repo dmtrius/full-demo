@@ -13,9 +13,9 @@ public class App50 {
 
     void main() {
         Deck deck = new Deck();
-        deck.printDeck("--- Initial ---", deck.cards(), Deck.CARDS_PER_RANKS);
-        deck.printDeck("--- Rank -> Suit ---", sortBy(deck.cards(), rankThenSuit), Deck.CARDS_PER_RANKS);
-        deck.printDeck("--- Suit -> Rank ---", sortBy(deck.cards(), suitThenRank), Deck.CARDS_PER_SUIT);
+        deck.print("--- Initial ---", deck.cards(), Deck.CARDS_PER_RANKS);
+        deck.print("--- Rank -> Suit ---", sortBy(deck.cards(), rankThenSuit), Deck.CARDS_PER_RANKS);
+        deck.print("--- Suit -> Rank ---", sortBy(deck.cards(), suitThenRank), Deck.CARDS_PER_SUIT);
     }
 
     private List<Deck.Card> sortBy(@NonNull List<Deck.Card> cards,
@@ -65,7 +65,7 @@ public class App50 {
          * @param list       - list of cards
          * @param cardsInLine - number of cards per line
          */
-        public void printDeck(String header, @NonNull Collection<Card> list, int cardsInLine) {
+        public void print(String header, @NonNull Collection<Card> list, int cardsInLine) {
             IO.println(RED + header + RESET + GREEN);
             int n = 0;
             for (Card card : list) {
