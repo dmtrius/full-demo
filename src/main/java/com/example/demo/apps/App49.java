@@ -3,6 +3,7 @@ package com.example.demo.apps;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@SuppressWarnings("java:S106")
 public class App49 {
     void main() {
         IO.println("App49: Java 26 features demo");
