@@ -4,16 +4,17 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class App50 {
 
     void main() {
         Deck deck = new Deck();
         deck.print("--- Initial ---", deck.cards(), Deck.CARDS_PER_RANKS);
+        deck.shuffle();
+        deck.print("--- After shuffle ---", deck.cards(), Deck.CARDS_PER_RANKS);
         deck.print("--- Rank -> Suit ---", sortBy(deck.cards(), rankThenSuit), Deck.CARDS_PER_RANKS);
         deck.print("--- Suit -> Rank ---", sortBy(deck.cards(), suitThenRank), Deck.CARDS_PER_SUIT);
     }
@@ -28,19 +29,29 @@ public class App50 {
     private static final Comparator<Deck.Card> suitThenRank = Comparator
         .comparing(Deck.Card::suit).thenComparing(Deck.Card::rank);
 
+    /**
+     * Deck of cards
+     */
     static class Deck {
         public record Card(Rank rank, Suit suit) {
         }
 
-        private final Set<Card> cards;
+        private final List<Card> cards = new ArrayList<>(Suit.values().length * Rank.values().length);
 
         public Deck() {
-            this.cards = new HashSet<>(Suit.values().length * Rank.values().length);
             createDeck();
         }
 
+        @SuppressWarnings("unused")
+        public Deck(boolean isShuffles) {
+            createDeck();
+            if (isShuffles) {
+                this.shuffle();
+            }
+        }
+
         public List<Card> cards() {
-            return new ArrayList<>(this.cards);
+            return this.cards;
         }
 
         private void createDeck() {
@@ -49,6 +60,10 @@ public class App50 {
                     this.cards.add(new Card(rank, suit));
                 }
             }
+        }
+
+        public void shuffle() {
+            Collections.shuffle(this.cards);
         }
 
         public static final int CARDS_PER_RANKS = 4;
