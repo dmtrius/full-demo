@@ -164,7 +164,7 @@ public class App52 {
     ) {
     }
 
-    private record RiskAssessment(int score,          // 0-100
+    private record RiskAssessment(int score,          // 0 - 100
                                   List<String> flags, // reasons for score
                                   Action recommended  // ALLOW, REVIEW, BLOCK
     ) {
