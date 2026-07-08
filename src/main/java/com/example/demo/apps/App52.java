@@ -26,7 +26,7 @@ public class App52 {
     private static final String TRUSTED = "TRUSTED";
     private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
     private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
-    public static final String FLAG_VELOCITY_FRAUD = "Velocity Fraud";
+    private static final String FLAG_VELOCITY_FRAUD = "Velocity Fraud";
     private static final int LOWER_BOUND = 33;
     private static final int UPPER_BOUND = 68;
     private static final int DELTA = 33;
