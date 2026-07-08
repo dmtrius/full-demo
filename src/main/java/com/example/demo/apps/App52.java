@@ -20,8 +20,8 @@ public class App52 {
         log.info("App52: Java 26 features demo");
         List<Transaction> transactions = generateTransactions();
         CustomerProfile profile = generateCustomerProfile();
-//        IO.println(transactions);
-//        IO.println(profile);
+        IO.println(transactions);
+        IO.println(profile);
 
         transactions.forEach(tx -> {
             IO.println(tx);
