@@ -1,6 +1,7 @@
 package com.example.demo.apps;
 
 import lombok.extern.log4j.Log4j2;
+import org.jspecify.annotations.NonNull;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -66,24 +67,22 @@ public class App52 {
         };
     }
 
-    private boolean isTrusted(Transaction tx, CustomerProfile profile) {
+    private boolean isTrusted(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
         return TRUSTED.equals(tx.merchantCategory());
     }
 
-    private boolean isUnusualGeo(Transaction tx, CustomerProfile profile) {
+    private boolean isUnusualGeo(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
         return !profile.knownCountries().contains(tx.country());
     }
 
     @SuppressWarnings("unused")
-    private boolean isUnusualAmount(Transaction tx, CustomerProfile profile) {
+    private boolean isUnusualAmount(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
         BigDecimal threshold = profile.avgTransactionAmount().add(profile.stdDevAmount());
         return tx.amount().compareTo(threshold) > 0;
     }
 
     @SuppressWarnings("unused")
-    private boolean isUnusualAmount2(
-        Transaction tx,
-        CustomerProfile profile) {
+    private boolean isUnusualAmount2(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         BigDecimal stdDev = profile.stdDevAmount();
 
@@ -104,9 +103,7 @@ public class App52 {
     }
 
     @SuppressWarnings("unused")
-    private boolean isUnusualAmount3(
-        Transaction tx,
-        CustomerProfile profile) {
+    private boolean isUnusualAmount3(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         List<Transaction> recent = profile.recentTransactions();
 
@@ -124,7 +121,7 @@ public class App52 {
     }
 
     @SuppressWarnings("unused")
-    private boolean velocityFraud(Transaction tx, CustomerProfile profile) {
+    private boolean velocityFraud(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         Instant now = tx.timestamp();
 
@@ -137,7 +134,7 @@ public class App52 {
     }
 
     @SuppressWarnings("unused")
-    private boolean velocityFraud2(Transaction tx, CustomerProfile profile) {
+    private boolean velocityFraud2(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         Instant now = tx.timestamp();
 
@@ -153,13 +150,12 @@ public class App52 {
     }
 
     private record RiskRule(
-        BiPredicate<Transaction, CustomerProfile> predicate,
-        String flag) {
+        BiPredicate<Transaction, CustomerProfile> predicate, String flag) {
     }
 
     // Our banking platform needs to flag potentially fraudulent transactions in real-time. Implement a function that evaluates a transaction against a customer's recent history and returns a risk score. The function should consider: unusual amounts, geographic anomalies, and velocity (too many transactions in short time).
-    private record Transaction(String id, String customerId, BigDecimal amount, String merchantCategory,
-                               String country, Instant timestamp) {
+    private record Transaction(String id, String customerId, BigDecimal amount,
+                               String merchantCategory, String country, Instant timestamp) {
     }
 
     private record CustomerProfile(BigDecimal avgTransactionAmount, BigDecimal stdDevAmount,
