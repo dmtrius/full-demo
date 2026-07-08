@@ -15,6 +15,12 @@ public class App52 {
 
     void main() {
         log.info("App52: Java 26 features demo");
+        List<Transaction> transactions = generateTransactions();
+        CustomerProfile profile = generateCustomerProfile();
+        IO.println(transactions);
+        IO.println(profile);
+        var risk = assessRisk(transactions.get(4), profile);
+        IO.println(risk);
     }
 
     private static final String TRUSTED = "TRUSTED";
@@ -33,9 +39,9 @@ public class App52 {
         int delta = trusted ? -DELTA : DELTA;
 
         var flags = rules.stream()
-                .filter(rule -> rule.predicate().test(tx, profile))
-                .map(RiskRule::flag)
-                .toList();
+            .filter(rule -> rule.predicate().test(tx, profile))
+            .map(RiskRule::flag)
+            .toList();
 
         int score = (trusted ? 100 : 0) + flags.size() * delta;
 
@@ -43,8 +49,8 @@ public class App52 {
     }
 
     private final List<RiskRule> rules = List.of(
-            new RiskRule(this::isUnusualAmount, FLAG_UNUSUAL_AMOUNT),
-            new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
+        new RiskRule(this::isUnusualAmount, FLAG_UNUSUAL_AMOUNT),
+        new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
     );
 
     private RiskAssessment assessmentCalc(int score, List<String> flags) {
@@ -71,31 +77,31 @@ public class App52 {
 
     @SuppressWarnings("unused")
     private boolean isUnusualAmount2(
-            Transaction tx,
-            CustomerProfile profile) {
+        Transaction tx,
+        CustomerProfile profile) {
 
         BigDecimal stdDev = profile.stdDevAmount();
 
         // No variance in historical data -> compare directly to average
         if (stdDev == null || stdDev.signum() == 0) {
             return tx.amount().compareTo(
-                    profile.avgTransactionAmount().multiply(BigDecimal.valueOf(2))
+                profile.avgTransactionAmount().multiply(BigDecimal.valueOf(2))
             ) > 0;
         }
 
         BigDecimal deviation =
-                tx.amount().subtract(profile.avgTransactionAmount()).abs();
+            tx.amount().subtract(profile.avgTransactionAmount()).abs();
 
         BigDecimal threshold =
-                stdDev.multiply(Z_SCORE_THRESHOLD);
+            stdDev.multiply(Z_SCORE_THRESHOLD);
 
         return deviation.compareTo(threshold) > 0;
     }
 
     @SuppressWarnings("unused")
     private boolean isUnusualAmount3(
-            Transaction tx,
-            CustomerProfile profile) {
+        Transaction tx,
+        CustomerProfile profile) {
 
         List<Transaction> recent = profile.recentTransactions();
 
@@ -104,10 +110,10 @@ public class App52 {
         }
 
         BigDecimal avg = recent.stream()
-                .map(Transaction::amount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(recent.size()),
-                        RoundingMode.HALF_UP);
+            .map(Transaction::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .divide(BigDecimal.valueOf(recent.size()),
+                RoundingMode.HALF_UP);
 
         return tx.amount().compareTo(avg.multiply(BigDecimal.valueOf(3))) > 0;
     }
@@ -118,9 +124,9 @@ public class App52 {
         Instant now = tx.timestamp();
 
         long txCountInWindow = profile.recentTransactions().stream()
-                .filter(t -> !t.timestamp().isBefore(now.minus(VELOCITY_WINDOW)))
-                .filter(t -> t.timestamp().isBefore(now)) // only past events
-                .count();
+            .filter(t -> !t.timestamp().isBefore(now.minus(VELOCITY_WINDOW)))
+            .filter(t -> t.timestamp().isBefore(now)) // only past events
+            .count();
 
         return txCountInWindow >= MAX_TX_IN_WINDOW;
     }
@@ -131,19 +137,19 @@ public class App52 {
         Instant now = tx.timestamp();
 
         double score = profile.recentTransactions().stream()
-                .filter(t -> !t.timestamp().isBefore(now.minus(VELOCITY_WINDOW)))
-                .mapToDouble(t -> {
-                    long secondsAgo = Duration.between(t.timestamp(), now).toSeconds();
-                    return 1.0 / (1 + secondsAgo); // newer = higher weight
-                })
-                .sum();
+            .filter(t -> !t.timestamp().isBefore(now.minus(VELOCITY_WINDOW)))
+            .mapToDouble(t -> {
+                long secondsAgo = Duration.between(t.timestamp(), now).toSeconds();
+                return 1.0 / (1 + secondsAgo); // newer = higher weight
+            })
+            .sum();
 
         return score > 3.0; // tuned threshold
     }
 
     private record RiskRule(
-            BiPredicate<Transaction, CustomerProfile> predicate,
-            String flag) {
+        BiPredicate<Transaction, CustomerProfile> predicate,
+        String flag) {
     }
 
     // Our banking platform needs to flag potentially fraudulent transactions in real-time. Implement a function that evaluates a transaction against a customer's recent history and returns a risk score. The function should consider: unusual amounts, geographic anomalies, and velocity (too many transactions in short time).
@@ -166,5 +172,65 @@ public class App52 {
         ALLOW,
         REVIEW,
         BLOCK
+    }
+
+    private static final String CUST_123 = "cust123";
+    private static final String US = "US";
+    private static final String CA = "CA";
+    private static final String UK = "UK";
+    private static final String CN = "CN";
+
+    @SuppressWarnings("unused")
+    private CustomerProfile generateCustomerProfile() {
+        // Generate recent transactions (last 30 days)
+        List<Transaction> recentTransactions = List.of(
+            new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, Instant.now().minus(Duration.ofDays(5))),
+            new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, Instant.now().minus(Duration.ofDays(4))),
+            new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, Instant.now().minus(Duration.ofDays(3))),
+            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), TRUSTED, US, Instant.now().minus(Duration.ofDays(2))),
+            new Transaction("tx5", CUST_123, BigDecimal.valueOf(190.75), TRUSTED, CA, Instant.now().minus(Duration.ofDays(1)))
+        );
+
+        // Calculate average transaction amount
+        BigDecimal sum = recentTransactions.stream()
+            .map(Transaction::amount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal avgAmount = sum.divide(BigDecimal.valueOf(recentTransactions.size()), RoundingMode.HALF_UP);
+
+        // Calculate standard deviation
+        BigDecimal variance = recentTransactions.stream()
+            .map(tx -> tx.amount().subtract(avgAmount).pow(2))
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .divide(BigDecimal.valueOf(recentTransactions.size()), RoundingMode.HALF_UP);
+        BigDecimal stdDev = BigDecimal.valueOf(Math.sqrt(variance.doubleValue()));
+
+        // Known countries where customer has transacted
+        Set<String> knownCountries = Set.of(US, CA, UK);
+
+        return new CustomerProfile(avgAmount, stdDev, knownCountries, recentTransactions);
+    }
+
+    @SuppressWarnings("unused")
+    private List<Transaction> generateTransactions() {
+        Instant now = Instant.now();
+
+        return List.of(
+            // Normal transactions
+            new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, now.minus(Duration.ofDays(5))),
+            new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, now.minus(Duration.ofDays(4))),
+            new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, now.minus(Duration.ofDays(3))),
+            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), TRUSTED, US, now.minus(Duration.ofDays(2))),
+
+            // Unusual amount - high
+            new Transaction("tx5", CUST_123, BigDecimal.valueOf(5000.00), TRUSTED, US, now.minus(Duration.ofDays(1))),
+
+            // Unusual geography
+            new Transaction("tx6", CUST_123, BigDecimal.valueOf(190.75), TRUSTED, CN, now.minus(Duration.ofMinutes(30))),
+
+            // Velocity fraud - multiple transactions in short time window
+            new Transaction("tx7", CUST_123, BigDecimal.valueOf(100.00), TRUSTED, US, now.minus(Duration.ofMinutes(5))),
+            new Transaction("tx8", CUST_123, BigDecimal.valueOf(120.00), TRUSTED, US, now.minus(Duration.ofMinutes(3))),
+            new Transaction("tx9", CUST_123, BigDecimal.valueOf(110.00), TRUSTED, US, now.minus(Duration.ofMinutes(1)))
+        );
     }
 }
