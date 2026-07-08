@@ -17,7 +17,7 @@ public class App52 {
         log.info("App52: Java 26 features demo");
     }
 
-    public static final String TRUSTED = "TRUSTED";
+    private static final String TRUSTED = "TRUSTED";
     private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
     private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
     private static final int LOWER_BOUND = 33;
