@@ -16,7 +16,7 @@ public class App52 {
     private static final int DELTA = 33;
 
     @SuppressWarnings("unused")
-    private RiskAssessment assessRisk(Transaction tx, CustomerProfile profile) {
+    private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
         boolean trusted = isTrusted(tx);
         int delta = trusted ? -1 * DELTA : DELTA;
 
