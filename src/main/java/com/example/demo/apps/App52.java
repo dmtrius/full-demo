@@ -48,7 +48,7 @@ public class App52 {
     );
 
     private RiskAssessment assessmentCalc(int score, List<String> flags) {
-        int category = Integer.compare(Math.max(LOWER_BOUND, Math.min(score, UPPER_BOUND)), score);
+        int category = Integer.compare(Math.clamp(score, LOWER_BOUND, UPPER_BOUND), score);
         return switch (category) {
             case -1 -> new RiskAssessment(score, flags, Action.BLOCK);
             case 1 -> new RiskAssessment(score, flags, Action.ALLOW);
