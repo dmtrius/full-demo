@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -15,11 +16,11 @@ public class App52 {
 
     void main() {
         log.info("App52: Java 26 features demo");
-        List<Transaction> transactions = generateTransactions();
+        List<Transaction> transactions = generateTransactions(false, false, false);
         CustomerProfile profile = generateCustomerProfile();
         IO.println(transactions);
         IO.println(profile);
-        var risk = assessRisk(transactions.get(4), profile);
+        var risk = assessRisk(transactions.get(1), profile);
         IO.println(risk);
     }
 
@@ -180,7 +181,6 @@ public class App52 {
     private static final String UK = "UK";
     private static final String CN = "CN";
 
-    @SuppressWarnings("unused")
     private CustomerProfile generateCustomerProfile() {
         // Generate recent transactions (last 30 days)
         List<Transaction> recentTransactions = List.of(
@@ -210,11 +210,32 @@ public class App52 {
         return new CustomerProfile(avgAmount, stdDev, knownCountries, recentTransactions);
     }
 
-    @SuppressWarnings("unused")
-    private List<Transaction> generateTransactions() {
+    private List<Transaction> generateTransactions(boolean isUnusualAmnt, boolean isUnusualGeo, boolean isVelocityFraud) {
         Instant now = Instant.now();
 
-        return List.of(
+        List<Transaction> txs = new ArrayList<>();
+        txs.add(new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, now.minus(Duration.ofDays(5))));
+        txs.add(new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, now.minus(Duration.ofDays(4))));
+        txs.add(new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, now.minus(Duration.ofDays(3))));
+        txs.add(new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), TRUSTED, US, now.minus(Duration.ofDays(2))));
+
+        if (isUnusualAmnt) {
+            txs.add(new Transaction("tx5", CUST_123, BigDecimal.valueOf(5000.00), TRUSTED, US, now.minus(Duration.ofDays(1))));
+        }
+
+        if (isUnusualGeo) {
+            txs.add(new Transaction("tx6", CUST_123, BigDecimal.valueOf(190.75), TRUSTED, CN, now.minus(Duration.ofMinutes(30))));
+        }
+
+        if (isVelocityFraud) {
+            txs.add(new Transaction("tx7", CUST_123, BigDecimal.valueOf(100.00), TRUSTED, US, now.minus(Duration.ofMinutes(5))));
+            txs.add(new Transaction("tx8", CUST_123, BigDecimal.valueOf(120.00), TRUSTED, US, now.minus(Duration.ofMinutes(3))));
+            txs.add(new Transaction("tx9", CUST_123, BigDecimal.valueOf(110.00), TRUSTED, US, now.minus(Duration.ofMinutes(1))));
+        }
+
+        return txs;
+
+        /*return List.of(
             // Normal transactions
             new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, now.minus(Duration.ofDays(5))),
             new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, now.minus(Duration.ofDays(4))),
@@ -231,6 +252,6 @@ public class App52 {
             new Transaction("tx7", CUST_123, BigDecimal.valueOf(100.00), TRUSTED, US, now.minus(Duration.ofMinutes(5))),
             new Transaction("tx8", CUST_123, BigDecimal.valueOf(120.00), TRUSTED, US, now.minus(Duration.ofMinutes(3))),
             new Transaction("tx9", CUST_123, BigDecimal.valueOf(110.00), TRUSTED, US, now.minus(Duration.ofMinutes(1)))
-        );
+        );*/
     }
 }
