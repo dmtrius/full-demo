@@ -48,6 +48,8 @@ public class App52 {
 
         int score = (trusted ? 100 : 0) + flags.size() * delta;
 
+        score = Math.clamp(score, 0, 100);
+
         return assessmentCalc(score, flags);
     }
 
