@@ -20,7 +20,9 @@ public class App52 {
         CustomerProfile profile = generateCustomerProfile();
         IO.println(transactions);
         IO.println(profile);
-        var risk = assessRisk(transactions.get(3), profile);
+        var tx = transactions.get(3);
+        IO.println(tx);
+        var risk = assessRisk(tx, profile);
         IO.println(risk);
     }
 
@@ -42,7 +44,7 @@ public class App52 {
         int delta = trusted ? -DELTA : DELTA;
 
         var flags = rules.stream()
-            .filter(rule -> rule.predicate().test(tx, profile))
+            .filter(rule -> !rule.predicate().test(tx, profile))
             .map(RiskRule::flag)
             .toList();
 
