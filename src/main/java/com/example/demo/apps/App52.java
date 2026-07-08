@@ -14,8 +14,12 @@ public class App52 {
         IO.println("App52: Java 26 features demo");
     }
 
-    private static final int DELTA = 33;
     public static final String TRUSTED = "TRUSTED";
+    private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
+    private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
+    private static final int LOWER_BOUND = 33;
+    private static final int UPPER_BOUND = 66;
+    private static final int DELTA = 33;
 
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
@@ -169,12 +173,6 @@ public class App52 {
                                   Action recommended  // ALLOW, REVIEW, BLOCK
     ) {
     }
-
-    private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
-    private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
-
-    private static final int LOWER_BOUND = 33;
-    private static final int UPPER_BOUND = 66;
 
     private enum Action {
         ALLOW,
