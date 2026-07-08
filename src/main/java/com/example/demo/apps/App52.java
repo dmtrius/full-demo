@@ -9,11 +9,13 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 
 public class App52 {
+
     void main() {
         IO.println("App52: Java 26 features demo");
     }
 
     private static final int DELTA = 33;
+    public static final String TRUSTED = "TRUSTED";
 
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
@@ -45,7 +47,7 @@ public class App52 {
     }
 
     private boolean isTrusted(Transaction tx) {
-        return "TRUSTED".equals(tx.merchantCategory());
+        return TRUSTED.equals(tx.merchantCategory());
     }
 
     private boolean isUnusualGeo(Transaction tx, CustomerProfile profile) {
