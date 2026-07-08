@@ -1,5 +1,7 @@
 package com.example.demo.apps;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -8,10 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
+@Log4j2
 public class App52 {
 
     void main() {
-        IO.println("App52: Java 26 features demo");
+        log.info("App52: Java 26 features demo");
     }
 
     public static final String TRUSTED = "TRUSTED";
@@ -29,7 +32,7 @@ public class App52 {
         boolean trusted = isTrusted(tx);
         int delta = trusted ? -1 * DELTA : DELTA;
 
-        List<String> flags = RULES.stream()
+        List<String> flags = rules.stream()
                 .filter(rule -> rule.predicate().test(tx, profile))
                 .map(RiskRule::flag)
                 .toList();
@@ -39,7 +42,7 @@ public class App52 {
         return assessmentCalc(score, flags);
     }
 
-    private final List<RiskRule> RULES = List.of(
+    private final List<RiskRule> rules = List.of(
             new RiskRule(this::isUnusualAmount, FLAG_UNUSUAL_AMOUNT),
             new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
     );
