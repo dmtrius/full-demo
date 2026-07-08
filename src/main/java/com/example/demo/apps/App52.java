@@ -8,7 +8,9 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiPredicate;
 
 @Log4j2
@@ -18,12 +20,14 @@ public class App52 {
         log.info("App52: Java 26 features demo");
         List<Transaction> transactions = generateTransactions();
         CustomerProfile profile = generateCustomerProfile();
-        IO.println(transactions);
-        IO.println(profile);
-        var tx = transactions.get(3);
-        IO.println(tx);
-        var risk = assessRisk(tx, profile);
-        IO.println(risk);
+//        IO.println(transactions);
+//        IO.println(profile);
+
+        transactions.forEach(tx -> {
+            IO.println(tx);
+            var risk = assessRisk(tx, profile);
+            IO.println(risk);
+        });
     }
 
     private static final String TRUSTED = "TRUSTED";
@@ -184,15 +188,26 @@ public class App52 {
     private static final String CA = "CA";
     private static final String UK = "UK";
     private static final String CN = "CN";
+    private static final Set<String> knownCountries = Set.of(US, CA, UK);
+
+    private static final Random rand = new Random(1000L);
+
+    private String getIsTrusted() {
+        return rand.nextBoolean() ? TRUSTED : UNTRUSTED;
+    }
+
+    private String getTxId() {
+        return UUID.randomUUID().toString();
+    }
 
     private CustomerProfile generateCustomerProfile() {
         // Generate recent transactions (last 30 days)
         List<Transaction> recentTransactions = List.of(
-            new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, Instant.now().minus(Duration.ofDays(5))),
-            new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, Instant.now().minus(Duration.ofDays(4))),
-            new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, Instant.now().minus(Duration.ofDays(3))),
-            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), TRUSTED, US, Instant.now().minus(Duration.ofDays(2))),
-            new Transaction("tx5", CUST_123, BigDecimal.valueOf(190.75), TRUSTED, CA, Instant.now().minus(Duration.ofDays(1)))
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(150.00), getIsTrusted(), US, Instant.now().minus(Duration.ofDays(5))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(200.50), getIsTrusted(), US, Instant.now().minus(Duration.ofDays(4))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(175.25), getIsTrusted(), US, Instant.now().minus(Duration.ofDays(3))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(160.00), getIsTrusted(), US, Instant.now().minus(Duration.ofDays(2))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(190.75), getIsTrusted(), CA, Instant.now().minus(Duration.ofDays(1)))
         );
 
         // Calculate average transaction amount
@@ -208,9 +223,6 @@ public class App52 {
             .divide(BigDecimal.valueOf(recentTransactions.size()), RoundingMode.HALF_UP);
         BigDecimal stdDev = BigDecimal.valueOf(Math.sqrt(variance.doubleValue()));
 
-        // Known countries where customer has transacted
-        Set<String> knownCountries = Set.of(US, CA, UK);
-
         return new CustomerProfile(avgAmount, stdDev, knownCountries, recentTransactions);
     }
 
@@ -219,21 +231,21 @@ public class App52 {
 
         return List.of(
             // Normal transactions
-            new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, now.minus(Duration.ofDays(5))),
-            new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, now.minus(Duration.ofDays(4))),
-            new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, now.minus(Duration.ofDays(3))),
-            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), UNTRUSTED, US, now.minus(Duration.ofDays(2))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(150.00), getIsTrusted(), US, now.minus(Duration.ofDays(5))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(200.50), getIsTrusted(), CA, now.minus(Duration.ofDays(4))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(175.25), getIsTrusted(), UK, now.minus(Duration.ofDays(3))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(160.00), getIsTrusted(), US, now.minus(Duration.ofDays(2))),
 
             // Unusual amount - high
-            new Transaction("tx5", CUST_123, BigDecimal.valueOf(5000.00), TRUSTED, US, now.minus(Duration.ofDays(1))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(5000.00), getIsTrusted(), US, now.minus(Duration.ofDays(1))),
 
             // Unusual geography
-            new Transaction("tx6", CUST_123, BigDecimal.valueOf(190.75), TRUSTED, CN, now.minus(Duration.ofMinutes(30))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(190.75), getIsTrusted(), CN, now.minus(Duration.ofMinutes(30))),
 
             // Velocity fraud - multiple transactions in short time window
-            new Transaction("tx7", CUST_123, BigDecimal.valueOf(100.00), TRUSTED, US, now.minus(Duration.ofMinutes(5))),
-            new Transaction("tx8", CUST_123, BigDecimal.valueOf(120.00), TRUSTED, US, now.minus(Duration.ofMinutes(3))),
-            new Transaction("tx9", CUST_123, BigDecimal.valueOf(110.00), TRUSTED, US, now.minus(Duration.ofMinutes(1)))
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(100.00), getIsTrusted(), US, now.minus(Duration.ofMinutes(5))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(120.00), getIsTrusted(), UK, now.minus(Duration.ofMinutes(3))),
+            new Transaction(getTxId(), CUST_123, BigDecimal.valueOf(110.00), getIsTrusted(), CA, now.minus(Duration.ofMinutes(1)))
         );
     }
 }
