@@ -26,8 +26,9 @@ public class App52 {
     private static final String TRUSTED = "TRUSTED";
     private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
     private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
+    public static final String FLAG_VELOCITY_FRAUD = "Velocity Fraud";
     private static final int LOWER_BOUND = 33;
-    private static final int UPPER_BOUND = 66;
+    private static final int UPPER_BOUND = 68;
     private static final int DELTA = 33;
     private static final BigDecimal Z_SCORE_THRESHOLD = BigDecimal.valueOf(3);
     private static final Duration VELOCITY_WINDOW = Duration.ofMinutes(2);
@@ -35,7 +36,7 @@ public class App52 {
 
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
-        boolean trusted = isTrusted(tx);
+        boolean trusted = isTrusted(tx, profile);
         int delta = trusted ? -DELTA : DELTA;
 
         var flags = rules.stream()
@@ -49,6 +50,8 @@ public class App52 {
     }
 
     private final List<RiskRule> rules = List.of(
+        new RiskRule(this::isTrusted, TRUSTED),
+        new RiskRule(this::velocityFraud2, FLAG_VELOCITY_FRAUD),
         new RiskRule(this::isUnusualAmount, FLAG_UNUSUAL_AMOUNT),
         new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
     );
@@ -62,7 +65,7 @@ public class App52 {
         };
     }
 
-    private boolean isTrusted(Transaction tx) {
+    private boolean isTrusted(Transaction tx, CustomerProfile profile) {
         return TRUSTED.equals(tx.merchantCategory());
     }
 
