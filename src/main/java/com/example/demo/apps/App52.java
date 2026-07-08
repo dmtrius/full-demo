@@ -32,7 +32,7 @@ public class App52 {
         boolean trusted = isTrusted(tx);
         int delta = trusted ? -DELTA : DELTA;
 
-        List<String> flags = rules.stream()
+        var flags = rules.stream()
                 .filter(rule -> rule.predicate().test(tx, profile))
                 .map(RiskRule::flag)
                 .toList();
