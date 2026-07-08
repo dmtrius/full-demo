@@ -19,11 +19,12 @@ public class App52 {
         CustomerProfile profile = generateCustomerProfile();
         IO.println(transactions);
         IO.println(profile);
-        var risk = assessRisk(transactions.get(1), profile);
+        var risk = assessRisk(transactions.get(3), profile);
         IO.println(risk);
     }
 
     private static final String TRUSTED = "TRUSTED";
+    private static final String UNTRUSTED = "UNTRUSTED";
     private static final String FLAG_UNUSUAL_AMOUNT = "Unusual Amount";
     private static final String FLAG_UNUSUAL_GEO = "Unusual Geo";
     private static final String FLAG_VELOCITY_FRAUD = "Velocity Fraud";
@@ -52,7 +53,7 @@ public class App52 {
     private final List<RiskRule> rules = List.of(
         new RiskRule(this::isTrusted, TRUSTED),
         new RiskRule(this::velocityFraud2, FLAG_VELOCITY_FRAUD),
-        new RiskRule(this::isUnusualAmount, FLAG_UNUSUAL_AMOUNT),
+        new RiskRule(this::isUnusualAmount3, FLAG_UNUSUAL_AMOUNT),
         new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
     );
 
@@ -73,6 +74,7 @@ public class App52 {
         return !profile.knownCountries().contains(tx.country());
     }
 
+    @SuppressWarnings("unused")
     private boolean isUnusualAmount(Transaction tx, CustomerProfile profile) {
         BigDecimal threshold = profile.avgTransactionAmount().add(profile.stdDevAmount());
         return tx.amount().compareTo(threshold) > 0;
@@ -220,7 +222,7 @@ public class App52 {
             new Transaction("tx1", CUST_123, BigDecimal.valueOf(150.00), TRUSTED, US, now.minus(Duration.ofDays(5))),
             new Transaction("tx2", CUST_123, BigDecimal.valueOf(200.50), TRUSTED, US, now.minus(Duration.ofDays(4))),
             new Transaction("tx3", CUST_123, BigDecimal.valueOf(175.25), TRUSTED, US, now.minus(Duration.ofDays(3))),
-            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), TRUSTED, US, now.minus(Duration.ofDays(2))),
+            new Transaction("tx4", CUST_123, BigDecimal.valueOf(160.00), UNTRUSTED, US, now.minus(Duration.ofDays(2))),
 
             // Unusual amount - high
             new Transaction("tx5", CUST_123, BigDecimal.valueOf(5000.00), TRUSTED, US, now.minus(Duration.ofDays(1))),
