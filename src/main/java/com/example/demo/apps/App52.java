@@ -30,7 +30,7 @@ public class App52 {
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
         boolean trusted = isTrusted(tx);
-        int delta = trusted ? -1 * DELTA : DELTA;
+        int delta = trusted ? -DELTA : DELTA;
 
         List<String> flags = rules.stream()
                 .filter(rule -> rule.predicate().test(tx, profile))
