@@ -20,6 +20,9 @@ public class App52 {
     private static final int LOWER_BOUND = 33;
     private static final int UPPER_BOUND = 66;
     private static final int DELTA = 33;
+    private static final BigDecimal Z_SCORE_THRESHOLD = BigDecimal.valueOf(3);
+    private static final Duration VELOCITY_WINDOW = Duration.ofMinutes(2);
+    private static final int MAX_TX_IN_WINDOW = 5;
 
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
@@ -62,8 +65,6 @@ public class App52 {
         BigDecimal threshold = profile.avgTransactionAmount().add(profile.stdDevAmount());
         return tx.amount().compareTo(threshold) > 0;
     }
-
-    private static final BigDecimal Z_SCORE_THRESHOLD = BigDecimal.valueOf(3);
 
     @SuppressWarnings("unused")
     private boolean isUnusualAmount2(
@@ -108,9 +109,6 @@ public class App52 {
         return tx.amount().compareTo(avg.multiply(BigDecimal.valueOf(3))) > 0;
     }
 
-    private static final Duration VELOCITY_WINDOW = Duration.ofMinutes(2);
-    private static final int MAX_TX_IN_WINDOW = 5;
-
     @SuppressWarnings("unused")
     private boolean velocityFraud(Transaction tx, CustomerProfile profile) {
 
@@ -126,19 +124,6 @@ public class App52 {
 
     @SuppressWarnings("unused")
     private boolean velocityFraud2(Transaction tx, CustomerProfile profile) {
-
-        Instant now = tx.timestamp();
-
-        long txCountInWindow = profile.recentTransactions().stream()
-                .filter(t -> !t.timestamp().isBefore(now.minus(VELOCITY_WINDOW)))
-                .filter(t -> t.timestamp().isBefore(now)) // only past events
-                .count();
-
-        return txCountInWindow >= MAX_TX_IN_WINDOW;
-    }
-
-    @SuppressWarnings("unused")
-    private boolean velocityFraud3(Transaction tx, CustomerProfile profile) {
 
         Instant now = tx.timestamp();
 
