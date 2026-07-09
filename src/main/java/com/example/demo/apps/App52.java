@@ -38,9 +38,9 @@ public class App52 {
     private static final int LOWER_BOUND = 33;
     private static final int UPPER_BOUND = 68;
     private static final int DELTA = 33;
+    private static final int MAX_TX_IN_WINDOW = 5;
     private static final BigDecimal Z_SCORE_THRESHOLD = BigDecimal.valueOf(3);
     private static final Duration VELOCITY_WINDOW = Duration.ofMinutes(2);
-    private static final int MAX_TX_IN_WINDOW = 5;
 
     @SuppressWarnings("unused")
     private RiskAssessment assessRisk(final Transaction tx, final CustomerProfile profile) {
