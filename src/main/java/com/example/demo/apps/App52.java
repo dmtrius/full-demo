@@ -61,7 +61,7 @@ public class App52 {
 
     private final List<RiskRule> rules = List.of(
         new RiskRule(this::isTrusted, TRUSTED),
-        new RiskRule(this::velocityFraud2, FLAG_VELOCITY_FRAUD),
+        new RiskRule(this::isVelocityFraud2, FLAG_VELOCITY_FRAUD),
         new RiskRule(this::isUnusualAmount3, FLAG_UNUSUAL_AMOUNT),
         new RiskRule(this::isUnusualGeo, FLAG_UNUSUAL_GEO)
     );
@@ -129,7 +129,7 @@ public class App52 {
     }
 
     @SuppressWarnings("unused")
-    private boolean velocityFraud(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
+    private boolean isVelocityFraud(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         Instant now = tx.timestamp();
 
@@ -142,7 +142,7 @@ public class App52 {
     }
 
     @SuppressWarnings("unused")
-    private boolean velocityFraud2(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
+    private boolean isVelocityFraud2(@NonNull Transaction tx, @NonNull CustomerProfile profile) {
 
         Instant now = tx.timestamp();
 
