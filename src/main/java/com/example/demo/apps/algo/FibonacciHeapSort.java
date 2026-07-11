@@ -52,7 +52,7 @@ public class FibonacciHeapSort<T extends Comparable<T>> {
         return size;
     }
 
-    /** Inserts a new key into the heap. Returns the created node reference (opaque handle). */
+    /** Inserts a new key into the heap. Returns the created node reference (opaque handle) */
     public Object insert(T key) {
         Node node = new Node(key);
         minNode = mergeLists(minNode, node);
@@ -118,6 +118,7 @@ public class FibonacciHeapSort<T extends Comparable<T>> {
     }
 
     /** Consolidates the root list so that no two roots share the same degree. */
+    @SuppressWarnings("unused")
     private void consolidate() {
         int maxDegree = ((int) Math.floor(Math.log(size + 1) / Math.log(2))) + 2;
         List<Node> degreeTable = new ArrayList<>(maxDegree);
@@ -225,6 +226,7 @@ public class FibonacciHeapSort<T extends Comparable<T>> {
     }
 
     /** Deletes an arbitrary node from the heap given its handle. */
+    @SuppressWarnings("unused")
     public void delete(Object nodeHandle, T minusInfinity) {
         decreaseKey(nodeHandle, minusInfinity);
         extractMin();
@@ -275,7 +277,7 @@ public class FibonacciHeapSort<T extends Comparable<T>> {
 
     // --- demo / manual test ---
 
-    public static void main(String[] args) {
+    void main() {
         Integer[] data = {23, 4, 17, 9, 42, 1, 8, 15, 30, -5, 0, 99, 7};
         System.out.println("Before: " + java.util.Arrays.toString(data));
         heapSort(data);
