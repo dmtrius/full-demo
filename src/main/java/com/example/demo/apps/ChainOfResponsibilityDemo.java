@@ -62,7 +62,7 @@ class HandlerHelper {
 // section Client
 
 public class ChainOfResponsibilityDemo {
-    public static void main(String[] args) {
+    void main() {
         // section Setup Chain of Responsibility
         Handler h1 = new ConcreteHandler1();
         Handler h2 = new ConcreteHandler2();
