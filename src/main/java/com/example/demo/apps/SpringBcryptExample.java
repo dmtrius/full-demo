@@ -17,7 +17,7 @@ public class SpringBcryptExample {
     void bCryptExample() {
         // Create an instance of BCryptPasswordEncoder
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        // The plain text password to be hashed
+        // The plaintext password to be hashed
         String plainPassword = "mySecurePassword";
         // Hash the password
         String hashedPassword = passwordEncoder.encode(plainPassword);
@@ -30,7 +30,7 @@ public class SpringBcryptExample {
     void argonExample() {
         // Create an instance of Argon2PasswordEncoder
         Argon2PasswordEncoder passwordEncoder = new Argon2PasswordEncoder(16, 32, 1, 65536, 3);
-        // The plain text password to be hashed
+        // The plaintext password to be hashed
         String plainPassword = "mySecurePassword";
         // Hash the password
         String hashedPassword = passwordEncoder.encode(plainPassword);

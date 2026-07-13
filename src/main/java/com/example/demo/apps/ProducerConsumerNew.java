@@ -25,7 +25,8 @@ public class ProducerConsumerNew {
                     }
                 }
             } catch (InterruptedException e) {
-                log.error("Interrupted PRODUCER");
+                log.error("Interrupted PRODUCER", e);
+                throw new RuntimeException(e);
             }
         });
 
@@ -41,7 +42,8 @@ public class ProducerConsumerNew {
                     }
                 }
             } catch (InterruptedException e) {
-                log.error("Interrupted CONSUMER");
+                log.error("Interrupted CONSUMER", e);
+                throw new RuntimeException(e);
             }
         });
 
