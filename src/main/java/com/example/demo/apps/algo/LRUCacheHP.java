@@ -1,7 +1,5 @@
 package com.example.demo.apps.algo;
 
-import lombok.SneakyThrows;
-
 import module java.base;
 
 /**

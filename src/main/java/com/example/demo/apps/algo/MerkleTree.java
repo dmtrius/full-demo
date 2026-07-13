@@ -53,11 +53,10 @@ public class MerkleTree {
         return result.toString();
     }
 
-    // Test method
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
-        List<String> dataBlocks = List.of("Block A", "Block B", "Block C", "Block D");
+
+    void main() {
+        var dataBlocks = List.of("Block A", "Block B", "Block C", "Block D");
         String merkleRoot = buildMerkleRoot(dataBlocks);
-        System.out.println("Merkle Root: " + merkleRoot);
+        IO.println("Merkle Root: " + merkleRoot);
     }
 }

@@ -6,7 +6,7 @@ public class MatrixTraversal {
     // Directions for traversal: right, down, left, up
     private static final int[][] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
     // Diagonal directions
-    private static final int[][] DIAGONAL_DIRECTIONS = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+     private static final int[][] DIAGONAL_DIRECTIONS = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
     /**
      * DFS traversal using recursion
@@ -18,7 +18,7 @@ public class MatrixTraversal {
         }
 
         // Process current cell
-        System.out.print(matrix[row][col] + " ");
+        IO.print(matrix[row][col] + " ");
         visited[row][col] = true;
 
         // Recursively visit all adjacent cells
@@ -50,7 +50,7 @@ public class MatrixTraversal {
             }
 
             // Process current cell
-            System.out.print(matrix[row][col] + " ");
+            IO.print(matrix[row][col] + " ");
             visited[row][col] = true;
 
             // Add all adjacent cells to stack
@@ -79,7 +79,7 @@ public class MatrixTraversal {
             int col = current[1];
 
             // Process current cell
-            System.out.print(matrix[row][col] + " ");
+            IO.print(matrix[row][col] + " ");
 
             // Add all unvisited adjacent cells to queue
             for (int[] dir : DIRECTIONS) {
@@ -98,30 +98,34 @@ public class MatrixTraversal {
      * Spiral traversal
      */
     public static void spiralTraversal(int[][] matrix) {
-        if (matrix == null || matrix.length == 0) return;
+        if (matrix == null || matrix.length == 0) {
+            return;
+        }
 
         int rows = matrix.length;
         int cols = matrix[0].length;
-        int top = 0, bottom = rows - 1;
-        int left = 0, right = cols - 1;
+        int top = 0;
+        int bottom = rows - 1;
+        int left = 0;
+        int right = cols - 1;
 
         while (top <= bottom && left <= right) {
             // Traverse right
             for (int j = left; j <= right; j++) {
-                System.out.print(matrix[top][j] + " ");
+                IO.print(matrix[top][j] + " ");
             }
             top++;
 
             // Traverse down
             for (int i = top; i <= bottom; i++) {
-                System.out.print(matrix[i][right] + " ");
+                IO.print(matrix[i][right] + " ");
             }
             right--;
 
             if (top <= bottom) {
                 // Traverse left
                 for (int j = right; j >= left; j--) {
-                    System.out.print(matrix[bottom][j] + " ");
+                    IO.print(matrix[bottom][j] + " ");
                 }
                 bottom--;
             }
@@ -129,7 +133,7 @@ public class MatrixTraversal {
             if (left <= right) {
                 // Traverse up
                 for (int i = bottom; i >= top; i--) {
-                    System.out.print(matrix[i][left] + " ");
+                    IO.print(matrix[i][left] + " ");
                 }
                 left++;
             }
@@ -145,24 +149,26 @@ public class MatrixTraversal {
 
         // Traverse all diagonals starting from the first row
         for (int col = 0; col < cols; col++) {
-            int i = 0, j = col;
+            int i = 0;
+            int j = col;
             while (i < rows && j < cols) {
-                System.out.print(matrix[i][j] + " ");
+                IO.print(matrix[i][j] + " ");
                 i++;
                 j++;
             }
-            System.out.println();
+            IO.println();
         }
 
         // Traverse remaining diagonals starting from the first column
         for (int row = 1; row < rows; row++) {
-            int i = row, j = 0;
+            int i = row;
+            int j = 0;
             while (i < rows && j < cols) {
-                System.out.print(matrix[i][j] + " ");
+                IO.print(matrix[i][j] + " ");
                 i++;
                 j++;
             }
-            System.out.println();
+            IO.println();
         }
     }
 
@@ -175,25 +181,25 @@ public class MatrixTraversal {
 
         // Print the first row
         for (int j = 0; j < cols; j++) {
-            System.out.print(matrix[0][j] + " ");
+            IO.print(matrix[0][j] + " ");
         }
 
         // Print last column
         for (int i = 1; i < rows; i++) {
-            System.out.print(matrix[i][cols-1] + " ");
+            IO.print(matrix[i][cols-1] + " ");
         }
 
         if (rows > 1) {
             // Print last row
             for (int j = cols-2; j >= 0; j--) {
-                System.out.print(matrix[rows-1][j] + " ");
+                IO.print(matrix[rows-1][j] + " ");
             }
         }
 
         if (cols > 1) {
             // Print first column
             for (int i = rows-2; i > 0; i--) {
-                System.out.print(matrix[i][0] + " ");
+                IO.print(matrix[i][0] + " ");
             }
         }
     }
@@ -206,7 +212,7 @@ public class MatrixTraversal {
     }
 
     // Example usage
-    public static void main(String[] args) {
+    void main() {
         int[][] matrix = {
                 {1, 2, 3, 4},
                 {5, 6, 7, 8},
@@ -214,22 +220,22 @@ public class MatrixTraversal {
                 {13, 14, 15, 16}
         };
 
-        System.out.println("DFS Recursive:");
+        IO.println("DFS Recursive:");
         dfsRecursive(matrix, 0, 0, new boolean[matrix.length][matrix[0].length]);
 
-        System.out.println("\n\nDFS Iterative:");
+        IO.println("\n\nDFS Iterative:");
         dfsIterative(matrix, 0, 0);
 
-        System.out.println("\n\nBFS:");
+        IO.println("\n\nBFS:");
         bfs(matrix, 0, 0);
 
-        System.out.println("\n\nSpiral Traversal:");
+        IO.println("\n\nSpiral Traversal:");
         spiralTraversal(matrix);
 
-        System.out.println("\n\nDiagonal Traversal:");
+        IO.println("\n\nDiagonal Traversal:");
         diagonalTraversal(matrix);
 
-        System.out.println("\nBoundary Traversal:");
+        IO.println("\n\nBoundary Traversal:");
         boundaryTraversal(matrix);
     }
 }
