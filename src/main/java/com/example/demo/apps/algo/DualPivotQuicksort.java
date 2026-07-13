@@ -67,12 +67,12 @@ public class DualPivotQuicksort {
     }
 
     // Example usage
-    public static void main(String[] args) {
+    void main() {
         int[] arr = {24, 8, 42, 75, 29, 77, 38, 57, 88, 91, 3, 99, 66};
-        System.out.println("Original array: " + Arrays.toString(arr));
+        IO.println("Original array: " + Arrays.toString(arr));
 
         sort(arr);
 
-        System.out.println("Sorted array: " + Arrays.toString(arr));
+        IO.println("Sorted array: " + Arrays.toString(arr));
     }
 }
