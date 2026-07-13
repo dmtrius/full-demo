@@ -84,7 +84,7 @@ public class ParallelQuickSort extends RecursiveAction {
     /**
      * Public method to sort an array using parallel quicksort
      */
-    public static void sort(int[] array) {
+    static void sort(int[] array) {
         try (ForkJoinPool pool = new ForkJoinPool()) {
             pool.invoke(new ParallelQuickSort(array, 0, array.length - 1));
         }
@@ -94,7 +94,7 @@ public class ParallelQuickSort extends RecursiveAction {
      * Demo and testing
      */
     @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    static void main(String... args) {
         // Test with different array sizes
         int[] sizes = {1000, 10000, 100000, 1000000};
 
@@ -110,7 +110,7 @@ public class ParallelQuickSort extends RecursiveAction {
             ParallelQuickSort.sort(parallelArray);
             long parallelTime = System.nanoTime() - startTime;
 
-            // Test Arrays.sort() for comparison
+            // Test Arrays::sort() for comparison
             int[] javaArray = Arrays.copyOf(originalArray, originalArray.length);
             startTime = System.nanoTime();
             Arrays.sort(javaArray);
@@ -119,10 +119,10 @@ public class ParallelQuickSort extends RecursiveAction {
             // Verify correctness
             boolean isCorrect = Arrays.equals(parallelArray, javaArray);
 
-            System.out.printf("  Parallel QuickSort: %.2f ms\n", parallelTime / 1_000_000.0);
-            System.out.printf("  Arrays.sort():      %.2f ms\n", javaTime / 1_000_000.0);
-            System.out.printf("  Speedup:           %.2fx\n", (double) javaTime / parallelTime);
-            System.out.printf("  Correct:           %s\n", isCorrect);
+            System.out.printf("  Parallel QuickSort: %.2f ms%n", parallelTime / 1_000_000.0);
+            System.out.printf("  Arrays.sort():      %.2f ms%n", javaTime / 1_000_000.0);
+            System.out.printf("  Speedup:           %.2fx%n", (double) javaTime / parallelTime);
+            System.out.printf("  Correct:           %s%n", isCorrect);
             System.out.println();
         }
 
