@@ -35,8 +35,9 @@ public class ParallelMerkleTree {
     // Task to hash individual data blocks (leaf level)
     static class ParallelHashTask extends RecursiveTask<List<String>> {
         private static final int THRESHOLD = 10_000;
-        List<String> data;
-        int start, end;
+        private final List<String> data;
+        private final int start;
+        private final int end;
 
         ParallelHashTask(List<String> data, int start, int end) {
             this.data = data;
@@ -44,6 +45,7 @@ public class ParallelMerkleTree {
             this.end = end;
         }
 
+        @SuppressWarnings("DuplicatedCode")
         @Override
         protected List<String> compute() {
             int length = end - start;
@@ -69,8 +71,9 @@ public class ParallelMerkleTree {
     // Task to hash node pairs (non-leaf levels)
     static class ParallelPairHashTask extends RecursiveTask<List<String>> {
         private static final int THRESHOLD = 5000;
-        List<String> nodes;
-        int start, pairCount;
+        private final List<String> nodes;
+        private final int start;
+        private final int pairCount;
 
         ParallelPairHashTask(List<String> nodes, int start, int pairCount) {
             this.nodes = nodes;
@@ -78,6 +81,7 @@ public class ParallelMerkleTree {
             this.pairCount = pairCount;
         }
 
+        @SuppressWarnings("DuplicatedCode")
         @Override
         protected List<String> compute() {
             if (pairCount <= THRESHOLD) {
@@ -120,8 +124,7 @@ public class ParallelMerkleTree {
         return sb.toString();
     }
 
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    void main() {
         int count = 1_000_000;
         List<String> blocks = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
