@@ -14,7 +14,6 @@ public class SubsetSum {
                 isSubsetSum(set, n - 1, sum - set[n - 1]);
     }
 
-    @SuppressWarnings("preview")
     void main() {
         int[] set = {3, 34, 4, 12, 5, 2};
         int sum = 9;
