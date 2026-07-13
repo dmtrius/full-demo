@@ -7,9 +7,6 @@ public class TestTask {
             return result;
         }
         //int[] a = {1, 2, 3, -2, 5, -1};
-//        (a)-> {
-//
-//        }
 
         for (int i = 0; i < a.length; i++) {
             for (int j = i + 1; j < a.length; j++) {
