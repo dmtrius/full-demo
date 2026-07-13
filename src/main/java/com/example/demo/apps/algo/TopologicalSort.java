@@ -1,11 +1,11 @@
 package com.example.demo.apps.algo;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
-import static java.lang.IO.println;
-
+@Slf4j
 public class TopologicalSort {
 
     // Class to represent a task
@@ -21,8 +21,12 @@ public class TopologicalSort {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Task task = (Task) o;
             return Objects.equals(name, task.name);
         }
@@ -55,15 +59,7 @@ public class TopologicalSort {
         }
 
         // Build graph and calculate in-degrees
-        for (Task task : tasks) {
-            for (Task dependency : task.getDependencies()) {
-                // Check if the dependency exists in our task list
-                if (graph.containsKey(dependency)) {
-                    graph.get(dependency).add(task);
-                    inDegree.put(task, inDegree.get(task) + 1);
-                }
-            }
-        }
+        buildGraph(tasks, graph, inDegree);
 
         // Find all nodes with in-degree 0
         Queue<Task> queue = new LinkedList<>();
@@ -96,6 +92,19 @@ public class TopologicalSort {
         return result;
     }
 
+    private void buildGraph(List<Task> tasks, Map<Task, List<Task>> graph, Map<Task, Integer> inDegree) {
+        // Build graph and calculate in-degrees
+        for (Task task : tasks) {
+            for (Task dependency : task.getDependencies()) {
+                // Check if the dependency exists in our task list
+                if (graph.containsKey(dependency)) {
+                    graph.get(dependency).add(task);
+                    inDegree.put(task, inDegree.get(task) + 1);
+                }
+            }
+        }
+    }
+
     // Method 2: DFS-based topological sort
     private List<Task> topologicalSortDFS(List<Task> tasks) {
         if (tasks == null || tasks.isEmpty()) {
@@ -108,10 +117,8 @@ public class TopologicalSort {
         Stack<Task> stack = new Stack<>();
 
         for (Task task : tasks) {
-            if (!visited.contains(task)) {
-                if (!dfs(task, graph, visited, visiting, stack)) {
-                    throw new IllegalArgumentException("Graph contains a cycle, topological sort not possible");
-                }
+            if (!visited.contains(task) && !dfs(task, graph, visited, visiting, stack)) {
+                throw new IllegalArgumentException("Graph contains a cycle, topological sort not possible");
             }
         }
 
@@ -187,10 +194,10 @@ public class TopologicalSort {
         Task taskE = new Task("E");
 
         // Set-up dependencies
-        // A depends on B and C
-        // B depends on D
-        // C depends on D
-        // E depends on A and C
+        // "A" depends on "B" and "C"
+        // "B" depends on "D"
+        // "C" depends on "D"
+        // "E" depends on "A" and "C"
         sorter.addDependency(taskA, taskB);
         sorter.addDependency(taskA, taskC);
         sorter.addDependency(taskB, taskD);
@@ -201,20 +208,20 @@ public class TopologicalSort {
         List<Task> tasks = Arrays.asList(taskA, taskB, taskC, taskD, taskE);
 
         try {
-            println("Using Kahn's Algorithm:");
+            IO.println("Using Kahn's Algorithm:");
             List<Task> result1 = sorter.topologicalSortKahn(tasks);
-            println(result1);
+            IO.println(result1);
 
-            println("\nUsing DFS Algorithm:");
+            IO.println("\nUsing DFS Algorithm:");
             List<Task> result2 = sorter.topologicalSortDFS(tasks);
-            println(result2);
+            IO.println(result2);
 
         } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+            IO.println("Error: " + e.getMessage());
         }
 
         // Test with cyclic dependency
-        println("\nTesting with cyclic dependency:");
+        IO.println("\nTesting with cyclic dependency:");
         Task taskX = new Task("X");
         Task taskY = new Task("Y");
         Task taskZ = new Task("Z");
@@ -227,12 +234,12 @@ public class TopologicalSort {
 
         try {
             List<Task> result = sorter.topologicalSortKahn(cyclicTasks);
-            println(result);
+            IO.println(result);
         } catch (IllegalArgumentException e) {
-            println("Detected cycle: " + e.getMessage());
+            IO.println("Detected cycle: " + e.getMessage());
         }
 
-        println(">>> tsTEST");
+        IO.println(">>> tsTEST");
         tsTest();
     }
 
@@ -249,8 +256,8 @@ public class TopologicalSort {
         sorter.addDependency(deploy, test);
 
         List<Task> tasks = Arrays.asList(compile, test, deploy);
-        println(tasks);
+        IO.println(tasks);
         List<Task> executionOrder = sorter.topologicalSortKahn(tasks);
-        println(executionOrder);
+        IO.println(executionOrder);
     }
 }
