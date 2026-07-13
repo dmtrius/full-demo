@@ -6,6 +6,7 @@ import java.util.function.Function;
 public class Either<L, R> {
     private final L left;
     private final R right;
+    // Check if this is a Left value
     private final boolean isLeft;
 
     private Either(L left, R right, boolean isLeft) {
@@ -22,11 +23,6 @@ public class Either<L, R> {
     // Factory method for creating a Right value
     public static <L, R> Either<L, R> right(R value) {
         return new Either<>(null, value, false);
-    }
-
-    // Check if this is a Left value
-    public boolean isLeft() {
-        return isLeft;
     }
 
     // Check if this is a Right value
@@ -80,7 +76,9 @@ public class Either<L, R> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Either<?, ?> either = (Either<?, ?>) o;
         return Objects.equals(left, either.left) && Objects.equals(right, either.right);
     }
