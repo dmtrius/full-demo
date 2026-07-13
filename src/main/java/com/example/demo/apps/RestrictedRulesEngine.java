@@ -20,10 +20,10 @@ public class RestrictedRulesEngine {
         );
 
         String status = checkRestrictions(shoppingCart);
-        System.out.println("Restriction Status: " + status);
+        IO.println("Restriction Status: " + status);
     }
 
-    public static String checkRestrictions(List<Product> shoppingCart) {
+    private static String checkRestrictions(List<Product> shoppingCart) {
         Map<String, Integer> categoryQuantityMap = new HashMap<>();
 
         for (Product product : shoppingCart) {
@@ -47,5 +47,5 @@ public class RestrictedRulesEngine {
         return MET;
     }
 
-    record Product(int productId, String category, int quantity){}
+    private record Product(int productId, String category, int quantity){}
 }
