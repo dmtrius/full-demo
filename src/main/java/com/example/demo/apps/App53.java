@@ -1,8 +1,8 @@
 package com.example.demo.apps;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+@Slf4j
 public class App53 {
     void main() {
         log.info("App53: Java 26 features demo");

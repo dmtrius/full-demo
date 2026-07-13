@@ -1,7 +1,11 @@
 package com.example.demo.apps;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class ReentrantLockHowTo {
     private final ReentrantLock lock = new ReentrantLock();
     private int count = 0;
@@ -10,7 +14,7 @@ public class ReentrantLockHowTo {
     public int getCount() {
         lock.lock();
         try {
-            System.out.println(Thread.currentThread().getName() + " gets Count: " + count);
+            IO.println(Thread.currentThread().getName() + " gets Count: " + count);
             return count++;
         } finally {
             lock.unlock();
@@ -22,15 +26,14 @@ public class ReentrantLockHowTo {
         return count++;
     }
 
-
-    public static void main(String... args) {
+    void main() {
         final ReentrantLockHowTo counter = new ReentrantLockHowTo();
         Thread t1 = new Thread(() -> {
             while (counter.getCount() < 6) {
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException _) {
+                    //ignore
                 }
             }
         });
@@ -38,9 +41,9 @@ public class ReentrantLockHowTo {
         Thread t2 = new Thread(() -> {
             while (counter.getCountTwo() < 6) {
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException _) {
+                    //ignore
                 }
             }
         });
