@@ -54,7 +54,7 @@ public class TarjanAlgorithm {
                 strongConnect(w, graph);
                 lowLinks[v] = Math.min(lowLinks[v], lowLinks[w]);
             } else if (onStack[w]) {
-                // Successor w is in stack and hence in the current SCC
+                // Successor "w" is in stack and hence in the current SCC
                 lowLinks[v] = Math.min(lowLinks[v], indices[w]);
             }
         }
@@ -73,7 +73,7 @@ public class TarjanAlgorithm {
     }
 
     @SuppressWarnings("unused")
-    public static void main(String... args) {
+    static void main(String... args) {
         // Example usage:
 
         // Create a directed graph using an adjacency list representation
