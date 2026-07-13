@@ -120,7 +120,7 @@ public class LRUCacheHP<K, V> {
         }
 
         Node<K, V> node = cache.remove(key);
-        if (node != null) {
+        if (!Objects.isNull(node)) {
             removeFromList(node);
             size.decrementAndGet();
             return node.value;
@@ -223,7 +223,6 @@ public class LRUCacheHP<K, V> {
     }
 
     // Example usage and performance testing
-//    @SneakyThrows
     static void main(){
         // Basic functionality test
         LRUCacheHP<String, Integer> cache = new LRUCacheHP<>(3);
