@@ -40,8 +40,9 @@ public class AuditableMerkleTree {
     // ForkJoin tasks same as before
     static class ParallelHashTask extends RecursiveTask<List<String>> {
         private static final int THRESHOLD = 10_000;
-        List<String> data;
-        int start, end;
+        private final List<String> data;
+        private final int start;
+        private final int end;
 
         ParallelHashTask(List<String> data, int start, int end) {
             this.data = data;
@@ -54,7 +55,7 @@ public class AuditableMerkleTree {
             int length = end - start;
             if (length <= THRESHOLD) {
                 List<String> result = new ArrayList<>(length);
-                for (int i = start; i < end; i++) {
+                for (int i = start; i < end; ++i) {
                     result.add(hash(data.get(i)));
                 }
                 return result;
@@ -73,8 +74,9 @@ public class AuditableMerkleTree {
 
     static class ParallelPairHashTask extends RecursiveTask<List<String>> {
         private static final int THRESHOLD = 5000;
-        List<String> nodes;
-        int start, pairCount;
+        private final List<String> nodes;
+        private final int start;
+        private final int pairCount;
 
         ParallelPairHashTask(List<String> nodes, int start, int pairCount) {
             this.nodes = nodes;
@@ -123,9 +125,9 @@ public class AuditableMerkleTree {
             sb.append(String.format("%02x", b));
         return sb.toString();
     }
-@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     // Example usage
-    public static void main(String[] args) {
+    void main() {
         int count = 16;
         List<String> blocks = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -137,11 +139,11 @@ public class AuditableMerkleTree {
         System.out.println("Merkle Root: " + root);
 
         // Print all levels for audit
-        List<List<String>> levels = tree.getLevels();
-        for (int i = 0; i < levels.size(); i++) {
-            System.out.println("Level " + i + " (" + levels.get(i).size() + " nodes):");
-            for (String hash : levels.get(i)) {
-                System.out.println("  " + hash);
+        List<List<String>> lvs = tree.getLevels();
+        for (int i = 0; i < lvs.size(); i++) {
+            IO.println("Level " + i + " (" + lvs.get(i).size() + " nodes):");
+            for (String hash : lvs.get(i)) {
+                IO.println("  " + hash);
             }
         }
     }
