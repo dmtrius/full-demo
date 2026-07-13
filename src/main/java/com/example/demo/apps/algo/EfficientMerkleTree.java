@@ -18,7 +18,9 @@ public class EfficientMerkleTree {
         }
 
         // Handle an empty tree case
-        if (currentLevel.isEmpty()) return StringUtils.EMPTY;
+        if (currentLevel.isEmpty()) {
+            return StringUtils.EMPTY;
+        }
 
         // Build tree level-by-level
         while (currentLevel.size() > 1) {
@@ -56,19 +58,28 @@ public class EfficientMerkleTree {
 
     @SuppressWarnings("unused")
     // Demo: simulate a large dataset
-    public static void main(String[] args) {
+    void main() {
         int count = 1_000_000; // 1 million entries
         Iterator<String> data = new Iterator<>() {
             int i = 0;
-            public boolean hasNext() { return i < count; }
-            public String next() { return "Block #" + (i++); }
+            @Override
+            public boolean hasNext() {
+                return i < count;
+            }
+            @Override
+            public String next() {
+                if (hasNext()) {
+                    return "Block #" + (i++);
+                }
+                throw new NoSuchElementException();
+            }
         };
 
         long start = System.currentTimeMillis();
         String root = computeMerkleRoot(data);
         long end = System.currentTimeMillis();
 
-        System.out.println("Merkle Root: " + root);
-        System.out.println("Computed in " + (end - start) + " ms");
+        IO.println("Merkle Root: " + root);
+        IO.println("Computed in " + (end - start) + " ms");
     }
 }
