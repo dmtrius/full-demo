@@ -27,13 +27,14 @@ public class LRUCacheHP<K, V> {
     private final ConcurrentHashMap<K, Node<K, V>> cache;
     private final Node<K, V> head;  // Dummy head
     private final Node<K, V> tail;  // Dummy tail
-    private final ReentrantReadWriteLock lock;
+    @SuppressWarnings("unused")
     private final ReentrantReadWriteLock.ReadLock readLock;
     private final ReentrantReadWriteLock.WriteLock writeLock;
     private final AtomicInteger size;
 
     /**
      * Creates a new LRU cache with the specified capacity
+     *
      * @param capacity Maximum number of entries the cache can hold
      */
     public LRUCacheHP(int capacity) {
@@ -45,7 +46,7 @@ public class LRUCacheHP<K, V> {
         this.cache = new ConcurrentHashMap<>(capacity);
         this.head = new Node<>(null, null);
         this.tail = new Node<>(null, null);
-        this.lock = new ReentrantReadWriteLock();
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.size = new AtomicInteger(0);
@@ -57,6 +58,7 @@ public class LRUCacheHP<K, V> {
 
     /**
      * Retrieves a value by key, marking it as most recently used
+     *
      * @param key The key to look up
      * @return The value associated with the key, or null if not found
      */
@@ -64,12 +66,10 @@ public class LRUCacheHP<K, V> {
         if (Objects.isNull(key)) {
             return null;
         }
-
         Node<K, V> node = cache.get(key);
         if (Objects.isNull(node)) {
             return null;
         }
-
         // Move to head (most recently used)
         moveToHead(node);
         return node.value;
@@ -77,7 +77,8 @@ public class LRUCacheHP<K, V> {
 
     /**
      * Puts a key-value pair into the cache
-     * @param key The key
+     *
+     * @param key   The key
      * @param value The value
      */
     public void put(K key, V value) {
@@ -109,6 +110,7 @@ public class LRUCacheHP<K, V> {
 
     /**
      * Removes a key from the cache
+     *
      * @param key The key to remove
      * @return The value which was removed, or null if key wasn't present
      */
@@ -217,11 +219,12 @@ public class LRUCacheHP<K, V> {
 
     @Override
     public String toString() {
-        return String.format("LRUCache{size=%d, capacity=%d}", size(), capacity);
+        return String.format("LRUCache{size=%d, capacity=%d}", size(), capacity());
     }
 
     // Example usage and performance testing
-    static void main(){
+    @SuppressWarnings("java:S1215")
+    static void main() {
         // Basic functionality test
         LRUCacheHP<String, Integer> cache = new LRUCacheHP<>(3);
 
@@ -229,24 +232,26 @@ public class LRUCacheHP<K, V> {
         cache.put("b", 2);
         cache.put("c", 3);
 
-        System.out.println("Get 'a': " + cache.get("a"));  // 1
-        System.out.println("Size: " + cache.size());        // 3
+        IO.println("Get 'a': " + cache.get("a"));  // 1
+        IO.println("Size: " + cache.size());        // 3
 
         cache.put("d", 4);  // Should evict 'b'
-        System.out.println("Get 'b': " + cache.get("b"));  // null
-        System.out.println("Keys: " + cache.keySet());      // [a, c, d]
+        IO.println("Get 'b': " + cache.get("b"));  // null
+        IO.println("Keys: " + cache.keySet());      // [a, c, d]
 
         // Concurrent performance test
-        System.out.println("\nRunning concurrent performance test...");
+        IO.println("\nRunning concurrent performance test...");
 
+        final int numOfThreads = 10;
         LRUCache<Integer, String> concurrentCache = new LRUCache<>(1000);
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
         Random random = new Random();
 
         long startTime = System.nanoTime();
 
-        CompletableFuture<?>[] futures = new CompletableFuture[10];
-        for (int threadId = 0; threadId < 10; threadId++) {
+        CompletableFuture<?>[] futures = new CompletableFuture[numOfThreads];
+        for (int threadId = 0; threadId < numOfThreads; threadId++) {
             final int id = threadId;
             futures[threadId] = CompletableFuture.runAsync(() -> {
                 for (int i = 0; i < 10000; i++) {
@@ -266,11 +271,14 @@ public class LRUCacheHP<K, V> {
         double duration = (endTime - startTime) / 1e9;
 
         System.out.printf("Concurrent test completed in %.2f seconds%n", duration);
-        System.out.println("Final cache size: " + concurrentCache.size());
+        IO.println("Final cache size: " + concurrentCache.size());
 
         executor.shutdown();
         try {
-            executor.awaitTermination(5, TimeUnit.SECONDS);
+            boolean resultOfAwait = executor.awaitTermination(5, TimeUnit.SECONDS);
+            if (!resultOfAwait) {
+                IO.println("Executor did not terminate in a timely manner.");
+            }
         } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
