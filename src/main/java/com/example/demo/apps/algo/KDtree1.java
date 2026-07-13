@@ -3,16 +3,12 @@ package com.example.demo.apps.algo;
 import de.biomedical_imaging.edu.wlu.cs.levy.CG.KDTree;
 import de.biomedical_imaging.edu.wlu.cs.levy.CG.KeyDuplicateException;
 import de.biomedical_imaging.edu.wlu.cs.levy.CG.KeySizeException;
-import lombok.SneakyThrows;
-
-import static java.lang.IO.println;
 
 public class KDtree1 {
     void main() throws KeyDuplicateException, KeySizeException {
         m1();
     }
 
-//    @SneakyThrows
     void m1() throws KeyDuplicateException, KeySizeException {
         KDTree<String> tree = new KDTree<>(3);
 
@@ -25,13 +21,13 @@ public class KDtree1 {
         double[] query = {6, 3, 5};
 
         String nearest = tree.nearest(query);
-        println("Nearest: " + nearest);
+        IO.println("Nearest: " + nearest);
 
-        println("Neighbors:");
+        IO.println("Neighbors:");
         var neighbors = tree.nearest(query, 3);
         neighbors.forEach(IO::println);
 
-        println("Range:");
+        IO.println("Range:");
         double[] min = {3, 2, 1};
         double[] max = {9, 7, 8};
         var results = tree.range(min, max);
