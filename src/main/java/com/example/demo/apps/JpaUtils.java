@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+@SuppressWarnings("unused")
 public class JpaUtils {
     private static final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("my-persistence-unit");
