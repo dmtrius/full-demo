@@ -8,12 +8,12 @@ public class CommentSanitiser {
     // List of swear words to be replaced
     private static final String[] SWEAR_WORDS = {"crap", "cretin"};
 
-    public static void main(String[] args) {
+    void main() {
         String comment = """
             James was a crap builder and generally a cretin. Send him your complaints on james@jollycleverbuilders.com.";
         """;
         String sanitisedComment = sanitiseComment(comment);
-        System.out.println(sanitisedComment);
+        IO.println(sanitisedComment);
     }
 
     public static String sanitiseComment(String comment) {
@@ -38,11 +38,11 @@ public class CommentSanitiser {
 
     private static String replaceSwearWords(String comment) {
         for (String swearWord : SWEAR_WORDS) {
-            // Create a pattern to match the swear word
+            // Create a pattern to match the swear words
             Pattern pattern = Pattern.compile("\\b" + swearWord + "\\b", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(comment);
 
-            // Replace the swear word with asterisks
+            // Replace the swear words with asterisks
             comment = matcher.replaceAll(createAsterisks(swearWord.length()));
         }
         return comment;
