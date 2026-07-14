@@ -12,8 +12,7 @@ import java.net.Socket;
 @Slf4j
 public class SimpleSocketClient {
     private static final int PORT = SimpleSocketServer.PORT;
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    void main() {
         try {
             // Connect to server at localhost:PORT
             Socket socket = new Socket("localhost", PORT);

@@ -16,8 +16,7 @@ import java.util.Set;
 public class NIOSocketServer {
     private static final int PORT = 8888;
 
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    void main() {
         try {
             // Create selector
             Selector selector = Selector.open();

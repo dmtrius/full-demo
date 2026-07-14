@@ -1,31 +1,39 @@
 package com.example.demo.apps.sockets;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.net.*;
 
+@Slf4j
 public class MultithreadedSocketServer {
-    public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(8888);
-            System.out.println("Multithreaded server started. Waiting for clients...");
+    void main() {
+        try (ServerSocket serverSocket = new ServerSocket(8888)) {
+            runSocket(serverSocket);
+        } catch (IOException e) {
+            log.error("Could not start server: {}", e.getMessage(), e);
+        }
+    }
 
+    private void runSocket(ServerSocket serverSocket) {
+        try {
+            IO.println("Multithreaded server started. Waiting for clients...");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
-
+                IO.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
                 // Create a new thread for each client
                 ClientHandler clientHandler = new ClientHandler(clientSocket);
                 new Thread(clientHandler).start();
             }
         } catch (IOException e) {
-            System.out.println("Server exception: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Server exception: {}", e.getMessage(), e);
         }
     }
 }
 
+@Slf4j
 class ClientHandler implements Runnable {
-    private Socket clientSocket;
+    private final Socket clientSocket;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
@@ -39,10 +47,10 @@ class ClientHandler implements Runnable {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                System.out.println("Received from client " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
+                IO.println("Received from client " + clientSocket.getInetAddress().getHostAddress() + ": " + inputLine);
 
                 // Echo the message back to client
-                out.println("Server echoes: " + inputLine);
+                IO.println("Server echoes: " + inputLine);
 
                 // If client sends "bye", close the connection
                 if ("bye".equalsIgnoreCase(inputLine)) {
@@ -53,11 +61,10 @@ class ClientHandler implements Runnable {
             in.close();
             out.close();
             clientSocket.close();
-            System.out.println("Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
+            IO.println("Client disconnected: " + clientSocket.getInetAddress().getHostAddress());
 
         } catch (IOException e) {
-            System.out.println("Client handler exception: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Client handler exception: {}", e.getMessage(), e);
         }
     }
 }

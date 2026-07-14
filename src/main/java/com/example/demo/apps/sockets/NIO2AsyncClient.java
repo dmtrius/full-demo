@@ -1,5 +1,7 @@
 package com.example.demo.apps.sockets;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
@@ -8,8 +10,9 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.Scanner;
 
+@Slf4j
 public class NIO2AsyncClient {
-    public static void main(String[] args) {
+    void main() {
         try {
             // Create asynchronous socket channel
             AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open();
@@ -20,31 +23,31 @@ public class NIO2AsyncClient {
 
             // Connect to server asynchronously
             socketChannel.connect(new InetSocketAddress("localhost", 8888), socketChannel,
-                    new CompletionHandler<Void, AsynchronousSocketChannel>() {
-                        @Override
-                        public void completed(Void result, AsynchronousSocketChannel channel) {
-                            try {
-                                System.out.println("Connected to server: " + channel.getRemoteAddress());
+                new CompletionHandler<>() {
+                    @Override
+                    public void completed(Void result, AsynchronousSocketChannel channel) {
+                        try {
+                            IO.println("Connected to server: " + channel.getRemoteAddress());
 
-                                // Start user input thread
-                                startClientInputProcess(channel);
+                            // Start user input thread
+                            startClientInputProcess(channel);
 
-                                // Start reading responses from server
-                                ByteBuffer buffer = ByteBuffer.allocate(1024);
-                                startReading(channel, buffer);
+                            // Start reading responses from server
+                            ByteBuffer buffer = ByteBuffer.allocate(1024);
+                            startReading(channel, buffer);
 
-                            } catch (IOException e) {
-                                System.out.println("Client connection exception: " + e.getMessage());
-                                closeChannel(channel);
-                            }
-                        }
-
-                        @Override
-                        public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-                            System.out.println("Connection failed: " + exc.getMessage());
+                        } catch (IOException e) {
+                            log.error("Client connection exception: {}", e.getMessage());
                             closeChannel(channel);
                         }
-                    });
+                    }
+
+                    @Override
+                    public void failed(Throwable exc, AsynchronousSocketChannel channel) {
+                        System.out.println("Connection failed: " + exc.getMessage());
+                        closeChannel(channel);
+                    }
+                });
 
             // Wait for user to enter "exit"
             Scanner scanner = new Scanner(System.in);
@@ -56,8 +59,7 @@ public class NIO2AsyncClient {
             }
 
         } catch (IOException e) {
-            System.out.println("Client exception: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Client exception: {}", e.getMessage(), e);
         }
     }
 
@@ -77,7 +79,7 @@ public class NIO2AsyncClient {
                     ByteBuffer buffer = ByteBuffer.wrap(message.getBytes());
 
                     // Write to server asynchronously
-                    channel.write(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+                    channel.write(buffer, buffer, new CompletionHandler<>() {
                         @Override
                         public void completed(Integer bytesWritten, ByteBuffer buffer) {
                             if (buffer.hasRemaining()) {
@@ -87,7 +89,7 @@ public class NIO2AsyncClient {
 
                         @Override
                         public void failed(Throwable exc, ByteBuffer buffer) {
-                            System.out.println("Failed to send message: " + exc.getMessage());
+                            log.error("Failed to send message: {}", exc.getMessage(), exc);
                             closeChannel(channel);
                         }
                     });
@@ -97,7 +99,7 @@ public class NIO2AsyncClient {
     }
 
     private static void startReading(AsynchronousSocketChannel channel, ByteBuffer buffer) {
-        channel.read(buffer, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+        channel.read(buffer, buffer, new CompletionHandler<>() {
             @Override
             public void completed(Integer bytesRead, ByteBuffer buffer) {
                 if (bytesRead > 0) {
@@ -116,7 +118,7 @@ public class NIO2AsyncClient {
 
             @Override
             public void failed(Throwable exc, ByteBuffer buffer) {
-                System.out.println("Read failed: " + exc.getMessage());
+                log.error("Read failed: {}", exc.getMessage(), exc);
                 closeChannel(channel);
             }
         });
@@ -126,10 +128,10 @@ public class NIO2AsyncClient {
         try {
             if (channel != null && channel.isOpen()) {
                 channel.close();
-                System.out.println("Disconnected from server");
+                IO.println("Disconnected from server");
             }
         } catch (IOException e) {
-            System.out.println("Error closing channel: " + e.getMessage());
+            log.error("Error closing channel: {}", e.getMessage(), e);
         }
     }
 }

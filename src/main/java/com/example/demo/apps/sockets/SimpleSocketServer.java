@@ -8,16 +8,15 @@ import java.net.*;
 @Slf4j
 public class SimpleSocketServer {
     public static final int PORT = 8888;
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    void main() {
         try {
             // Create server socket
             ServerSocket serverSocket = new ServerSocket(PORT);
-            System.out.println("Server started. Waiting for client connection...");
+            IO.println("Server started. Waiting for client connection...");
 
             // Wait for client connection
             Socket clientSocket = serverSocket.accept();
-            System.out.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
+            IO.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
 
             // Set up input and output streams
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -25,10 +24,10 @@ public class SimpleSocketServer {
 
             // Read a message from the client
             String inputLine = in.readLine();
-            System.out.println("Received from client: " + inputLine);
+            IO.println("Received from client: " + inputLine);
 
-            // Send response to a client
-            out.println("Hello from server! I received: " + inputLine);
+            // Send the response to a client
+            IO.println("Hello from server! I received: " + inputLine);
 
             // Close connections
             in.close();
