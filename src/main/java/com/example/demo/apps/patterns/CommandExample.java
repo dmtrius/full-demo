@@ -83,11 +83,12 @@ class DepositCommand implements Command {
     public void execute() {
         account.deposit(amount);
     }
+
     @Override
     public void undo() {
         // Undo deposit by withdrawing (assuming sufficient balance, which should hold true here)
         account.withdraw(amount);
-        System.out.println("Undo Deposit: withdrew $" + amount + ", balance back to $" + account.getBalance());
+        IO.println("Undo Deposit: withdrew $" + amount + ", balance back to $" + account.getBalance());
     }
 }
 
@@ -95,7 +96,7 @@ class DepositCommand implements Command {
 class WithdrawCommand implements Command {
     private final BankAccount account;
     private final Integer amount;
-    // Track if the withdraw actually happened (to handle undo properly)
+    // Track if the withdrawal actually happened (to handle undo properly)
     private boolean success = false;
 
     public WithdrawCommand(BankAccount account, Integer amount) {
@@ -107,14 +108,15 @@ class WithdrawCommand implements Command {
     public void execute() {
         success = account.withdraw(amount);
     }
+
     @Override
     public void undo() {
         if (success) {
             // Undo withdraw by depositing back
             account.deposit(amount);
-            System.out.println("Undo Withdraw: deposited $" + amount + ", balance back to $" + account.getBalance());
+            IO.println("Undo Withdraw: deposited $" + amount + ", balance back to $" + account.getBalance());
         } else {
-            System.out.println("Undo Withdraw: nothing to undo");
+            IO.println("Undo Withdraw: nothing to undo");
         }
     }
 }
