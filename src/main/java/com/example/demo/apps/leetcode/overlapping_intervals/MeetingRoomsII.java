@@ -1,6 +1,8 @@
 package com.example.demo.apps.leetcode.overlapping_intervals;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 import static java.lang.IO.println;
@@ -11,7 +13,7 @@ import static java.lang.IO.println;
  *
  * <h2>Meeting Rooms II</h2>
  * Problem
- * Given an array of meeting time intervals intervals where intervals[i] = [start_i, end_i], return the minimum number of conference rooms required.
+ * Given an array of meeting time intervals where intervals[i] = [startI, endI], return the minimum number of conference rooms required.
  * Solution Approach
  * The key insight is to track when rooms become occupied and when they become free. We can use a min-heap (priority queue) to track the end times of ongoing meetings.
  * Algorithm:
@@ -40,7 +42,7 @@ public class MeetingRoomsII {
         }
 
         // Sort meetings by start time
-        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a[0]));
 
         // Min-heap to track end times of ongoing meetings
         PriorityQueue<Integer> heap = new PriorityQueue<>();
@@ -51,7 +53,7 @@ public class MeetingRoomsII {
         // Process remaining meetings
         for (int i = 1; i < intervals.length; i++) {
             // If earliest ending meeting has ended, remove it (room becomes free)
-            if (intervals[i][0] >= heap.peek()) {
+            if (intervals[i][0] >= Objects.requireNonNull(heap.peek())) {
                 heap.poll();
             }
 
