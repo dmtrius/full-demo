@@ -1,23 +1,26 @@
 package com.example.demo.apps;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayDeque;
 import java.util.Scanner;
 
+@Slf4j
 public class AdvancedCalculator {
 
     void main() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Advanced Calculator");
-        System.out.println("Supports: +, -, *, /, and parentheses ()");
-        System.out.print("Enter an expression: ");
+        IO.println("Advanced Calculator");
+        IO.println("Supports: +, -, *, /, and parentheses ()");
+        IO.print("Enter an expression: ");
         String expression = scanner.nextLine();
 
         try {
             double result = evaluateExpression(expression);
-            System.out.println("Result: " + result);
+            IO.println("Result: " + result);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            log.error("Error: {}", e.getMessage());
         }
     }
 
