@@ -1,7 +1,5 @@
 package com.example.demo.apps.leetcode.matrix_traversal;
 
-import java.util.Arrays;
-
 import static com.example.demo.apps.leetcode.Utils.printMatrix;
 import static java.lang.IO.println;
 
@@ -21,9 +19,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: image = [[1,1,1],[1,1,0],[1,0,1]], sr = 1, sc = 1, color = 2
+ * Input: image = [[1, 1, 1], [1, 1, 0], [1, 0, 1]], sr = 1, sc = 1, color = 2
  * <p>
- * Output: [[2,2,2],[2,2,0],[2,0,1]]
+ * Output: [[2, 2, 2], [2, 2, 0], [2, 0, 1]]
  * <p>
  * Explanation:
  * <p>
@@ -33,9 +31,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 2:
  * <p>
- * Input: image = [[0,0,0],[0,0,0]], sr = 0, sc = 0, color = 0
+ * Input: image = [[0, 0, 0], [0, 0, 0]], sr = 0, sc = 0, color = 0
  * <p>
- * Output: [[0,0,0],[0,0,0]]
+ * Output: [[0, 0, 0], [0, 0, 0]]
  * <p>
  * Explanation:
  * <p>
@@ -46,7 +44,9 @@ public class FloodFill {
         int [][] image = {{1, 1, 1},{1, 1, 0},{1, 0, 1}};
         printMatrix(image);
         println();
-        int sr = 1, sc = 1, color = 2;
+        int sr = 1;
+        int sc = 1;
+        int color = 2;
         var result = floodFill(image, sr, sc, color);
         printMatrix(result);
     }
