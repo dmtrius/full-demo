@@ -8,6 +8,6 @@ public record Booking(
     int end,
     int personCount,
     Set<Feature> features,
-//    LocalDateTime date,
+    LocalDateTime date,
     Room room) {
 }

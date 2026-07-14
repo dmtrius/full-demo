@@ -3,7 +3,9 @@ package com.example.demo.apps.bookings.service;
 import com.example.demo.apps.bookings.entity.Booking;
 import com.example.demo.apps.bookings.entity.Feature;
 import com.example.demo.apps.bookings.entity.Room;
+import java.time.LocalDateTime;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +46,8 @@ public class BookingServiceImpl implements BookingService {
         var availableRooms = getAvailableRooms(start, end, personCount, features);
         if (!availableRooms.isEmpty()) {
             Room room = availableRooms.getFirst();
-            Booking booking = new Booking(start, end, personCount, features, room);
+            LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+            Booking booking = new Booking(start, end, personCount, features, now, room);
             bookings.put(room, booking);
             return booking;
         }
