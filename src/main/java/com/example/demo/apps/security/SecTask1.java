@@ -1,5 +1,6 @@
 package com.example.demo.apps.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Cipher;
@@ -8,20 +9,21 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+@Slf4j
 public class SecTask1 {
-    void main() throws Exception {
-//        main1();
-//        main2();
-//        main3();
+    void main() throws NoSuchAlgorithmException {
+        main1();
+        main2();
+        main3();
         main4();
     }
 
@@ -29,10 +31,10 @@ public class SecTask1 {
         try {
             // List all available providers and their services
             for (Provider provider : Security.getProviders()) {
-                System.out.println("Provider: " + provider.getName());
+                IO.println("Provider: " + provider.getName());
                 for (Provider.Service service : provider.getServices()) {
                     if (service.getType().equals("KeyGenerator")) {
-                        System.out.println("  Algorithm: " + service.getAlgorithm());
+                        IO.println("  Algorithm: " + service.getAlgorithm());
                     }
                 }
             }
@@ -41,18 +43,18 @@ public class SecTask1 {
             KeyGenerator keyGen = KeyGenerator.getInstance("AES");
             keyGen.init(256); // Initialize with keysize
             SecretKey secretKey = keyGen.generateKey();
-            System.out.println("Generated AES key: " + secretKey.getAlgorithm());
+            IO.println("Generated AES key: " + secretKey.getAlgorithm());
 
             // Generate an HMAC-SHA256 key with specific provider
             keyGen = KeyGenerator.getInstance("HmacSHA256", "SunJCE");
             secretKey = keyGen.generateKey();
-            System.out.println("Generated HMAC-SHA256 key: " + secretKey.getAlgorithm());
+            IO.println("Generated HMAC-SHA256 key: " + secretKey.getAlgorithm());
 
             keyGen = KeyGenerator.getInstance("Blowfish", "SunJCE");
             keyGen.init(448);
             secretKey = keyGen.generateKey();
-            System.out.println("Generated Blowfish key: " + secretKey.getAlgorithm());
-            System.out.println(Arrays.toString(secretKey.getEncoded()));
+            IO.println("Generated Blowfish key: " + secretKey.getAlgorithm());
+            IO.println(Arrays.toString(secretKey.getEncoded()));
             // Generate IV
             byte[] iv = new byte[8]; // 64-bit IV for Blowfish
             new SecureRandom().nextBytes(iv);
@@ -71,9 +73,9 @@ public class SecTask1 {
             // Decrypt
             byte[] decrypted = cipher.doFinal(encrypted);
             byte[] decodedBytes = Base64.getDecoder().decode(decrypted);
-            System.out.println("Decrypted: " + new String(decodedBytes));
+            IO.println("Decrypted: " + new String(decodedBytes));
         } catch (GeneralSecurityException e) {
-            e.printStackTrace();
+            log.error("Security exception occurred: ", e);
         }
     }
 
@@ -86,28 +88,27 @@ public class SecTask1 {
                 }
             }
         }
-        System.out.println("Available KeyGenerator algorithms:");
-        algorithms.forEach(System.out::println);
+        IO.println("Available KeyGenerator algorithms:");
+        algorithms.forEach(IO::println);
     }
 
-    void main2() throws NoSuchAlgorithmException, NoSuchProviderException {
+    void main2() throws NoSuchAlgorithmException {
         byte[] keyBytes = Hex.decode("000102030405060708090a0b0c0d0e0f");
-        System.out.println(Arrays.toString(keyBytes));
+        IO.println(Arrays.toString(keyBytes));
 
         KeyGenerator kGen = KeyGenerator.getInstance("HmacSHA512");
         SecretKey key = kGen.generateKey();
-        System.out.println(Arrays.toString(key.getEncoded()));
+        IO.println(Arrays.toString(key.getEncoded()));
     }
 
     void main1() {
         Provider[] providers = Security.getProviders();
-        Arrays.stream(providers)
-                .forEach(p -> {
-                    System.out.print(p.getName());
-                    System.out.print(" :: ");
-                    System.out.println(p.getInfo());
-                    p.forEach((key, value) ->
-                            System.out.println(key + " >> " + value));
-                });
+        for (Provider p : providers) {
+            System.out.print(p.getName());
+            System.out.print(" :: ");
+            System.out.println(p.getInfo());
+            p.forEach((key, value) ->
+                System.out.println(key + " >> " + value));
+        }
     }
 }
