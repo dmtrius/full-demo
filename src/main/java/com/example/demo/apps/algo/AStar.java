@@ -55,8 +55,7 @@ public class AStar {
     }
 
     private static boolean isValid(int row, int col) {
-        return (row >= 0) && (row < ROW) && (col >= 0)
-            && (col < COL);
+        return (row >= 0) && (row < ROW) && (col >= 0) && (col < COL);
     }
 
     private static boolean isUnBlocked(int[][] grid, int row, int col) {
@@ -68,9 +67,7 @@ public class AStar {
     }
 
     private static double calculateHValue(int row, int col, int[] dest) {
-        return Math.sqrt((row - dest[0]) * (row - dest[0])
-            + ((double)col - dest[1])
-            * (col - dest[1]));
+        return Math.sqrt((row - dest[0]) * (row - dest[0]) + ((double)col - dest[1]) * (col - dest[1]));
     }
 
     private static void tracePath(Cell[][] cellDetails, int[] dest) {
@@ -89,8 +86,7 @@ public class AStar {
         }
 
         path.put(new int[]{row, col}, true);
-        List<int[]> pathList
-            = new ArrayList<>(path.keySet());
+        List<int[]> pathList = new ArrayList<>(path.keySet());
         pathList = pathList.reversed();
 
         pathList.forEach(p -> IO.print("-> (" + p[0] + ", " + (p[1]) + ")"));
@@ -119,12 +115,9 @@ public class AStar {
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
                 cellDetails[i][j] = new Cell();
-                cellDetails[i][j].f
-                    = Double.POSITIVE_INFINITY;
-                cellDetails[i][j].g
-                    = Double.POSITIVE_INFINITY;
-                cellDetails[i][j].h
-                    = Double.POSITIVE_INFINITY;
+                cellDetails[i][j].f = Double.POSITIVE_INFINITY;
+                cellDetails[i][j].g = Double.POSITIVE_INFINITY;
+                cellDetails[i][j].h = Double.POSITIVE_INFINITY;
                 cellDetails[i][j].parentI = -1;
                 cellDetails[i][j].parentJ = -1;
             }
@@ -144,8 +137,7 @@ public class AStar {
         boolean foundDest = false;
 
         while (!openList.isEmpty()) {
-            Map.Entry<Double, int[]> p
-                = openList.entrySet().iterator().next();
+            Map.Entry<Double, int[]> p = openList.entrySet().iterator().next();
             for (Map.Entry<Double, int[]> q : openList.entrySet()) {
                 if (q.getKey() < p.getKey()) {
                     p = q;
@@ -201,8 +193,7 @@ public class AStar {
                     fNew = gNew + hNew;
 
                     if (cellDetails[i + 1][j].f == Double.POSITIVE_INFINITY || cellDetails[i + 1][j].f > fNew) {
-                        openList.put(
-                            fNew, new int[]{i + 1, j});
+                        openList.put(fNew, new int[]{i + 1, j});
 
                         cellDetails[i + 1][j].f = fNew;
                         cellDetails[i + 1][j].g = gNew;
@@ -227,8 +218,7 @@ public class AStar {
                     fNew = gNew + hNew;
 
                     if (cellDetails[i][j + 1].f == Double.POSITIVE_INFINITY || cellDetails[i][j + 1].f > fNew) {
-                        openList.put(
-                            fNew, new int[]{i, j + 1});
+                        openList.put(fNew, new int[]{i, j + 1});
 
                         cellDetails[i][j + 1].f = fNew;
                         cellDetails[i][j + 1].g = gNew;
@@ -333,10 +323,8 @@ public class AStar {
                         cellDetails[i + 1][j + 1].f = fNew;
                         cellDetails[i + 1][j + 1].g = gNew;
                         cellDetails[i + 1][j + 1].h = hNew;
-                        cellDetails[i + 1][j + 1].parentI
-                            = i;
-                        cellDetails[i + 1][j + 1].parentJ
-                            = j;
+                        cellDetails[i + 1][j + 1].parentI = i;
+                        cellDetails[i + 1][j + 1].parentJ = j;
                     }
                 }
             }
