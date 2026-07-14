@@ -270,8 +270,8 @@ public class LRUCacheHP<K, V> {
         long endTime = System.nanoTime();
         double duration = (endTime - startTime) / 1e9;
 
-        System.out.printf("Concurrent test completed in %.2f seconds%n", duration);
-        IO.println("Final cache size: " + concurrentCache.size());
+        IO.println("Concurrent test completed in %.2f seconds%n".formatted(duration));
+        IO.println("Final cache size: %s".formatted(concurrentCache.size()));
 
         executor.shutdown();
         try {
@@ -287,6 +287,6 @@ public class LRUCacheHP<K, V> {
         Runtime runtime = Runtime.getRuntime();
         runtime.gc();  // Suggest garbage collection
         long usedMemory = runtime.totalMemory() - runtime.freeMemory();
-        System.out.printf("Memory usage: %.2f MB%n", usedMemory / (1024.0 * 1024.0));
+        IO.println("Memory usage: %.2f MB%n".formatted(usedMemory / (1024.0 * 1024.0)));
     }
 }
