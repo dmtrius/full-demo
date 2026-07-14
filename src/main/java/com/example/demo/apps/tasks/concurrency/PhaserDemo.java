@@ -3,9 +3,12 @@ package com.example.demo.apps.tasks.concurrency;
 import java.util.concurrent.Phaser;
 
 public class PhaserDemo {
-    public static void main(String[] args) {
+
+    private static final String PHASE_D_COMPLETE = "Phase %d Complete";
+
+    void main() {
         Phaser phaser = new Phaser(1); // Register main thread
-        System.out.println("Starting");
+        IO.println("Starting");
 
         // Create and start 3 threads
         new MyThread(phaser, "A");
@@ -15,23 +18,23 @@ public class PhaserDemo {
         // Wait for all threads to complete phase 0
         int curPhase = phaser.getPhase();
         phaser.arriveAndAwaitAdvance();
-        System.out.println("Phase " + curPhase + " Complete");
+        IO.println(PHASE_D_COMPLETE.formatted(curPhase));
 
         // Wait for all threads to complete phase 1
         curPhase = phaser.getPhase();
         phaser.arriveAndAwaitAdvance();
-        System.out.println("Phase " + curPhase + " Complete");
+        IO.println(PHASE_D_COMPLETE.formatted(curPhase));
 
         // Wait for all threads to complete phase 2
         curPhase = phaser.getPhase();
         phaser.arriveAndAwaitAdvance();
-        System.out.println("Phase " + curPhase + " Complete");
+        IO.println(PHASE_D_COMPLETE.formatted(curPhase));
 
         // Deregister main thread
         phaser.arriveAndDeregister();
 
         if (phaser.isTerminated()) {
-            System.out.println("The Phaser is terminated");
+            IO.println("The Phaser is terminated");
         }
     }
 }
@@ -49,7 +52,7 @@ class MyThread implements Runnable {
 
     public void run() {
         while (!phaser.isTerminated()) {
-            System.out.println(name + " is working in phase " + phaser.getPhase());
+            IO.println(name + " is working in phase " + phaser.getPhase());
             phaser.arriveAndAwaitAdvance(); // Wait for others
         }
     }
