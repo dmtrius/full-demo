@@ -1,8 +1,8 @@
 package com.example.demo.apps.leetcode.bfs;
 
-import com.example.demo.apps.leetcode.TreeNode;
-
 import module java.base;
+
+import com.example.demo.apps.leetcode.TreeNode;
 
 import static java.lang.IO.println;
 
@@ -14,8 +14,8 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: root = [3,9,20,null,null,15,7]
- * Output: [[3],[9,20],[15,7]]
+ * Input: root = [3, 9, 20, null, null, 15, 7]
+ * Output: [[3], [9, 20], [15, 7]]
  * Example 2:
  * <p>
  * Input: root = [1]

@@ -3,6 +3,7 @@ package com.example.demo.apps.leetcode.binary_tree_traversal;
 import com.example.demo.apps.leetcode.TreeNode;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 import static java.lang.IO.println;
@@ -17,7 +18,7 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: root = [3,9,20,null,null,15,7]
+ * Input: root = [3, 9, 20, null, null, 15, 7]
  * <p>
  * Output: 3
  * <p>
@@ -39,14 +40,18 @@ public class MaximumDepthOfBinaryTree {
     }
 
     int maxDepth(TreeNode root) {
-        if (root == null) return 0;
+        if (root == null) {
+            return 0;
+        }
         int leftDepth = maxDepth(root.left);
         int rightDepth = maxDepth(root.right);
         return 1 + Math.max(leftDepth, rightDepth);
     }
 
     int maxDepthBFS(TreeNode root) {
-        if (root == null) return 0;
+        if (root == null) {
+            return 0;
+        }
         Queue<TreeNode> queue = new LinkedList<>();
         queue.offer(root);
         int depth = 0;
@@ -54,8 +59,12 @@ public class MaximumDepthOfBinaryTree {
             int size = queue.size();
             for (int i = 0; i < size; i++) {
                 TreeNode node = queue.poll();
-                if (node.left != null) queue.offer(node.left);
-                if (node.right != null) queue.offer(node.right);
+                if (Objects.requireNonNull(node).left != null) {
+                    queue.offer(node.left);
+                }
+                if (Objects.requireNonNull(node).right != null) {
+                    queue.offer(node.right);
+                }
             }
             depth++;
         }

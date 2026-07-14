@@ -25,9 +25,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 2:
  * <p>
- * Input: root = [1,2,3,4,5,null,8,null,null,6,7,9]
+ * Input: root = [1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9]
  * <p>
- * Output: [4,2,6,5,7,1,3,9,8]
+ * Output: [4, 2, 6, 5, 7,1, 3, 9, 8]
  * <p>
  * Explanation:
  * <p>
