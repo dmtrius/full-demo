@@ -27,8 +27,6 @@ public class LRUCacheHP<K, V> {
     private final ConcurrentHashMap<K, Node<K, V>> cache;
     private final Node<K, V> head;  // Dummy head
     private final Node<K, V> tail;  // Dummy tail
-    @SuppressWarnings("unused")
-    private final ReentrantReadWriteLock.ReadLock readLock;
     private final ReentrantReadWriteLock.WriteLock writeLock;
     private final AtomicInteger size;
 
@@ -47,7 +45,6 @@ public class LRUCacheHP<K, V> {
         this.head = new Node<>(null, null);
         this.tail = new Node<>(null, null);
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-        this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.size = new AtomicInteger(0);
 
