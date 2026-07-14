@@ -1,16 +1,23 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
+@Slf4j
 public class OpenNotifyExample {
-    public static void main(String[] args) {
+    void main() {
         try {
-            String endpoint = "http://api.open-notify.org/iss-now.json";
+            String endpoint = "https://api.open-notify.org/iss-now.json";
             URL url = new URI(endpoint).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -25,7 +32,7 @@ public class OpenNotifyExample {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println("ISS Location: " + response);
+                IO.println("ISS Location: " + response);
 
 //                JSONObject json = new JSONObject(response);
 //                JSONObject issPosition = json.getJSONObject("iss_position");
@@ -34,11 +41,12 @@ public class OpenNotifyExample {
 //                System.out.printf("ISS is at: Latitude %.4f, Longitude %.4f%n", latitude, longitude);
                   testRuntime2(response.toString());
             } else {
-                System.out.println("Error: HTTP " + responseCode);
+                IO.println("Error: HTTP " + responseCode);
             }
             conn.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (URISyntaxException | IOException e) {
+            log.error("Error occurred", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -77,17 +85,18 @@ public class OpenNotifyExample {
 
             // Wait for the process to complete
             int exitCode = process.waitFor();
-            System.out.println("Exit Code: " + exitCode);
-            System.out.println("Output:\n" + output);
+            IO.println("Exit Code: " + exitCode);
+            IO.println("Output:\n" + output);
             if (!error.isEmpty()) {
-                System.err.println("Errors:\n" + error);
+                log.error("Errors: {}", error);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error executing jq command", e);
         }
     }
 
+    @SuppressWarnings("unused")
     static void testRuntime(String data) {
         try {
             // Execute the command
@@ -104,8 +113,8 @@ public class OpenNotifyExample {
 
             // Wait for the process to complete
             int exitCode = process.waitFor();
-            System.out.println("Exit Code: " + exitCode);
-            System.out.println("Output:\n" + output);
+            IO.println("Exit Code: " + exitCode);
+            IO.println("Output:\n" + output);
 
             // Optionally, capture error stream
             BufferedReader errorReader = new BufferedReader(
@@ -115,11 +124,11 @@ public class OpenNotifyExample {
                 error.append(line).append("\n");
             }
             if (!error.isEmpty()) {
-                System.err.println("Errors:\n" + error);
+                log.error("Errors: {}", error);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error executing jq command", e);
         }
     }
 }

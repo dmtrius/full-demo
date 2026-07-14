@@ -1,10 +1,13 @@
 package com.example.demo.apps.tasks;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.*;
 import java.util.function.BiFunction;
 
 import static java.lang.IO.println;
 
+@UtilityClass
 public class FoldUtils {
 
     // foldLeft: (accumulator, element) -> result
@@ -31,9 +34,8 @@ public class FoldUtils {
         return foldLeft(list, initial, op);
     }
 
-    @SuppressWarnings({"unused", "preview"})
-    // Demo
-    public static void main(String[] args) {
+    @SuppressWarnings("unused")
+    void main() {
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4);
 
         // foldLeft: (((0 + 1) + 2) + 3) + 4
