@@ -4,19 +4,19 @@ public enum Command {
     START {
         @Override
         public void execute() {
-            System.out.println("System is starting...");
+            IO.println("System is starting...");
         }
     },
     STOP {
         @Override
         public void execute() {
-            System.out.println("System is stopping...");
+            IO.println("System is stopping...");
         }
     },
     RESTART {
         @Override
         public void execute() {
-            System.out.println("System is restarting...");
+            IO.println("System is restarting...");
         }
     };
 
@@ -26,12 +26,12 @@ public enum Command {
     public static Command fromString(String commandStr) {
         try {
             return Command.valueOf(commandStr.toUpperCase());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             throw new UnsupportedOperationException("Unsupported command: " + commandStr);
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         // Imagine this comes from user input or configuration:
         String input = "start";
         Command cmd = Command.fromString(input);
