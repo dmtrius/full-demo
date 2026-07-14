@@ -1,6 +1,10 @@
 package com.example.demo.apps.leetcode;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Utils {
+
     public static void printMatrix(int[][] arr) {
         for (int[] ints : arr) {
             for (int anInt : ints) {
