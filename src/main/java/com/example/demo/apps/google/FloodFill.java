@@ -18,14 +18,14 @@ public class FloodFill {
         // Replace the color at (x, y)
         screen[x][y] = newColor;
 
-        // Recur for north, south, east and west
+        // Recur for north, south, east, and west
         floodFillUtil(screen, x + 1, y, prevColor, newColor); // South
         floodFillUtil(screen, x - 1, y, prevColor, newColor); // North
         floodFillUtil(screen, x, y + 1, prevColor, newColor); // East
         floodFillUtil(screen, x, y - 1, prevColor, newColor); // West
     }
 
-    public static void main(String[] args) {
+    void main() {
         int[][] screen = {
                 {1, 1, 1, 1},
                 {1, 1, 0, 0},
@@ -39,12 +39,12 @@ public class FloodFill {
 
         floodFill(screen, x, y, newColor);
 
-        System.out.println("Updated screen after call to floodFill:");
+        IO.println("Updated screen after call to floodFill:");
         for (int[] row : screen) {
             for (int col : row) {
-                System.out.print(col + " ");
+                IO.print(col + " ");
             }
-            System.out.println();
+            IO.println();
         }
     }
 }
