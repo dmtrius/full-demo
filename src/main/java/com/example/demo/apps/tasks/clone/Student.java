@@ -7,6 +7,8 @@ public class Student implements Cloneable {
         this.name = name;
         this.address = address;
     }
+
+    @SuppressWarnings("java:S2975")
     @Override
     protected Student clone() throws CloneNotSupportedException {
         Student clonedStudent = (Student) super.clone();

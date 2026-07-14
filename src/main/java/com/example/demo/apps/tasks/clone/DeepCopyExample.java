@@ -11,9 +11,9 @@ public class DeepCopyExample {
         clonedStudent.name = "Alice";
         clonedStudent.address.city = "Los Angeles";
         // Print both objects
-        System.out.println("Original Student: " + originalStudent.name + ", Address: "
+        IO.println("Original Student: " + originalStudent.name + ", Address: "
                 + originalStudent.address.city + ", " + originalStudent.address.state);
-        System.out.println("Cloned Student: " + clonedStudent.name + ", Address: "
+        IO.println("Cloned Student: " + clonedStudent.name + ", Address: "
                 + clonedStudent.address.city + ", " + clonedStudent.address.state);
     }
 }
