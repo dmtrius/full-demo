@@ -20,11 +20,12 @@ public enum Operation {
 
     public abstract int apply(int a, int b);
 
-    public static void main(String[] args) {
-        int x = 10, y = 5;
+    static void main() {
+        int x = 10;
+        int y = 5;
         for (Operation op : Operation.values()) {
-            System.out.printf("%d %s %d = %d%n", x, op.name(), y, op.apply(x, y));
+            IO.println(String.format("%d %s %d = %d", x, op.name(), y, op.apply(x, y)));
         }
-        System.out.println(Operation.DIVIDE.apply(10, 0));
+        IO.println(Operation.DIVIDE.apply(10, 0));
     }
 }
