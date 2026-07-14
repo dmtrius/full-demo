@@ -82,7 +82,9 @@ public class TopKFrequentStreaming {
 
         println(topK);
 
-        var topKMap = misraGries(data.iterator(), 10);
+        var topKMap = misraGries(data.iterator(), 8);
+        println(topKMap);
+        topKMap = misraGries(data.iterator(), 10);
         println(topKMap);
     }
 }

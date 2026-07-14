@@ -7,6 +7,7 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 public class ProductCacheService {
     private final Cache<Long, Product> productCache;
 
@@ -57,7 +58,7 @@ public class ProductCacheService {
                 .build();
     }
 
-    record Product(Long id, String name){}
+    private record Product(Long id, String name){}
 }
 
 

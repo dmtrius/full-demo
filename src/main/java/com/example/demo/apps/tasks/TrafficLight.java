@@ -23,10 +23,10 @@ public enum TrafficLight {
     public abstract TrafficLight next();
     public abstract String action();
 
-    public static void main(String[] args) {
+    static void main() {
         TrafficLight light = RED;
         for (int i = 0; i < 6; i++) {  // Cycle through a few times.
-            System.out.println("Light: " + light + ", Action: " + light.action());
+            IO.println("Light: %s, Action: %s".formatted(light, light.action()));
             light = light.next();
         }
     }
