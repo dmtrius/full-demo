@@ -1,19 +1,23 @@
 package com.example.demo.apps.db;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+@Slf4j
 public class MySQLDatabaseExample {
 
-    // JDBC URL, username and password of MySQL server
+    // JDBC URL, username, and password of MySQL server
     private static final String URL = "jdbc:mysql://localhost:3306/registration_02";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    public static void main(String... args) {
-        String sql = "select * from user_account";
+    @SuppressWarnings("java:S2115")
+    void main() {
+        String sql = "select id, name, email from user_account";
         try (
                 // Establish the connection
                 Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -22,7 +26,7 @@ public class MySQLDatabaseExample {
                 // Execute a SELECT query
                 ResultSet resultSet = statement.executeQuery(sql)
         ) {
-            System.out.println("Connection to MySQL DB successful!");
+            IO.println("Connection to MySQL DB successful!");
 
             // Process the ResultSet
             while (resultSet.next()) {
@@ -32,12 +36,12 @@ public class MySQLDatabaseExample {
                 String email = resultSet.getString("email");
 
                 // Display values
-                System.out.println("ID: " + id);
-                System.out.println("Name: " + name);
-                System.out.println("Email: " + email);
+                IO.println("ID: " + id);
+                IO.println("Name: " + name);
+                IO.println("Email: " + email);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while fetching data from MySQL DB", e);
         }
     }
 }
