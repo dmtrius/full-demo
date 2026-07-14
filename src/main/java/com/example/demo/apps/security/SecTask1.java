@@ -108,7 +108,7 @@ public class SecTask1 {
             System.out.print(" :: ");
             System.out.println(p.getInfo());
             p.forEach((key, value) ->
-                System.out.println(key + " >> " + value));
+                IO.println(key + " >> " + value));
         }
     }
 }
