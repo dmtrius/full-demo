@@ -6,6 +6,8 @@ import com.example.demo.apps.bookings.entity.Room;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +23,7 @@ class BookingServiceImplTest {
     private final Map<Room, Booking> bookings = new HashMap<>();
 
     @BeforeEach
-    public void init() {
+     void init() {
         Set<Feature> f1 = Set.of(
                 PROJECTOR,
                 WHITEBOARD
@@ -34,8 +36,9 @@ class BookingServiceImplTest {
         Room r2 = new Room("R2", 5, f2, 12, 16);
         rooms.put(r1.name(), r1);
         rooms.put(r2.name(), r2);
-        Booking b1 = new Booking(12, 13, 8, f1, r1);
-        Booking b2 = new Booking(8, 14, 12, f2, r2);
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+        Booking b1 = new Booking(12, 13, 8, f1, now, r1);
+        Booking b2 = new Booking(8, 14, 12, f2, now.minusHours(1), r2);
         bookings.put(r1, b1);
         bookings.put(r2, b2);
         service = new BookingServiceImpl(bookings, rooms);

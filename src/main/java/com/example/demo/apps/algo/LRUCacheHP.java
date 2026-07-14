@@ -219,8 +219,7 @@ public class LRUCacheHP<K, V> {
         return String.format("LRUCache{size=%d, capacity=%d}", size(), capacity());
     }
 
-    // Example usage and performance testing
-    @SuppressWarnings("java:S1215")
+    @SuppressWarnings({"java:S1215", "java:S2095"})
     static void main() {
         // Basic functionality test
         LRUCacheHP<String, Integer> cache = new LRUCacheHP<>(3);
@@ -242,43 +241,45 @@ public class LRUCacheHP<K, V> {
         final int numOfThreads = 10;
         LRUCache<Integer, String> concurrentCache = new LRUCache<>(1000);
 
-
         Random random = new Random();
 
         long startTime = System.nanoTime();
 
         CompletableFuture<?>[] futures = new CompletableFuture[numOfThreads];
         ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
-        for (int threadId = 0; threadId < numOfThreads; threadId++) {
-            final int id = threadId;
-            futures[threadId] = CompletableFuture.runAsync(() -> {
-                for (int i = 0; i < 10000; i++) {
-                    int key = random.nextInt(2000);
-                    if (random.nextBoolean()) {
-                        concurrentCache.put(key, "value-%d-%d".formatted(key, id));
-                    } else {
-                        concurrentCache.get(key);
-                    }
-                }
-            }, executor);
-        }
-
-        CompletableFuture.allOf(futures).join();
-
-        long endTime = System.nanoTime();
-        double duration = (endTime - startTime) / 1e9;
-
-        IO.println("Concurrent test completed in %.2f seconds%n".formatted(duration));
-        IO.println("Final cache size: %s".formatted(concurrentCache.size()));
-
-        executor.shutdown();
         try {
-            boolean resultOfAwait = executor.awaitTermination(5, TimeUnit.SECONDS);
-            if (!resultOfAwait) {
-                IO.println("Executor did not terminate in a timely manner.");
+            for (int threadId = 0; threadId < numOfThreads; threadId++) {
+                final int id = threadId;
+                futures[threadId] = CompletableFuture.runAsync(() -> {
+                    for (int i = 0; i < 10000; i++) {
+                        int key = random.nextInt(2000);
+                        if (random.nextBoolean()) {
+                            concurrentCache.put(key, "value-%d-%d".formatted(key, id));
+                        } else {
+                            concurrentCache.get(key);
+                        }
+                    }
+                }, executor);
             }
-        } catch (InterruptedException _) {
-            Thread.currentThread().interrupt();
+
+            CompletableFuture.allOf(futures).join();
+
+            long endTime = System.nanoTime();
+            double duration = (endTime - startTime) / 1e9;
+
+            IO.println("Concurrent test completed in %.2f seconds%n".formatted(duration));
+            IO.println("Final cache size: %s".formatted(concurrentCache.size()));
+        } finally {
+            executor.shutdown();
+            try {
+                boolean resultOfAwait = executor.awaitTermination(5, TimeUnit.SECONDS);
+                if (!resultOfAwait) {
+                    IO.println("Executor did not terminate in a timely manner.");
+                }
+            } catch (InterruptedException _) {
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
         }
 
         // Memory usage statistics
