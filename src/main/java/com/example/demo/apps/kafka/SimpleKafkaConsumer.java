@@ -8,21 +8,20 @@ import java.time.Duration;
 import java.util.Collections;
 
 public class SimpleKafkaConsumer {
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
-        String topic = WordCountExample.OUTPUT_TOPIC;//KafkaConfig.TOPIC;
+    void main() {
+        String topic = WordCountExample.OUTPUT_TOPIC;
         String groupId = KafkaConfig.GROUP;
 
         try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(KafkaConfig.getConsumerConfig(groupId))) {
             consumer.subscribe(Collections.singletonList(topic));
-            System.out.println("Listening for messages on topic: " + topic);
+            IO.println("Listening for messages on topic: " + topic);
 
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
 
-                for (ConsumerRecord<String, String> record : records) {
+                for (ConsumerRecord<String, String> rrd : records) {
                     System.out.printf("Received: key=%s, value=%s, offset=%d, partition=%d%n",
-                            record.key(), record.value(), record.offset(), record.partition());
+                            rrd.key(), rrd.value(), rrd.offset(), rrd.partition());
                 }
             }
         }

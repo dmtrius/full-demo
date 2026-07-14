@@ -10,10 +10,10 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
 
-import java.util.Arrays;
 import java.util.Properties;
 
 import static java.lang.IO.println;
+import static org.apache.kafka.common.serialization.Serdes.String;
 
 @Slf4j
 public class WordCountExample {
@@ -24,7 +24,6 @@ public class WordCountExample {
         streams();
     }
 
-    @SuppressWarnings("preview")
     private static void streams() {
         // Stream builder
         StreamsBuilder builder = new StreamsBuilder();
@@ -42,12 +41,13 @@ public class WordCountExample {
         // Write word counts to the output topic
         wordCounts.toStream()
                 .peek((k, v) -> println("### WordCount: " + k + " -> " + v))
-                .to(OUTPUT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+                .to(OUTPUT_TOPIC, Produced.with(String(), Serdes.Long()));
 
         // Start the stream
-        KafkaStreams streams = new KafkaStreams(builder.build(), getConfig());
-        streams.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        try (KafkaStreams streams = new KafkaStreams(builder.build(), getConfig())) {
+            streams.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        }
     }
 
     private static Properties getConfig()  {
@@ -55,8 +55,8 @@ public class WordCountExample {
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount-app");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, String().getClass().getName());
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.AT_LEAST_ONCE);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConfig.GROUP);

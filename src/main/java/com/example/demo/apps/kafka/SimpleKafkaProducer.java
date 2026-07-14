@@ -10,8 +10,7 @@ import java.util.Scanner;
 
 @Slf4j
 public class SimpleKafkaProducer {
-    @SuppressWarnings("unused")
-    public static void main(String[] args) {
+    void main() {
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(KafkaConfig.getProducerConfig());
              /*Scanner scanner = new Scanner(System.in)*/) {
 //            println("Enter messages to send to Kafka (type 'exit' to quit):");
@@ -27,9 +26,9 @@ public class SimpleKafkaProducer {
     }
 
     private static void send(KafkaProducer<String, String> producer, String line, String topic) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(
+        ProducerRecord<String, String> rcrd = new ProducerRecord<>(
                 Objects.isNull(topic) ? KafkaConfig.TOPIC : topic, "KS", line);
-        producer.send(record, (metadata, exception) -> {
+        producer.send(rcrd, (metadata, exception) -> {
             if (Objects.isNull(exception)) {
                 log.info("Sent message to topic {} partition {} offset {}",
                         metadata.topic(), metadata.partition(), metadata.offset());
@@ -41,7 +40,6 @@ public class SimpleKafkaProducer {
 
     private static void sendRandomMessages(KafkaProducer<String, String> producer, int numMessages, String topic) {
         for (int i = 0; i < numMessages; ++i) {
-            //send(producer, Faker.instance().animal().name(), topic);
             send(producer, Faker.instance().backToTheFuture().quote(), topic);
         }
     }
