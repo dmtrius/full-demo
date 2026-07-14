@@ -56,7 +56,8 @@ public class HappyNumber {
     }
 
     boolean isHappyFloyd(int n) {
-        int slow = n, fast = getSum(n);
+        int slow = n;
+        int fast = getSum(n);
         while (slow != fast) {
             slow = getSum(slow);
             fast = getSum(getSum(fast));

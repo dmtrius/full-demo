@@ -13,9 +13,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: head = [1,2,3,4]
+ * Input: head = [1, 2, 3, 4]
  * <p>
- * Output: [2,1,4,3]
+ * Output: [2, 1, 4, 3]
  * <p>
  * Explanation:
  * <p>
@@ -33,9 +33,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 4:
  * <p>
- * Input: head = [1,2,3]
+ * Input: head = [1, 2, 3]
  * <p>
- * Output: [2,1,3]
+ * Output: [2, 1, 3]
  */
 public class SwapNodesInPairs {
     void main() {

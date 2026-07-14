@@ -13,8 +13,8 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: head = [1,2,3,4,5], left = 2, right = 4
- * Output: [1,4,3,2,5]
+ * Input: head = [1, 2, 3, 4, 5], left = 2, right = 4
+ * Output: [1, 4, 3, 2, 5]
  * Example 2:
  * <p>
  * Input: head = [5], left = 1, right = 1
@@ -25,12 +25,12 @@ public class ReverseLinkedListII {
         int[] nums = {3, 2, 0, -4, 10, -4, 11};
         var head = createList(nums);
         println(head);
-        reverseBetween(head, 2, 4);
-        println(head);
-        reverseBetweenAlternative(head, 2, 4);
-        println(head);
-        reverseBetweenRecursive(head, 2, 4);
-        println(head);
+        var result = reverseBetween(head, 2, 4);
+        println(result);
+        result = reverseBetweenAlternative(head, 2, 4);
+        println(result);
+        result = reverseBetweenRecursive(head, 2, 4);
+        println(result);
     }
 
     ListNode reverseBetween(ListNode head, int left, int right) {
@@ -65,7 +65,9 @@ public class ReverseLinkedListII {
     }
 
     ListNode reverseBetweenAlternative(ListNode head, int left, int right) {
-        if (head == null || left == right) return head;
+        if (head == null || left == right)  {
+            return head;
+        }
 
         ListNode dummy = new ListNode(0);
         dummy.next = head;

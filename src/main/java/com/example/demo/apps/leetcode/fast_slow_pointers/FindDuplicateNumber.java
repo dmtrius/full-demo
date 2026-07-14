@@ -8,7 +8,7 @@ import static java.lang.IO.println;
 /**
  * Fast & Slow pointers (<a href="https://leetcode.com/problems/find-the-duplicate-number/">287</a>)
  * <a href="https://algo.monster/liteproblems/287">287</a>
- * <h2>Find theDuplicate Numbers</h2>
+ * <h2>Find the Duplicate Numbers</h2>
  * Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
  * <p>
  * There is only one repeated number in nums, return this repeated number.
@@ -17,15 +17,15 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums = [1,3,4,2,2]
+ * Input: nums = [1, 3, 4, 2, 2]
  * Output: 2
  * Example 2:
  * <p>
- * Input: nums = [3,1,3,4,2]
+ * Input: nums = [3, 1, 3, 4, 2]
  * Output: 3
  * Example 3:
  * <p>
- * Input: nums = [3,3,3,3,3]
+ * Input: nums = [3, 3, 3, 3, 3]
  * Output: 3
  */
 public class FindDuplicateNumber {

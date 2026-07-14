@@ -13,12 +13,12 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: head = [1,2,3,4,5]
- * Output: [5,4,3,2,1]
+ * Input: head = [1, 2, 3, 4, 5]
+ * Output: [5, 4, 3, 2, 1]
  * Example 2:
  * <p>
- * Input: head = [1,2]
- * Output: [2,1]
+ * Input: head = [1, 2]
+ * Output: [2, 1]
  * Example 3:
  * <p>
  * Input: head = []
