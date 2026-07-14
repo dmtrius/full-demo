@@ -1,11 +1,10 @@
 package com.example.demo.apps.monads;
 
 import java.util.function.Function;
-import java.util.function.IntFunction;
 
 public class Example {
 
-    public static void main(String[] args) {
+    void main() {
         int x = 2;
         // Task: performing operation, returning wrapped value, over the value inside the container object.
         // Non-Monad
