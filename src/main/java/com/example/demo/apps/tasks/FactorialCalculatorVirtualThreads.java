@@ -1,11 +1,14 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 public class FactorialCalculatorVirtualThreads {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final BlockingQueue<Integer> inputQueue = new LinkedBlockingQueue<>();
@@ -18,9 +21,9 @@ public class FactorialCalculatorVirtualThreads {
         BigInteger factorial,
         int index) {}
 
-    public static void main(String[] args) {
+    static void main() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of calculation threads: ");
+        IO.print("Enter number of calculation threads: ");
         int numThreads = scanner.nextInt();
         scanner.close();
 
@@ -37,12 +40,12 @@ public class FactorialCalculatorVirtualThreads {
                 executor.submit(() -> {
                     while (true) {
                         try {
-                            Integer number = inputQueue.take();
+                            int number = inputQueue.take();
                             if (number == -1) {
                                 break; // Null indicates end of input
                             }
                             calculateFactorial(number);
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException _) {
                             Thread.currentThread().interrupt();
                             break;
                         }
@@ -52,10 +55,13 @@ public class FactorialCalculatorVirtualThreads {
             // Wait for reader thread to finish before closing executor
             try {
                 readerThread.join();
-//                writerThread.join();
+                writerThread.join();
                 executor.shutdown();
-                executor.awaitTermination(60, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
+                boolean termResult = executor.awaitTermination(60, TimeUnit.SECONDS);
+                if (!termResult) {
+                    log.info("Execution terminated timeout");
+                }
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         }
@@ -71,21 +77,21 @@ public class FactorialCalculatorVirtualThreads {
                     if (number >= 0) {
                         inputQueue.put(number);
                     } else {
-                        System.err.println("Skipping negative number: " + number);
+                        log.info("Skipping negative number: {}", number);
                     }
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid number format in input: " + line);
-                } catch (InterruptedException e) {
+                    log.error("Invalid number format in input: {}", line, e);
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     break;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading input file: " + e.getMessage());
+            log.error("Error reading input file: {}", e.getMessage(), e);
         } finally {
             try {
                 inputQueue.put(null); // Signal end of input
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         }
@@ -99,7 +105,7 @@ public class FactorialCalculatorVirtualThreads {
         }
         try {
             resultQueue.put(new Result(number, factorial, number));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
@@ -119,7 +125,7 @@ public class FactorialCalculatorVirtualThreads {
                         currentSecond = nowSecond;
                         calculationsInCurrentSecond.set(0);
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     return;
                 }
@@ -148,8 +154,8 @@ public class FactorialCalculatorVirtualThreads {
                 writer.flush();
             }
         } catch (IOException e) {
-            System.err.println("Error writing output file: " + e.getMessage());
-        } catch (InterruptedException e) {
+            log.error("Error writing output file: {}", e.getMessage(), e);
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

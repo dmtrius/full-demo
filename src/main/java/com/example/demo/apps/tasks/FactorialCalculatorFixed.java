@@ -1,5 +1,7 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class FactorialCalculatorFixed {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final BlockingQueue<InputTask> inputQueue = new LinkedBlockingQueue<>();
@@ -33,12 +36,11 @@ public class FactorialCalculatorFixed {
             BigInteger factorial) {
     }
 
-    @SuppressWarnings("unused")
-    public static void main(String... args) {
+    static void main() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of calculation threads: ");
+        IO.print("Enter number of calculation threads: ");
         final int numThreads = scanner.nextInt();
-        System.out.print("Enter results count (0 for all): ");
+        IO.print("Enter results count (0 for all): ");
         resultsCount = scanner.nextInt();
         scanner.close();
 
@@ -57,35 +59,35 @@ public class FactorialCalculatorFixed {
                             }
                             calculateFactorial(task);
                         }
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException _) {
                         Thread.currentThread().interrupt();
                     }
                 });
             }
             try {
                 readerThread.join();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
             executor.shutdown();
             try {
                 if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    System.err.println("Calculation threads did not terminate in time.");
+                    log.error("Calculation threads did not terminate in time.");
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
 
             try {
                 resultQueue.put(NAN);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
 
             try {
                 writerThread.join();
-                System.out.println("Completed.");
-            } catch (InterruptedException e) {
+                IO.println("Completed.");
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         }
@@ -110,18 +112,18 @@ public class FactorialCalculatorFixed {
                 try {
                     int number = Integer.parseInt(line.trim());
                     inputQueue.put(new InputTask(number, index++));
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     break;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading input file: " + e.getMessage());
+            log.error("Error reading input file: {}", e.getMessage(), e);
         } finally {
             for (int i = 0; i < numThreads; i++) {
                 try {
                     inputQueue.put(POISON_PILL);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                 }
             }
@@ -136,7 +138,7 @@ public class FactorialCalculatorFixed {
         }
         try {
             resultQueue.put(new Result(task.number, task.index, factorial));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
@@ -153,7 +155,7 @@ public class FactorialCalculatorFixed {
                     long sleepMillis = 1000 - (System.currentTimeMillis() % 1000);
                     try {
                         TimeUnit.MILLISECONDS.sleep(sleepMillis);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException _) {
                         Thread.currentThread().interrupt();
                         return;
                     }
@@ -190,8 +192,8 @@ public class FactorialCalculatorFixed {
                 writer.flush();
             }
         } catch (IOException e) {
-            System.err.println("Error writing output file: " + e.getMessage());
-        } catch (InterruptedException e) {
+            log.error("Error writing output file: {}", e.getMessage(), e);
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

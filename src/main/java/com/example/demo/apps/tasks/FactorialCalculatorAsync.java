@@ -1,5 +1,7 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -12,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntPredicate;
 
+@Slf4j
 public class FactorialCalculatorAsync {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final int MAX_NUMBER_OF_THREADS = 5000;
@@ -45,11 +48,11 @@ public class FactorialCalculatorAsync {
     private record Result(int number, int index, BigInteger factorial) {
     }
 
-    public static void main(String... args) {
+    static void main(String... args) {
         if (args.length == 0) {
-            System.out.println("FILES: input.txt & output.txt");
-            System.out.println("Usage: java FactorialCalculatorAsync [basePath]");
-            System.out.println("basePath - path to input/output files");
+            IO.println("FILES: input.txt & output.txt");
+            IO.println("Usage: java FactorialCalculatorAsync [basePath]");
+            IO.println("basePath - path to input/output files");
             System.exit(1);
         }
         if (!Objects.isNull(args[0]) && !args[0].isEmpty()) {
@@ -69,7 +72,7 @@ public class FactorialCalculatorAsync {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        System.out.println("Started...");
+        IO.println("Started...");
 
         Thread writerThread = new Thread(() -> writeOutputFile(basePath + OUTPUT));
         writerThread.start();
@@ -90,8 +93,8 @@ public class FactorialCalculatorAsync {
                 }, executor)
                 .thenRun(() -> {
                     try {
-                        resultQueue.put(NAN); // poison pill after all are done
-                    } catch (InterruptedException e) {
+                        resultQueue.put(NAN); // Poison pill after all are done
+                    } catch (InterruptedException _) {
                         Thread.currentThread().interrupt();
                     }
                 })
@@ -102,11 +105,11 @@ public class FactorialCalculatorAsync {
 
         try {
             writerThread.join();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("Completed.");
+        IO.println("Completed.");
     }
 
     private static List<InputTask> readInputFile(String filename) {
@@ -124,11 +127,11 @@ public class FactorialCalculatorAsync {
                 }
                 inputTasks.add(new InputTask(Integer.parseInt(line), index++));
                 if (SHOW_OUTPUT && index % COUNTS_SHOW == 0) {
-                    System.out.println("Read " + index + " lines...");
+                    IO.println("Read " + index + " lines...");
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error reading input file: " + e.getLocalizedMessage());
+            log.error("Error reading input file: {}", e.getLocalizedMessage(), e);
         }
         return inputTasks;
     }
@@ -140,7 +143,7 @@ public class FactorialCalculatorAsync {
         }
         try {
             resultQueue.put(new Result(task.number, task.index, factorial));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
@@ -148,10 +151,11 @@ public class FactorialCalculatorAsync {
     public static void rateLimit() {
         try {
             rateLimiter.acquire();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
+
     public static void shutdown() {
         scheduler.shutdownNow();
     }
@@ -184,7 +188,7 @@ public class FactorialCalculatorAsync {
                     Result r = resultMap.remove(expectedIndex++);
                     writeBuffer.add(r.number + SEPARATOR + r.factorial);
                     if (SHOW_OUTPUT && expectedIndex % COUNTS_SHOW == 0) {
-                        System.out.println("Wrote " + expectedIndex + " lines...");
+                        IO.println("Wrote " + expectedIndex + " lines...");
                     }
                     if (writeBuffer.size() >= BATCH_SIZE) {
                         filePosition = flushBuffer(channel, writeBuffer, filePosition);
@@ -193,7 +197,7 @@ public class FactorialCalculatorAsync {
             }
 
         } catch (IOException | InterruptedException e) {
-            System.out.println("Error writing output file: " + e.getMessage());
+            log.error("Error writing output file: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
     }
@@ -214,9 +218,11 @@ public class FactorialCalculatorAsync {
 
         Future<Integer> result = channel.write(byteBuffer, position);
         try {
-            int written = result.get();
+            int written = result.get(3, TimeUnit.SECONDS);
             return position + written;
-        } catch (Exception e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Error during asynchronous write: {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
             throw new IOException("Failed to write to file", e);
         }
     }
@@ -226,11 +232,11 @@ public class FactorialCalculatorAsync {
                                      IntPredicate predicate) {
         int result;
         do {
-            System.out.print(message);
+            IO.print(message);
             while (!scanner.hasNextInt()) {
-                System.out.println(VALUE_WARNING);
+                IO.println(VALUE_WARNING);
                 scanner.next();
-                System.out.print(message);
+                IO.print(message);
             }
             result = scanner.nextInt();
         } while (predicate.test(result));

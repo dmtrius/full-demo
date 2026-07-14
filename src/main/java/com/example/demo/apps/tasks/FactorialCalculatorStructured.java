@@ -1,11 +1,14 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Slf4j
 public class FactorialCalculatorStructured {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final BlockingQueue<Result> resultQueue = new LinkedBlockingQueue<>();
@@ -20,7 +23,7 @@ public class FactorialCalculatorStructured {
     private record InputTask(int number, int index) {}
     private record Result(int number, int index, BigInteger factorial) {}
 
-    public static void main(String[] args) throws Exception {
+    static void main() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter number of calculation threads: ");
         int numThreads = scanner.nextInt();
@@ -59,7 +62,7 @@ public class FactorialCalculatorStructured {
             scope.join();  // Wait for writer to finish
         }*/
 
-        System.out.println("Completed.");
+        IO.println("Completed.");
     }
 
     private static List<InputTask> readInputFile(String filename) {
@@ -74,11 +77,12 @@ public class FactorialCalculatorStructured {
                 inputTasks.add(new InputTask(Integer.parseInt(line), index++));
             }
         } catch (IOException e) {
-            System.err.println("Error reading input file: " + e.getMessage());
+            log.error("Error reading input file: {}", e.getMessage(), e);
         }
         return inputTasks;
     }
 
+    @SuppressWarnings("unused")
     private static Result calculateFactorial(InputTask task) {
         BigInteger factorial = BigInteger.ONE;
         for (int i = 1; i <= task.number; i++) {
@@ -87,6 +91,7 @@ public class FactorialCalculatorStructured {
         return new Result(task.number, task.index, factorial);
     }
 
+    @SuppressWarnings("unused")
     private static void rateLimit(Semaphore rateLimiter) {
         long now = System.currentTimeMillis() / 1000;
         synchronized (FactorialCalculatorStructured.class) {
@@ -100,11 +105,12 @@ public class FactorialCalculatorStructured {
 
         try {
             rateLimiter.acquire();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
 
+    @SuppressWarnings("unused")
     private static void writeOutputFile(String filename) {
         Map<Integer, Result> resultMap = new TreeMap<>();
         int expectedIndex = 0;
@@ -124,7 +130,7 @@ public class FactorialCalculatorStructured {
                 writer.flush();
             }
         } catch (IOException | InterruptedException e) {
-            System.err.println("Error writing output file: " + e.getMessage());
+            log.error("Error writing output file: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
     }
