@@ -1,13 +1,12 @@
 package com.example.demo.apps.tasks.backpressure;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
-
-import static java.lang.IO.println;
 
 @Slf4j
 class CustomSubscriber<T> implements Flow.Subscriber<T> {
@@ -25,11 +24,11 @@ class CustomSubscriber<T> implements Flow.Subscriber<T> {
 
     @Override
     public void onNext(T item) {
-        println("Received: " + item);
+        IO.println("Received: " + item);
         executorService.submit(() -> {
             try {
                 Thread.sleep(Duration.ofMillis(400)); // Simulate slow processing
-                println("Processed:: " + item);
+                IO.println("Processed:: " + item);
             } catch (InterruptedException e) {
                 log.error(e.getMessage());
                 onError(e);
@@ -48,7 +47,12 @@ class CustomSubscriber<T> implements Flow.Subscriber<T> {
 
     @Override
     public void onComplete() {
-        println("Completed");
+        IO.println("Completed");
+        executorService.shutdown();
+    }
+
+    @PreDestroy
+    void shutdown() {
         executorService.shutdown();
     }
 }
