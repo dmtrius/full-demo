@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CoroutineMain {
-    public static void main(String[] args) {
+    void main() {
         Coroutine bob = new Coroutine() {
             public void corun() throws InterruptedException {
                 count("Bob", this);
@@ -26,7 +26,7 @@ public class CoroutineMain {
 
     private static void count(String name, Coroutine co) throws InterruptedException {
         for (int i = 1; i <= 100; i++) {
-            System.out.println(name + ": " + i);
+            IO.println(name + ": " + i);
             if (i % 3 == 0) {
                 co.yield(); // yield control every 3 counts
             }

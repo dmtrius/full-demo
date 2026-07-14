@@ -1,6 +1,7 @@
 package com.example.demo.apps.tasks;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -39,10 +40,11 @@ public abstract class Either<L, R> {
     }
 
     // Predicate-based factory methods
-    public static <L, R> Either<L, R> predicate(Supplier<Boolean> predicate, Supplier<L> left, Supplier<R> right) {
-        return !predicate.get() ? ofLeft(left.get()) : ofRight(right.get());
+    public static <L, R> Either<L, R> predicate(BooleanSupplier predicate, Supplier<L> left, Supplier<R> right) {
+        return !predicate.getAsBoolean() ? ofLeft(left.get()) : ofRight(right.get());
     }
 
+    @SuppressWarnings("unused")
     public static <L, R> Either<L, R> predicate(boolean predicate, L left, R right) {
         return predicate(() -> predicate, () -> left, () -> right);
     }
@@ -84,17 +86,19 @@ public abstract class Either<L, R> {
         }
     }
 
+    @SuppressWarnings("unused")
     public void ifRight(Consumer<R> f) {
         if (isRight()) {
             f.accept(right);
         }
     }
 
-    // Get left or right value or a default alternative
+    @SuppressWarnings("unused")
     public L leftOrElse(L alternative) {
         return isLeft() ? left : alternative;
     }
 
+    @SuppressWarnings("unused")
     public R rightOrElse(R alternative) {
         return isRight() ? right : alternative;
     }

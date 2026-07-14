@@ -13,7 +13,7 @@ public class EitherExamples {
                     try {
                         Integer.parseInt("123");
                         return true;
-                    } catch (NumberFormatException e) {
+                    } catch (NumberFormatException _) {
                         return false;
                     }
                 },
@@ -21,7 +21,7 @@ public class EitherExamples {
                 () -> Integer.parseInt("123")
         );
 
-        //result.ifRight(value -> println("Parsed number: " + value));
+//        result.ifRight(value -> println("Parsed number: " + value));
         result.ifLeft(error -> println("Error: " + error));
     }
 }
