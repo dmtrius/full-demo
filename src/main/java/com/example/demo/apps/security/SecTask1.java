@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Properties;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,6 +27,9 @@ public class SecTask1 {
         main4();
     }
 
+    private static final Random rand = new SecureRandom();
+
+    @SuppressWarnings({"java:S5542", "java:S5547"})
     void main4() {
         try {
             // List all available providers and their services
@@ -57,7 +60,7 @@ public class SecTask1 {
             IO.println(Arrays.toString(secretKey.getEncoded()));
             // Generate IV
             byte[] iv = new byte[8]; // 64-bit IV for Blowfish
-            new SecureRandom().nextBytes(iv);
+            rand.nextBytes(iv);
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
 
             // Initialize cipher for encryption
@@ -102,13 +105,10 @@ public class SecTask1 {
     }
 
     void main1() {
-        Provider[] providers = Security.getProviders();
-        for (Provider p : providers) {
-            System.out.print(p.getName());
-            System.out.print(" :: ");
-            System.out.println(p.getInfo());
-            p.forEach((key, value) ->
-                IO.println(key + " >> " + value));
-        }
+        Arrays.stream(Security.getProviders())
+            .forEach(provider -> {
+                IO.println("%s :: %s%n".formatted(provider.getName(), provider.getInfo()));
+                provider.forEach((key, _) -> IO.println("  %s >> %s%n".formatted(key, provider.get(key))));
+            });
     }
 }
