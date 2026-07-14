@@ -30,11 +30,11 @@ package com.example.demo.apps.leetcode.prefix_sum;
 public class RangeSumQuery {
     static void main() {
         RangeSumQuery rangeSumQuery = new RangeSumQuery(new int[]{-2, 0, 3, -5, 2, -1});
-        System.out.println(rangeSumQuery.sumRange(0, 2));
+        IO.println(rangeSumQuery.sumRange(0, 2));
         RangeSumQuery obj = new RangeSumQuery(new int[]{-2, 0, 3, -5, 2, -1});
-        System.out.println(obj.sumRange(0, 2));  // 1
-        System.out.println(obj.sumRange(2, 5));  // -1
-        System.out.println(obj.sumRange(0, 5));  // -3
+        IO.println(obj.sumRange(0, 2));  // 1
+        IO.println(obj.sumRange(2, 5));  // -1
+        IO.println(obj.sumRange(0, 5));  // -3
     }
 
     private final int[] prefix;

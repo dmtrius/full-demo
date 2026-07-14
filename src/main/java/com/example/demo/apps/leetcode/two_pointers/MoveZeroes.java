@@ -14,8 +14,8 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums = [0,1,0,3,12]
- * Output: [1,3,12,0,0]
+ * Input: nums = [0, 1, 0, 3, 12]
+ * Output: [1, 3, 12, 0, 0]
  * Example 2:
  * <p>
  * Input: nums = [0]

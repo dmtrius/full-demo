@@ -10,11 +10,11 @@ import static java.lang.IO.println;
  * <a href="https://algo.monster/liteproblems/76">76</a>
  * <h2>Minimum Window Substring</h2>
  * Given two strings s and t of lengths m and n respectively, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
- *
+ * <p>
  * The testcases will be generated such that the answer is unique.
- *
+ * <p>
  * Example 1:
- *
+ * <p>
  * Input: s = "ADOBECODEBANC", t = "ABC"
  * Output: "BANC"
  * Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
@@ -32,7 +32,8 @@ import static java.lang.IO.println;
  */
 public class MinimumWindowSubstring {
     void main() {
-        String s = "ADOBECODEBANC", t = "ABC";
+        String s = "ADOBECODEBANC";
+        String t = "ABC";
         println(minWindow(s, t));
     }
 
@@ -47,7 +48,10 @@ public class MinimumWindowSubstring {
         }
 
         Map<Character, Integer> window = new HashMap<>();
-        int left = 0, count = 0, minLen = Integer.MAX_VALUE, minStart = 0;
+        int left = 0;
+        int count = 0;
+        int minLen = Integer.MAX_VALUE;
+        int minStart = 0;
 
         for (int right = 0; right < s.length(); right++) {
             char c = s.charAt(right);

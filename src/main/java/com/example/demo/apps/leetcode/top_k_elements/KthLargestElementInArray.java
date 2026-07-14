@@ -16,11 +16,11 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums = [3,2,1,5,6,4], k = 2
+ * Input: nums = [3, 2, 1, 5, 6, 4], k = 2
  * Output: 5
  * Example 2:
  * <p>
- * Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+ * Input: nums = [3, 2, 3, 1, 2, 4, 5, 5, 6], k = 4
  * Output: 4
  */
 public class KthLargestElementInArray {

@@ -2,6 +2,7 @@ package com.example.demo.apps.leetcode.top_k_elements;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -19,18 +20,19 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
- * Output: [[1,2],[1,4],[1,6]]
+ * Input: nums1 = [1, 7, 11], nums2 = [2, 4, 6], k = 3
+ * Output: [[1, 2], [1, 4], [1, 6]]
  * Explanation: The first 3 pairs are returned from the sequence: [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
  * Example 2:
  * <p>
- * Input: nums1 = [1,1,2], nums2 = [1,2,3], k = 2
- * Output: [[1,1],[1,1]]
- * Explanation: The first 2 pairs are returned from the sequence: [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+ * Input: nums1 = [1, 1, 2], nums2 = [1, 2, 3], k = 2
+ * Output: [[1, 1], [1, 1]]
+ * Explanation: The first 2 pairs are returned from the sequence: [1, 1], [1, 1], [1, 2], [2, 1], [1, 2], [2, 2], [1, 3], [1, 3], [2, 3]
  */
 public class FindKPairsWithSmallestSums {
     void main() {
-        int[] nums1 = {1, 7, 11}, nums2 = {2, 4, 6};
+        int[] nums1 = {1, 7, 11};
+        int[] nums2 = {2, 4, 6};
         int k = 3;
         println(kSmallestPairs(nums1, nums2, k));
         println(kSmallestPairsAlternative(nums1, nums2, k));
@@ -45,7 +47,7 @@ public class FindKPairsWithSmallestSums {
         }
 
         // Min-heap: stores [sum, index in nums1, index in nums2]
-        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
 
         // Initialize heap with pairs (nums1[i], nums2[0]) for all i
         // Only add min(k, nums1.length) elements to optimize
@@ -81,7 +83,7 @@ public class FindKPairsWithSmallestSums {
 
         // Min-heap based on sum
         PriorityQueue<int[]> minHeap = new PriorityQueue<>(
-                (a, b) -> (nums1[a[0]] + nums2[a[1]]) - (nums1[b[0]] + nums2[b[1]])
+            Comparator.comparingInt(a -> (nums1[a[0]] + nums2[a[1]]))
         );
 
         // Start with all pairs from first row

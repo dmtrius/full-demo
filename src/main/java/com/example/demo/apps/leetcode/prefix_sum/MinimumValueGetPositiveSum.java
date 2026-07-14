@@ -14,7 +14,7 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums = [-3,2,-3,4,2]
+ * Input: nums = [-3, 2, -3, 4, 2]
  * Output: 5
  * Explanation: If you choose startValue = 4, in the third iteration your step by step sum is less than 1.
  * step by step sum

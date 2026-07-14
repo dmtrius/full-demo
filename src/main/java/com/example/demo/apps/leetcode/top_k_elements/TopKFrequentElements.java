@@ -3,6 +3,7 @@ package com.example.demo.apps.leetcode.top_k_elements;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,9 +19,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: nums = [1,1,1,2,2,3], k = 2
+ * Input: nums = [1, 1, 1, 2, 2, 3], k = 2
  * <p>
- * Output: [1,2]
+ * Output: [1, 2]
  * <p>
  * Example 2:
  * <p>
@@ -30,9 +31,9 @@ import static java.lang.IO.println;
  * <p>
  * Example 3:
  * <p>
- * Input: nums = [1,2,1,2,1,2,3,1,3,2], k = 2
+ * Input: nums = [1, 2, 1, 2, 1, 2, 3, 1, 3, 2], k = 2
  * <p>
- * Output: [1,2]
+ * Output: [1, 2]
  */
 public class TopKFrequentElements {
     void main() {
