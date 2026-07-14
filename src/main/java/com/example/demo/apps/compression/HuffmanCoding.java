@@ -69,7 +69,7 @@ public class HuffmanCoding {
         }
 
         for (int i = 0; i < bitSet.length(); i++) {
-            current = bitSet.get(i) ? current.right : current.left;
+            current = bitSet.get(i) ? Objects.requireNonNull(current).right : Objects.requireNonNull(current).left;
 
             if (!Objects.isNull(current) && current.left == null && current.right == null) {
                 result.append(current.data);
