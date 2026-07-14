@@ -8,7 +8,7 @@ public class HelloWorldJNI2 {
     }
 
     void main () {
-        System.out.println("In this Program we will learn about Java Native");
+        IO.println("In this Program we will learn about Java Native");
         HelloWorldJNI2 gfg = new HelloWorldJNI2();
         gfg.print_Hello();
     }
