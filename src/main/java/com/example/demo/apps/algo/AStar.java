@@ -26,10 +26,10 @@ public class AStar {
 
     private static final int ROW = 9;
     private static final int COL = 10;
-    public static final String SOURCE_OR_DESTINATION_IS_INVALID = "Source or destination is invalid";
-    public static final String SOURCE_OR_THE_DESTINATION_IS_BLOCKED = "Source or the destination is blocked";
-    public static final String WE_ARE_ALREADY_AT_THE_DESTINATION = "We are already at the destination";
-    public static final String THE_DESTINATION_CELL_IS_FOUND = "The destination cell is found";
+    private static final String SOURCE_OR_DESTINATION_IS_INVALID = "Source or destination is invalid";
+    private static final String SOURCE_OR_THE_DESTINATION_IS_BLOCKED = "Source or the destination is blocked";
+    private static final String WE_ARE_ALREADY_AT_THE_DESTINATION = "We are already at the destination";
+    private static final String THE_DESTINATION_CELL_IS_FOUND = "The destination cell is found";
 
     void main() {
         // Description of the Grid-
