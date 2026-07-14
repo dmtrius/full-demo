@@ -1,5 +1,8 @@
 package com.example.demo.apps.tasks;
 
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
@@ -8,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.apache.commons.lang.math.NumberUtils.isNumber;
 
+@Slf4j
 public class FactorialCalculator {
     private static final int MAX_CALCULATIONS_PER_SECOND = 100;
     private static final BlockingQueue<Integer> inputQueue = new LinkedBlockingQueue<>();
@@ -15,52 +19,43 @@ public class FactorialCalculator {
     private static final AtomicLong calculationsInCurrentSecond = new AtomicLong(0);
     private static volatile long currentSecond = System.currentTimeMillis() / 1000;
 
-    static class Result {
-        int number;
-        BigInteger factorial;
-        int index;
-
-        Result(int number, BigInteger factorial, int index) {
-            this.number = number;
-            this.factorial = factorial;
-            this.index = index;
-        }
+    record Result(
+        int number,
+        BigInteger factorial,
+        int index) {
     }
 
-    public static void main(String[] args) {
+    void main() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter number of calculation threads: ");
+        IO.print("Enter number of calculation threads: ");
         int numThreads = scanner.nextInt();
         scanner.close();
 
-        // Start reader thread
         Thread readerThread = new Thread(() -> readInputFile("input.txt"));
         readerThread.start();
 
-        // Start writer thread
         Thread writerThread = new Thread(() -> writeOutputFile("output.txt"));
         writerThread.start();
 
-        // Use try-with-resources for ExecutorService
         try (ExecutorService executor = Executors.newFixedThreadPool(numThreads)) {
             // Submit calculation tasks
             while (true) {
                 try {
                     int number = inputQueue.take();
-                    System.out.println("TAKING: " + number);
+                    IO.println("TAKING: " + number);
                     if (number == -1) {
                         break; // Null indicates the end of input
                     }
                     executor.submit(() -> calculateFactorial(number));
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     break;
                 }
             }
-        } // ExecutorService automatically shuts down when block exits
+        }
     }
 
-    private static void readInputFile(String filename) {
+    private static void readInputFile(@NonNull String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -73,21 +68,21 @@ public class FactorialCalculator {
                     if (number >= 0) {
                         inputQueue.put(number);
                     } else {
-                        System.err.println("Skipping negative number: " + number);
+                        log.error("Skipping negative number: {}", number);
                     }
                 } catch (NumberFormatException e) {
-                    System.err.println("Invalid number format in input: '" + line + "'");
-                } catch (InterruptedException e) {
+                    log.error("Invalid number format in input: '{}'", e.getMessage(), e);
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     break;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error reading input file: " + e.getMessage());
+            log.error("Error reading input file: {}", e.getMessage(), e);
         } finally {
             try {
                 inputQueue.put(-1); // Signal end of input
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         }
@@ -101,7 +96,7 @@ public class FactorialCalculator {
         }
         try {
             resultQueue.put(new Result(number, factorial, number));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
@@ -121,7 +116,7 @@ public class FactorialCalculator {
                         currentSecond = nowSecond;
                         calculationsInCurrentSecond.set(0);
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
                     return;
                 }
@@ -152,8 +147,8 @@ public class FactorialCalculator {
                 writer.flush();
             }
         } catch (IOException e) {
-            System.err.println("Error writing output file: " + e.getMessage());
-        } catch (InterruptedException e) {
+            log.error("Error writing output file: {}", e.getMessage(), e);
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }
