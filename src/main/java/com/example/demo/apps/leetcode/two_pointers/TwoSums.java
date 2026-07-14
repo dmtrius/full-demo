@@ -2,8 +2,6 @@ package com.example.demo.apps.leetcode.two_pointers;
 
 import java.util.Arrays;
 
-import static java.lang.IO.println;
-
 /**
  * Two Pointers (<a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">167</a>)
  * <a href="https://algo.monster/liteproblems/167">167</a>
@@ -18,24 +16,26 @@ import static java.lang.IO.println;
  * <p>
  * Example 1:
  * <p>
- * Input: numbers = [2,7,11,15], target = 9
- * Output: [1,2]
+ * Input: numbers = [2, 7, 11, 15], target = 9
+ * Output: [1, 2]
  * Explanation: The sum of 2 and 7 is 9. Therefore, index1 = 1, index2 = 2. We return [1, 2].
  * Example 2:
  * <p>
- * Input: numbers = [2,3,4], target = 6
- * Output: [1,3]
- * Explanation: The sum of 2 and 4 is 6. Therefore index1 = 1, index2 = 3. We return [1, 3].
+ * Input: numbers = [2, 3, 4], target = 6
+ * Output: [1, 3]
+ * Explanation: The sum of 2 and 4 is 6. Therefore, index1 = 1, index2 = 3. We return [1, 3].
  * Example 3:
  * <p>
- * Input: numbers = [-1,0], target = -1
- * Output: [1,2]
- * Explanation: The sum of -1 and 0 is -1. Therefore index1 = 1, index2 = 2. We return [1, 2].
+ * Input: numbers = [-1, 0], target = -1
+ * Output: [1, 2]
+ * Explanation: The sum of -1 and 0 is -1. Therefore, index1 = 1, index2 = 2. We return [1, 2].
  */
 public class TwoSums {
     void main() {
-        int[] n = twoSum(new int[]{2, 7, 11, 15}, 9);
-        println(Arrays.toString(n));
+        int[] n = twoSum(new int[]{2, 7, 11, 15, 21, 47}, 9);
+        IO.println(Arrays.toString(n));
+        n = twoSum(new int[]{2, 7, 11, 15, 21, 47}, 36);
+        IO.println(Arrays.toString(n));
     }
 
     static int[] twoSum(int[] numbers, int target) {
