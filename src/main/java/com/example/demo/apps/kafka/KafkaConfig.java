@@ -1,9 +1,10 @@
 package com.example.demo.apps.kafka;
 
-import org.apache.kafka.clients.producer.ProducerConfig;
+import lombok.experimental.UtilityClass;
 
 import java.util.Properties;
 
+@UtilityClass
 public class KafkaConfig {
     public static final String TOPIC = "MyTopic";
     public static final String GROUP = "MyGroup";
