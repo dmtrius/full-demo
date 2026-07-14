@@ -36,7 +36,7 @@ public class ParallelArraySum extends RecursiveTask<Long> {
         }
     }
 
-    public static void main(String[] args) {
+    static void main() {
         int size = 10_000_000;
         long[] array = new long[size];
         Random random = new Random();
@@ -48,8 +48,8 @@ public class ParallelArraySum extends RecursiveTask<Long> {
             long startTime = System.currentTimeMillis();
             long sum = pool.invoke(task);
             long endTime = System.currentTimeMillis();
-            System.out.println("Sum: " + sum);
-            System.out.println("Time taken: " + (endTime - startTime) + " ms");
+            IO.println("Sum: " + sum);
+            IO.println("Time taken: " + (endTime - startTime) + " ms");
         }
     }
 }
