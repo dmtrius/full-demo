@@ -111,27 +111,29 @@ public class LakeCounter {
     }
 
     // Main method to demonstrate usage
-    public static void main(String[] args) {
-//        String[] imageRows = {
-//                "...x......x...",
-//                "...xxxxx.x.x..",
-//                "....xxx..x....",
-//                "....xxxxxx....",
-//                "......xxx.x.x.",
-//                ".....xxxxxxx..",
-//                ".....xxx....x.",
-//                "............x."
-//        };
-//        String[] imageRows = {
-//                "...|x|...|...|x.|",
-//                "...|xxxxx|.|x.|x|",
-//                "...|xxx|.|.|x|.|",
-//                "......|xxxxxx|.|.|",
-//                ".....|xxx|.|x|.|x|",
-//                ".....|x|x|xxxx|x|.|",
-//                ".....|xxx|......|x|.|",
-//                ".....|......|.|x|.|"
-//        };
+    void main() {
+/*
+                String[] imageRows = {
+                "...x......x...",
+                "...xxxxx.x.x..",
+                "....xxx..x....",
+                "....xxxxxx....",
+                "......xxx.x.x.",
+                ".....xxxxxxx..",
+                ".....xxx....x.",
+                "............x."
+        };
+        String[] imageRows = {
+                "...|x|...|...|x.|",
+                "...|xxxxx|.|x.|x|",
+                "...|xxx|.|.|x|.|",
+                "......|xxxxxx|.|.|",
+                ".....|xxx|.|x|.|x|",
+                ".....|x|x|xxxx|x|.|",
+                ".....|xxx|......|x|.|",
+                ".....|......|.|x|.|"
+        };
+        */
         String[] imageRows = {
                 "|.|.|.|x|.|.|.|.|.|.|.|.|.|.|.|.|.|.|x|.|",
                 "|.|.|.|.|x|x|x|x|x|x|.|.|.|.|.|.|.|x|.|x|",
@@ -142,20 +144,20 @@ public class LakeCounter {
                 "|.|.|.|.|.|x|x|x|.|.|.|.|.|.|.|.|x|.|.|.|",
                 "|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|.|x|.|.|.|"
         };
-        for (int i = 0; i < imageRows.length; i++) {
-            System.out.println(imageRows[i]);
+        for (String imageRow : imageRows) {
+            IO.println(imageRow);
         }
-        System.out.println();
+        IO.println();
         for (int i = 0; i < imageRows.length; i++) {
             imageRows[i] = imageRows[i].replace("|","");
-            System.out.println(imageRows[i]);
+            IO.println(imageRows[i]);
         }
 
         char[][] image = createImage(imageRows);
 
         // Test cases
-        System.out.println("Lakes at (2,2): " + countLakes(image, new int[]{2, 2})); // 0
-        System.out.println("Lakes at (6,6): " + countLakes(image, new int[]{6, 6})); // 1
-        System.out.println("Lakes at (12,5): " + countLakes(image, new int[]{12, 5})); // 2
+        IO.println("Lakes at (2,2): " + countLakes(image, new int[]{2, 2})); // 0
+        IO.println("Lakes at (6,6): " + countLakes(image, new int[]{6, 6})); // 1
+        IO.println("Lakes at (12,5): " + countLakes(image, new int[]{12, 5})); // 2
     }
 }
