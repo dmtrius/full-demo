@@ -242,19 +242,20 @@ public class LRUCacheHP<K, V> {
         final int numOfThreads = 10;
         LRUCache<Integer, String> concurrentCache = new LRUCache<>(1000);
 
-        ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
+
         Random random = new Random();
 
         long startTime = System.nanoTime();
 
         CompletableFuture<?>[] futures = new CompletableFuture[numOfThreads];
+        ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
         for (int threadId = 0; threadId < numOfThreads; threadId++) {
             final int id = threadId;
             futures[threadId] = CompletableFuture.runAsync(() -> {
                 for (int i = 0; i < 10000; i++) {
                     int key = random.nextInt(2000);
                     if (random.nextBoolean()) {
-                        concurrentCache.put(key, "value-" + key + "-" + id);
+                        concurrentCache.put(key, "value-%d-%d".formatted(key, id));
                     } else {
                         concurrentCache.get(key);
                     }
