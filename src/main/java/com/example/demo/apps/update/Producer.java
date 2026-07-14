@@ -14,8 +14,8 @@ public class Producer implements Runnable {
         while (true) {
             try {
                 queue.put(i);
-                System.out.println("Produced: " + i);
-            } catch (InterruptedException e) {
+                IO.println("Produced: " + i);
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
             i++;
