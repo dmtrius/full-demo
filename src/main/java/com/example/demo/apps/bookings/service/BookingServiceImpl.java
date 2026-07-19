@@ -3,11 +3,14 @@ package com.example.demo.apps.bookings.service;
 import com.example.demo.apps.bookings.entity.Booking;
 import com.example.demo.apps.bookings.entity.Feature;
 import com.example.demo.apps.bookings.entity.Room;
+import org.jspecify.annotations.NonNull;
+
 import java.time.LocalDateTime;
 
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class BookingServiceImpl implements BookingService {
@@ -15,7 +18,7 @@ public class BookingServiceImpl implements BookingService {
     private final Map<Room, Booking> bookings;
     private final Map<String, Room> rooms;
 
-    public BookingServiceImpl(Map<Room, Booking> bookings, Map<String, Room> rooms) {
+    public BookingServiceImpl(@NonNull Map<Room, Booking> bookings, @NonNull Map<String, Room> rooms) {
         this.bookings = bookings;
         this.rooms = rooms;
     }
@@ -42,16 +45,16 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking book(int start, int end, int personCount, Set<Feature> features) {
-        var availableRooms = getAvailableRooms(start, end, personCount, features);
-        if (!availableRooms.isEmpty()) {
-            Room room = availableRooms.getFirst();
-            LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
-            Booking booking = new Booking(start, end, personCount, features, now, room);
-            bookings.put(room, booking);
-            return booking;
-        }
-        return null;
+    public Optional<Booking> book(int start, int end, int personCount, Set<Feature> features) {
+        return getAvailableRooms(start, end, personCount, features)
+            .stream()
+            .findFirst()
+            .map(room -> {
+                Booking booking = new Booking(start, end, personCount, features,
+                    LocalDateTime.now(ZoneId.systemDefault()), room);
+                bookings.put(room, booking);
+                return booking;
+            });
     }
 
     private List<Room> getAvailableRooms(int start, int end, int personCount, Set<Feature> features) {

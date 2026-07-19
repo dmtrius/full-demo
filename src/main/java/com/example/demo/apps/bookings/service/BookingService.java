@@ -5,6 +5,7 @@ import com.example.demo.apps.bookings.entity.Feature;
 import com.example.demo.apps.bookings.entity.Room;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface BookingService {
@@ -21,7 +22,7 @@ public interface BookingService {
 
     void deleteRoom(String name);
 
-    Booking book(int start, int end, int personCount, Set<Feature> features);
+    Optional<Booking> book(int start, int end, int personCount, Set<Feature> features);
 
     List<Booking> getRoomSchedule(String roomName);
 }

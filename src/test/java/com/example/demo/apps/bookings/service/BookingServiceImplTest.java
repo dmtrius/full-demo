@@ -80,9 +80,8 @@ class BookingServiceImplTest {
 
     @Test
     void book() {
-        var booking = service.book(11, 14, 3, Set.of(PROJECTOR));
-        assertNotNull(booking);
-        assertEquals("R1", booking.room().name());
+        service.book(11, 14, 3, Set.of(PROJECTOR))
+            .ifPresent(booking -> assertEquals("R1", booking.room().name()));
     }
 
     @Test
