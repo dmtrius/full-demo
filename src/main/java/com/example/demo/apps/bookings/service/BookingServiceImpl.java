@@ -57,8 +57,7 @@ public class BookingServiceImpl implements BookingService {
     private List<Room> getAvailableRooms(int start, int end, int personCount, Set<Feature> features) {
         return rooms.values().stream()
             .filter(room -> room.capacity() >= personCount)
-            .filter(room -> room.openHour() <= start
-                && room.closeHour() >= end)
+            .filter(room -> room.openHour() >= start && room.closeHour() <= end)
             .filter(room -> room.features().containsAll(features))
             .toList();
     }
