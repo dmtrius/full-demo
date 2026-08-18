@@ -37,3 +37,5 @@ build/
 /*-snapshot.json
 **/node_modules/**
 .myollamaenhancer/**
+
+.zig*/**
