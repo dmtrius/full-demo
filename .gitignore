@@ -33,7 +33,7 @@ build/
 
 ### VS Code ###
 .vscode/
-/.fastRequest/config/fastRequestCurrentProjectConfig.json
+/.fastRequest/**
 /*-snapshot.json
 **/node_modules/**
 .myollamaenhancer/**
