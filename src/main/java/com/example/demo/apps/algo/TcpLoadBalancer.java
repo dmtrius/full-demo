@@ -1,9 +1,12 @@
 package com.example.demo.apps.algo;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,6 +60,21 @@ public class TcpLoadBalancer {
         try (InputStream in = inSock.getInputStream(); OutputStream out = outSock.getOutputStream()) {
             byte[] buf = new byte[8192];
             int n;
+
+            if (in.markSupported()) {
+                in.mark(8192);
+            }
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(in, StandardCharsets.UTF_8)
+            );
+            String line = br.readLine();
+            if ("_quit()".equals(line)) {
+                isRunning.set(false);
+                return;
+            } else {
+                in.reset();
+            }
+
             while ((n = in.read(buf)) != -1) {
                 out.write(buf, 0, n);
                 out.flush();
@@ -67,8 +85,8 @@ public class TcpLoadBalancer {
 
     static void main() {
         var backends = List.of(
-            new InetSocketAddress("127.0.0.1", 8001),
-            new InetSocketAddress("127.0.0.1", 8002)
+                new InetSocketAddress("127.0.0.1", 8001),
+                new InetSocketAddress("127.0.0.1", 8002)
         );
         new TcpLoadBalancer(9000, backends).start();
     }
