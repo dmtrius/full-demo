@@ -12,7 +12,20 @@ import java.util.Scanner;
 
 @Slf4j
 public class NIO2AsyncClient {
-    void main() {
+    private static final String QUIT = "_quit()";
+    private static final String HOST = "localhost";
+    private static final int DEFAULT_PORT = 8888;
+    private final int port;
+
+    public NIO2AsyncClient(int port) {
+        this.port = port;
+    }
+
+    static void main() {
+        new NIO2AsyncClient(DEFAULT_PORT).start();
+    }
+
+    public void start() {
         try {
             // Create asynchronous socket channel
             AsynchronousSocketChannel socketChannel = AsynchronousSocketChannel.open();
@@ -22,12 +35,12 @@ public class NIO2AsyncClient {
             socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
 
             // Connect to server asynchronously
-            socketChannel.connect(new InetSocketAddress("localhost", 8888), socketChannel,
+            socketChannel.connect(new InetSocketAddress(HOST, port), socketChannel,
                 new CompletionHandler<>() {
                     @Override
                     public void completed(Void result, AsynchronousSocketChannel channel) {
                         try {
-                            IO.println("Connected to server: " + channel.getRemoteAddress());
+                            log.info("Connected to server: {}", channel.getRemoteAddress());
 
                             // Start user input thread
                             startClientInputProcess(channel);
@@ -37,23 +50,23 @@ public class NIO2AsyncClient {
                             startReading(channel, buffer);
 
                         } catch (IOException e) {
-                            log.error("Client connection exception: {}", e.getMessage());
+                            log.error("Client connection exception: {}", e.getMessage(), e);
                             closeChannel(channel);
                         }
                     }
 
                     @Override
                     public void failed(Throwable exc, AsynchronousSocketChannel channel) {
-                        System.out.println("Connection failed: " + exc.getMessage());
+                        log.error("Connection failed: {}", exc.getMessage(), exc);
                         closeChannel(channel);
                     }
                 });
 
-            // Wait for user to enter "exit"
+            // Wait for user to enter QUIT
             Scanner scanner = new Scanner(System.in);
             while (true) {
                 String input = scanner.nextLine();
-                if ("exit".equalsIgnoreCase(input)) {
+                if (QUIT.equalsIgnoreCase(input)) {
                     break;
                 }
             }
@@ -66,12 +79,12 @@ public class NIO2AsyncClient {
     private static void startClientInputProcess(AsynchronousSocketChannel channel) {
         new Thread(() -> {
             try (Scanner scanner = new Scanner(System.in)) {
-                System.out.println("Enter messages to send to server (type 'quit' to disconnect):");
+                IO.println("Enter messages to send to server (type '%s' to disconnect):".formatted(QUIT));
 
                 while (true) {
                     String message = scanner.nextLine();
 
-                    if ("quit".equalsIgnoreCase(message)) {
+                    if (QUIT.equalsIgnoreCase(message)) {
                         closeChannel(channel);
                         break;
                     }
@@ -106,12 +119,12 @@ public class NIO2AsyncClient {
                     buffer.flip();
                     byte[] data = new byte[buffer.limit()];
                     buffer.get(data);
-                    System.out.println("Server: " + new String(data));
+                    log.info("Server: {}", new String(data));
 
                     buffer.clear();
                     channel.read(buffer, buffer, this);
                 } else {
-                    System.out.println("Server closed the connection");
+                    log.info("Server closed the connection");
                     closeChannel(channel);
                 }
             }
@@ -128,7 +141,7 @@ public class NIO2AsyncClient {
         try {
             if (channel != null && channel.isOpen()) {
                 channel.close();
-                IO.println("Disconnected from server");
+                log.info("Disconnected from server");
             }
         } catch (IOException e) {
             log.error("Error closing channel: {}", e.getMessage(), e);

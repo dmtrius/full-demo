@@ -15,7 +15,19 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class NIO2AsyncServer {
-    void main() {
+    private static final String HOST = "localhost";
+    private static final int DEFAULT_PORT = 8888;
+    private final int port;
+
+    public NIO2AsyncServer(int port) {
+        this.port = port;
+    }
+
+    static void main() {
+        new NIO2AsyncServer(DEFAULT_PORT).start();
+    }
+
+    public void start() {
         try {
             // Create a thread pool for the channel group
             AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(
@@ -24,12 +36,12 @@ public class NIO2AsyncServer {
             // Create the asynchronous server socket channel
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel
                     .open(group)
-                    .bind(new InetSocketAddress("localhost", 8888));
+                    .bind(new InetSocketAddress(HOST, port));
 
             // Configure socket options
             serverChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 
-            IO.println("NIO.2 Asynchronous server started on port 8888");
+            log.info("NIO.2 Asynchronous server started on port {}", port);
 
             // Start accepting connections asynchronously
             serverChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>() {
@@ -39,7 +51,7 @@ public class NIO2AsyncServer {
                     serverChannel.accept(null, this);
 
                     try {
-                        IO.println("Client connected: " + clientChannel.getRemoteAddress());
+                        log.info("Client connected: {}", clientChannel.getRemoteAddress());
 
                         // Allocate buffer for reading client data
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -53,7 +65,7 @@ public class NIO2AsyncServer {
                                     byte[] data = new byte[buffer.limit()];
                                     buffer.get(data);
                                     String message = new String(data);
-                                    IO.println("Received: " + message.trim());
+                                    log.info("Received: {}", message.trim());
 
                                     // Echo the message back to client
                                     ByteBuffer writeBuffer = ByteBuffer.wrap(("Echo: " + message).getBytes());
@@ -128,7 +140,7 @@ public class NIO2AsyncServer {
                 byte[] data = new byte[buffer.limit()];
                 buffer.get(data);
                 String message = new String(data);
-                IO.println("Received: " + message.trim());
+                log.info("Received: {}", message.trim());
 
                 // Echo the message back to client
                 ByteBuffer writeBuffer = ByteBuffer.wrap(("Echo: " + message).getBytes());
@@ -164,7 +176,7 @@ public class NIO2AsyncServer {
 
     private static void closeChannel(AsynchronousSocketChannel channel) {
         try {
-            IO.println("Closing connection with client: " + channel.getRemoteAddress());
+            log.info("Closing connection with client: {}", channel.getRemoteAddress());
             channel.close();
         } catch (IOException e) {
             log.error("Error closing channel: {}", e.getMessage(), e);
