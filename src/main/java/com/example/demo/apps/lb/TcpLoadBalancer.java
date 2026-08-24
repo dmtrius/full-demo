@@ -1,5 +1,6 @@
 package com.example.demo.apps.lb;
 
+import com.example.demo.apps.sockets.NIO2AsyncServer;
 import com.example.demo.apps.sockets.NIOSocketServer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -104,15 +105,28 @@ public class TcpLoadBalancer {
                 new InetSocketAddress("127.0.0.1", BE_PORT1),
                 new InetSocketAddress("127.0.0.1", BE_PORT2)
         );
-        runBEs(backends);
+        runBEs(backends, ServerType.NIO2);
         log.info("Listening on port: {}", FE_PORT);
         new TcpLoadBalancer(FE_PORT, backends).start();
     }
 
-    static void runBEs(List<InetSocketAddress> backends) {
+    private static void runBEs(List<InetSocketAddress> backends, ServerType type) {
         backends.forEach(be -> {
             log.info("Starting backend server on port: {}", be.getPort());
-            new Thread(() -> new NIOSocketServer(be.getPort()).start()).start();
+            new Thread(() -> {
+                switch (type) {
+                    case NIO:
+                        new NIOSocketServer(be.getPort()).start();
+                        break;
+                    case NIO2:
+                        new NIO2AsyncServer(be.getPort()).start();
+                        break;
+                }
+            }).start();
         });
+    }
+
+    private enum ServerType {
+        NIO, NIO2
     }
 }

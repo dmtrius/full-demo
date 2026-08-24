@@ -15,11 +15,17 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class NIO2AsyncServer {
-    private static final String HOST = "localhost";
+    private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_PORT = 8888;
+    private final String host;
     private final int port;
 
     public NIO2AsyncServer(int port) {
+        this(DEFAULT_HOST, port);
+    }
+
+    public NIO2AsyncServer(String host, int port) {
+        this.host = host;
         this.port = port;
     }
 
@@ -36,7 +42,7 @@ public class NIO2AsyncServer {
             // Create the asynchronous server socket channel
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel
                     .open(group)
-                    .bind(new InetSocketAddress(HOST, port));
+                    .bind(new InetSocketAddress(host, port));
 
             // Configure socket options
             serverChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
