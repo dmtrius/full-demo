@@ -21,11 +21,11 @@ public class SimpleSocketClient {
         client.start();
     }
 
-    void start() {
+    public void start() {
         try {
             // Connect to server at localhost:PORT
             Socket socket = new Socket("localhost", port);
-            System.out.println("Connected to server");
+            log.info("Connected to server");
 
             // Set up input and output streams
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -36,13 +36,12 @@ public class SimpleSocketClient {
 
             // Read response from server
             String response = in.readLine();
-            System.out.println("Server response: " + response);
+            log.info("Server response: {}", response);
 
             // Close connections
             in.close();
             out.close();
             socket.close();
-
         } catch (IOException e) {
             log.error(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package com.example.demo.apps.lb;
 
+import com.example.demo.apps.sockets.SimpleSocketServer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -48,8 +49,10 @@ public class TcpLoadBalancer {
             server.setTcpNoDelay(true);
             client.setTcpNoDelay(true);
 
-            Thread t1 = Thread.ofVirtual().start(() -> pipe(client, server));
-            Thread t2 = Thread.ofVirtual().start(() -> pipe(server, client));
+            Thread t1 = new Thread(() -> pipe(client, server));
+            Thread t2 = new Thread(() -> pipe(server, client));
+            t1.start();
+            t2.start();
             t1.join();
             t2.join();
         } catch (IOException | InterruptedException e) {
@@ -78,7 +81,7 @@ public class TcpLoadBalancer {
             if ("_quit()".equals(line)) {
                 isRunning.set(false);
                 return;
-            } else {
+            } else if (in.markSupported()) {
                 in.reset();
             }
 
@@ -101,7 +104,15 @@ public class TcpLoadBalancer {
                 new InetSocketAddress("127.0.0.1", BE_PORT1),
                 new InetSocketAddress("127.0.0.1", BE_PORT2)
         );
+        runBEs(backends);
         log.info("Listening on port: {}", FE_PORT);
         new TcpLoadBalancer(FE_PORT, backends).start();
+    }
+
+    static void runBEs(List<InetSocketAddress> backends) {
+        backends.forEach(be -> {
+            log.info("Starting backend server on port: {}", be.getPort());
+            new Thread(() -> new SimpleSocketServer(be.getPort()).start()).start();
+        });
     }
 }

@@ -18,15 +18,15 @@ public class SimpleSocketServer {
         server.start();
     }
 
-    void start() {
+    public void start() {
         try {
             // Create server socket
             ServerSocket serverSocket = new ServerSocket(this.port);
-            IO.println("Server started. Waiting for client connection...");
+            log.info("Server started. Waiting for client connection...");
 
             // Wait for client connection
             Socket clientSocket = serverSocket.accept();
-            IO.println("Client connected: " + clientSocket.getInetAddress().getHostAddress());
+            log.info("Client connected: {}", clientSocket.getInetAddress().getHostAddress());
 
             // Set up input and output streams
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -34,10 +34,11 @@ public class SimpleSocketServer {
 
             // Read a message from the client
             String inputLine = in.readLine();
-            IO.println("Received from client: " + inputLine);
+            log.info("Received from client: {}", inputLine);
 
             // Send the response to a client
-            IO.println("Hello from server! I received: " + inputLine);
+            log.info("Sending to client: {}", inputLine);
+            out.println(inputLine);
 
             // Close connections
             in.close();
