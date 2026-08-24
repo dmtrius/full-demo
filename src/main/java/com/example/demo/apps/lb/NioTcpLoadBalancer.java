@@ -1,4 +1,4 @@
-package com.example.demo.apps.algo;
+package com.example.demo.apps.lb;
 
 import lombok.extern.slf4j.Slf4j;
 

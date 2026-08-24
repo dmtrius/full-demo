@@ -1,4 +1,4 @@
-package com.example.demo.apps.algo;
+package com.example.demo.apps.lb;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

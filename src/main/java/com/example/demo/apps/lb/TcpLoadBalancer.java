@@ -1,4 +1,6 @@
-package com.example.demo.apps.algo;
+package com.example.demo.apps.lb;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,12 +14,13 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 public class TcpLoadBalancer {
     private final int listenPort;
     private final List<InetSocketAddress> backends;
     private final AtomicInteger rr = new AtomicInteger(0);
     private final ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor();
-    private AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
     public TcpLoadBalancer(int listenPort, List<InetSocketAddress> backends) {
         this.listenPort = listenPort;
@@ -31,7 +34,9 @@ public class TcpLoadBalancer {
                 Socket client = serverSocket.accept();
                 pool.submit(() -> handle(client));
             }
-        } catch (IOException _) {}
+        } catch (IOException e) {
+            log.error("Error occurred while starting the load balancer", e);
+        }
     }
 
     @SuppressWarnings({"java:S2142", "java:S108"})
@@ -47,7 +52,9 @@ public class TcpLoadBalancer {
             Thread t2 = Thread.ofVirtual().start(() -> pipe(server, client));
             t1.join();
             t2.join();
-        } catch (IOException | InterruptedException _) {}
+        } catch (IOException | InterruptedException e) {
+            log.error("Error occurred while handling client connection", e);
+        }
     }
 
     private InetSocketAddress pickBackend() {
@@ -80,14 +87,21 @@ public class TcpLoadBalancer {
                 out.flush();
             }
             outSock.shutdownOutput();
-        } catch (IOException _) {}
+        } catch (IOException e) {
+            log.error("Error occurred while piping data", e);
+        }
     }
+
+    private static final int FE_PORT = 9000;
+    private static final int BE_PORT1 = 8001;
+    private static final int BE_PORT2 = 8002;
 
     static void main() {
         var backends = List.of(
-                new InetSocketAddress("127.0.0.1", 8001),
-                new InetSocketAddress("127.0.0.1", 8002)
+                new InetSocketAddress("127.0.0.1", BE_PORT1),
+                new InetSocketAddress("127.0.0.1", BE_PORT2)
         );
-        new TcpLoadBalancer(9000, backends).start();
+        log.info("Listening on port: {}", FE_PORT);
+        new TcpLoadBalancer(FE_PORT, backends).start();
     }
 }

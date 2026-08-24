@@ -7,11 +7,21 @@ import java.net.*;
 
 @Slf4j
 public class SimpleSocketServer {
-    public static final int PORT = 8888;
-    void main() {
+    private final int port;
+
+    public SimpleSocketServer(int port) {
+        this.port = port;
+    }
+
+    static void main() {
+        SimpleSocketServer server = new SimpleSocketServer(8888);
+        server.start();
+    }
+
+    void start() {
         try {
             // Create server socket
-            ServerSocket serverSocket = new ServerSocket(PORT);
+            ServerSocket serverSocket = new ServerSocket(this.port);
             IO.println("Server started. Waiting for client connection...");
 
             // Wait for client connection
