@@ -1,6 +1,6 @@
 package com.example.demo.apps.lb;
 
-import com.example.demo.apps.sockets.SimpleSocketServer;
+import com.example.demo.apps.sockets.NIOSocketServer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -112,7 +112,7 @@ public class TcpLoadBalancer {
     static void runBEs(List<InetSocketAddress> backends) {
         backends.forEach(be -> {
             log.info("Starting backend server on port: {}", be.getPort());
-            new Thread(() -> new SimpleSocketServer(be.getPort()).start()).start();
+            new Thread(() -> new NIOSocketServer(be.getPort()).start()).start();
         });
     }
 }

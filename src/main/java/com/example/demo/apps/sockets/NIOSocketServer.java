@@ -14,9 +14,17 @@ import java.util.Set;
 
 @Slf4j
 public class NIOSocketServer {
-    private static final int PORT = 8888;
+    private final int port;
 
-    void main() {
+    public NIOSocketServer(int port) {
+        this.port = port;
+    }
+
+    static void main() {
+        new NIOSocketServer(8888).start();
+    }
+
+    public void start() {
         try {
             // Create selector
             Selector selector = Selector.open();
@@ -24,11 +32,11 @@ public class NIOSocketServer {
             // Create and configure the server socket channel
             ServerSocketChannel serverChannel = ServerSocketChannel.open();
             serverChannel.configureBlocking(false);
-            serverChannel.socket().bind(new InetSocketAddress(PORT));
+            serverChannel.socket().bind(new InetSocketAddress(port));
 
             // Register the channel with selector, for accept operations
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("NIO server started on port " + PORT);
+            log.info("NIO server started on port {}", port);
 
             ByteBuffer buffer = ByteBuffer.allocate(256);
 
@@ -48,7 +56,7 @@ public class NIOSocketServer {
                         SocketChannel client = serverChannel.accept();
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ);
-                        System.out.println("New client connected: " + client.getRemoteAddress());
+                        log.info("New client connected: {}", client.getRemoteAddress());
                     }
 
                     if (key.isReadable()) {
@@ -61,7 +69,7 @@ public class NIOSocketServer {
                             // Connection closed by client
                             client.close();
                             key.cancel();
-                            System.out.println("Client disconnected");
+                            log.info("Client disconnected");
                             continue;
                         }
 
@@ -69,7 +77,7 @@ public class NIOSocketServer {
                         byte[] data = new byte[buffer.limit()];
                         buffer.get(data);
                         String message = new String(data).trim();
-                        System.out.println("Received: " + message);
+                        log.info("Received: {}", message);
 
                         // Echo back to a client
                         buffer.clear();
@@ -81,7 +89,6 @@ public class NIOSocketServer {
                     iter.remove();
                 }
             }
-
         } catch (IOException e) {
             log.error(e.getMessage());
         }
