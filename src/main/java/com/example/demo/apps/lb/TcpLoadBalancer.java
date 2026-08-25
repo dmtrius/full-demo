@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class TcpLoadBalancer {
+    private static final String QUIT = "_quit()";
     private final int listenPort;
     private final List<InetSocketAddress> backends;
     private final AtomicInteger rr = new AtomicInteger(0);
@@ -79,7 +80,7 @@ public class TcpLoadBalancer {
                     new InputStreamReader(in, StandardCharsets.UTF_8)
             );
             String line = br.readLine();
-            if ("_quit()".equals(line)) {
+            if (QUIT.equals(line)) {
                 isRunning.set(false);
                 return;
             } else if (in.markSupported()) {
