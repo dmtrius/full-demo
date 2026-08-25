@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class App55 {
     void main() {
-        IO.println("Hello, World!");
         Console console = System.console();
         if (null == console) {
             IO.println("No console available!");
