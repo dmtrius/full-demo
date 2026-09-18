@@ -10,7 +10,7 @@ public class App56 {
     }
 }
 
-record R1(int id, String name){
+record R1(int id, String name) {
     public R1 withName(String newName) {
         return new R1(id, newName);
     }
