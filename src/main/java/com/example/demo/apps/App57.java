@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class App57 {
     void main() {
         IO.println("Hello World");
-        byte[] hash128 = Hashing.murmur3_128()
+        byte[] hash128 = Hashing.murmur3_128(Integer.MAX_VALUE)
             .hashString("Hello World", StandardCharsets.UTF_8).asBytes();
         IO.println(Arrays.toString(hash128));
     }
