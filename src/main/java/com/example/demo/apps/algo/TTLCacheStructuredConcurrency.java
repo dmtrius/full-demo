@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -81,7 +82,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
         try (var scope = StructuredTaskScope.open()) {
             entries.forEach((key, val) -> scope.fork(() -> put(key, val)));
             scope.join();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             throw new SCException("Batch put interrupted", e);
         }
@@ -101,7 +102,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
                             (v1, v2) -> v1,
                             ConcurrentHashMap::new
                     ));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             throw new SCException("Batch get interrupted", e);
         }
