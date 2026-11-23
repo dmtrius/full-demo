@@ -17,6 +17,7 @@ import static java.lang.IO.println;
 
 @SuppressWarnings("unused")
 public class TTLCacheStructuredConcurrency<K, V> {
+    private static final int COEFF = 1000;
     private static final String DEFAULT = "default";
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
@@ -31,7 +32,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
 
     public TTLCacheStructuredConcurrency(long ttlSeconds) {
         this.cache = new ConcurrentHashMap<>();
-        this.ttlMillis = ttlSeconds * 1000;
+        this.ttlMillis = ttlSeconds * COEFF;
         this.lastCleanup = new AtomicLong(System.currentTimeMillis());
     }
 

@@ -6,10 +6,11 @@ import static java.lang.IO.println;
 
 @SuppressWarnings("preview")
 public class StructuredConcurrencyExample {
+    private static final double THRESHOLD = 0.3d;
     void main() {
         try (var scope = StructuredTaskScope.open()) {
             var result1 = scope.fork(() -> {
-                if (Math.random() > 0.3d)  {
+                if (Math.random() > THRESHOLD)  {
                     throw new SCException("Task 1 failed");
                 }
                 return "Task 1 completed";
