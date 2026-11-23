@@ -1,6 +1,5 @@
 package com.example.demo.apps;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 
 import static java.lang.IO.println;
@@ -22,7 +21,7 @@ public class StructuredConcurrencyExample {
 
             println(result1.get());
             println(result2.get());
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             println("Error in one of the tasks: " + e.getMessage());
         }

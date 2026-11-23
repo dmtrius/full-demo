@@ -26,7 +26,6 @@ public class App57 {
     void m1() {
         log.info("----------");
         List<String> names = List.of("Alice", "Bob", "Charlie", "Diana", "Eve");
-        long count;
         var list = names.stream()
                 .map(
                         name -> {
@@ -34,7 +33,7 @@ public class App57 {
                             return name.toUpperCase();
                         }
                 ).toList();
-        count = names.stream()
+        long count = names.stream()
                 .map(
                         name -> {
                             log.info("Processing name [to count]: {}", name);
