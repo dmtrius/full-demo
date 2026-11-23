@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 
 @Log4j2
 public class App57 {
@@ -15,5 +16,7 @@ public class App57 {
         byte[] hash128 = Hashing.murmur3_128(Integer.MAX_VALUE)
             .hashString(str, StandardCharsets.UTF_8).asBytes();
         log.info(Arrays.toString(hash128));
+        var list = Arrays.asList("one", "two", "three");
+        Objects.checkIndex(5, list.size());
     }
 }
