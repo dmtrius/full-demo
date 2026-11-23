@@ -22,21 +22,22 @@ public class App57 {
         m1();
     }
 
+    @SuppressWarnings("all")
     void m1() {
         log.info("----------");
         List<String> names = List.of("Alice", "Bob", "Charlie", "Diana", "Eve");
-        long count = 0;
+        long count;
         var list = names.stream()
                 .map(
                         name -> {
-                            log.info("Processing name: {}", name);
+                            log.info("Processing name [toList]: {}", name);
                             return name.toUpperCase();
                         }
                 ).toList();
         count = names.stream()
                 .map(
                         name -> {
-                            log.info("Processing name: {}", name);
+                            log.info("Processing name [to count]: {}", name);
                             return name.toUpperCase();
                         }
                 )
