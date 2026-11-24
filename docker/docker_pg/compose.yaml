@@ -242,23 +242,47 @@ services:
       - "8083:8080"     # admin console — NOT 8080, see below
 
   vault:
-    image: hashicorp/vault:1.20
+    privileged: true
+    image: hashicorp/vault:latest
     container_name: vault
     restart: unless-stopped
-    command: server
+#    command: server
     cap_add:
       - IPC_LOCK
     environment:
-      VAULT_ADDR: http://0.0.0.0:8200
+      VAULT_ADDR: https://127.0.0.1:8200
+      VAULT_API_ADDR: "https://vault.test.lan"
+      VAULT_CACERT: /vault/userconfig/tls/ca.crt
     ports:
-      - "8200:8200"
+      - "8201:8201"
+      - "443:8200"
     volumes:
-      - vault_data:/vault/file        # persistent storage backend
-      - ./vault/config:/vault/config:ro
+      - ./vault/audit:/vault/audit
+      - ./vault/config:/vault/config
+      - ./vault/data:/vault/data
+      - ./vault/file:/vault/file
+      - ./vault/logs:/vault/logs
+      - ./vault/userconfig:/vault/userconfig
+      - ./vault/plugins:/vault/plugins
+      - ./vault/userconfig/tls/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    command: vault server -config=/vault/config/vault-config.hcl
+    networks:
+      - services_net
+
+networks:
+  services_net:
+    driver: bridge
 # hvs.n1kJjGkrj1ivJFIz6g9y17vD
 # EX6cMHsf9EW9zkVrCM2+JpTFPcNwTm4T7NKQd0c3NnC5
 # kfCNzmkpeDGzFh45OHMLOmu4S41HV1+QCTkzbh66YUDC
 # UTkZT3IEsn+6ouVCEJJpKGZ2BuTmz/vfEypM9ub8kGgJ
+###
+# hvs.eSd4frjWFUEmngDI6vp71Aox
+# Bswy3caRIIBk45BFsZZ4jAd4FcPeQGnxsC/ixtsHfp/w
+# yYYFBgAx0LwR9m+fwCYS9H1VQoZTHMPXbZQPJKO7/o1q
+# UDZjeYZAFI38NGzEvSFOllc2C/FBAsHjysQy3sEXY7Py
+# yoPV/KG4kKxXPitUQpJt1D9JHIfGgrsLMeAUO4NYDdJV
+# LbGXj+Z0OgsoBe6It0BjgS9fGtocYT34jdeKytYP/Ynx
 
 volumes:
   postgres_data:
