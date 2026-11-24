@@ -14,9 +14,9 @@
     <name>mydemoapplication</name>
     <description>My Demo Application using Spring Boot and other libs</description>
     <properties>
-        <java.version>27</java.version>
-        <maven.compiler.target>27</maven.compiler.target>
-        <maven.compiler.source>27</maven.compiler.source>
+        <java.version>26</java.version>
+        <maven.compiler.target>26</maven.compiler.target>
+        <maven.compiler.source>26</maven.compiler.source>
         <hibernate.version>7.2.4.Final</hibernate.version>
         <keycloak.springboot.version>25.0.3</keycloak.springboot.version>
         <lombok.version>1.18.48</lombok.version>
@@ -452,8 +452,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>27</source>
-                    <target>27</target>
+                    <source>26</source>
+                    <target>26</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>--enable-preview</arg>

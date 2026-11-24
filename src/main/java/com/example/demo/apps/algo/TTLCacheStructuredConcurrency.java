@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -18,6 +17,7 @@ import static java.lang.IO.println;
 
 @SuppressWarnings("unused")
 public class TTLCacheStructuredConcurrency<K, V> {
+    private static final int COEFF = 1000;
     private static final String DEFAULT = "default";
     private final ConcurrentMap<K, CacheEntry<V>> cache;
     private final long ttlMillis;
@@ -32,7 +32,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
 
     public TTLCacheStructuredConcurrency(long ttlSeconds) {
         this.cache = new ConcurrentHashMap<>();
-        this.ttlMillis = ttlSeconds * 1000;
+        this.ttlMillis = ttlSeconds * COEFF;
         this.lastCleanup = new AtomicLong(System.currentTimeMillis());
     }
 
@@ -82,7 +82,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
         try (var scope = StructuredTaskScope.open()) {
             entries.forEach((key, val) -> scope.fork(() -> put(key, val)));
             scope.join();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new SCException("Batch put interrupted", e);
         }
@@ -102,7 +102,7 @@ public class TTLCacheStructuredConcurrency<K, V> {
                             (v1, v2) -> v1,
                             ConcurrentHashMap::new
                     ));
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new SCException("Batch get interrupted", e);
         }

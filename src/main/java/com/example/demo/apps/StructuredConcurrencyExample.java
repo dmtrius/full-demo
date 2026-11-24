@@ -1,16 +1,16 @@
 package com.example.demo.apps;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.StructuredTaskScope;
 
 import static java.lang.IO.println;
 
 @SuppressWarnings("preview")
 public class StructuredConcurrencyExample {
+    private static final double THRESHOLD = 0.3d;
     void main() {
         try (var scope = StructuredTaskScope.open()) {
             var result1 = scope.fork(() -> {
-                if (Math.random() > 0.3d)  {
+                if (Math.random() > THRESHOLD)  {
                     throw new SCException("Task 1 failed");
                 }
                 return "Task 1 completed";
@@ -22,7 +22,7 @@ public class StructuredConcurrencyExample {
 
             println(result1.get());
             println(result2.get());
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             println("Error in one of the tasks: " + e.getMessage());
         }
