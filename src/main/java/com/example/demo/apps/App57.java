@@ -25,7 +25,7 @@ public class App57 {
     @SuppressWarnings("all")
     void m1() {
         log.info("----------");
-        List<String> names = List.of("Alice", "Bob", "Charlie", "Diana", "Eve");
+        var names = List.of("Alice", "Bob", "Charlie", "Diana", "Eve");
         var list = names.stream()
                 .map(
                         name -> {
