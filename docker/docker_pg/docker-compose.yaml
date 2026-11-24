@@ -255,6 +255,11 @@ services:
     volumes:
       - vault_data:/vault/file        # persistent storage backend
       - ./vault/config:/vault/config:ro
+# hvs.n1kJjGkrj1ivJFIz6g9y17vD
+# EX6cMHsf9EW9zkVrCM2+JpTFPcNwTm4T7NKQd0c3NnC5
+# kfCNzmkpeDGzFh45OHMLOmu4S41HV1+QCTkzbh66YUDC
+# UTkZT3IEsn+6ouVCEJJpKGZ2BuTmz/vfEypM9ub8kGgJ
+
 volumes:
   postgres_data:
   mysql_data:
