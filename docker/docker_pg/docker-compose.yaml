@@ -1,0 +1,272 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: app
+      MYSQL_PASSWORD: changeme
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pchangeme"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  mongodb:
+    image: mongo:8.0
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      
+  mongo-express:
+    image: mongo-express:1.0
+    container_name: mongo-express
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "8082:8081"     # host 8081 is taken by Keycloak
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:changeme@mongodb:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: changeme
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: changeme
+
+  activemq:
+    image: apache/activemq-classic:6.1.7
+    container_name: activemq
+    restart: unless-stopped
+    ports:
+      - "61616:61616"   # OpenWire (JMS clients)
+      - "8161:8161"     # Web console / Jolokia REST
+      # - "5672:5672"   # AMQP
+      # - "61613:61613" # STOMP
+      # - "61614:61614" # WS
+      # - "1883:1883"   # MQTT
+    volumes:
+      - activemq_data:/opt/apache-activemq/data
+      
+  rabbitmq:
+    image: rabbitmq:4.3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: changeme
+    ports:
+      - "5672:5672"     # AMQP — apps connect here
+      - "15672:15672"   # management web UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      
+  kafka:
+    image: apache/kafka:4.3.0
+    container_name: kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"     # client access from the host (localhost:9092)
+    environment:
+      # --- KRaft combined mode (broker + controller in one node) ---
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
+      # --- listeners ---
+      # HOST   -> reachable from your machine at localhost:9092
+      # DOCKER -> reachable from other containers at kafka:19092
+      KAFKA_LISTENERS: CONTROLLER://0.0.0.0:9093,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: HOST://localhost:9092,DOCKER://kafka:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,HOST:PLAINTEXT,DOCKER:PLAINTEXT
+      # --- single-node replication settings (must be 1) ---
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      
+  zookeeper:
+    image: zookeeper:3.9.5
+    container_name: zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      
+  kafka-ui:
+    image: ghcr.io/kafbat/kafka-ui:v1.3.0
+    container_name: kafka-ui
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8092:8080"     # web UI at http://localhost:8092
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:19092   # DOCKER listener, not localhost
+      DYNAMIC_CONFIG_ENABLED: "true"
+      
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false      # DEV ONLY — disables TLS + auth
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"   # HTTP REST API
+      # - "9300:9300" # transport (inter-node; only needed for multi-node)
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      
+  maildev:
+    image: maildev/maildev:2.2.1
+    container_name: maildev
+    restart: unless-stopped
+    environment:
+      MAILDEV_SMTP_PORT: 1025
+      MAILDEV_WEB_PORT: 1080
+    ports:
+      - "1080:1080"     # web inbox at http://localhost:1080
+      - "1025:1025"     # SMTP — point your apps here
+      
+  redis:
+    image: redis:8.8
+    container_name: redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  sqlite-web:
+    image: ghcr.io/coleifer/sqlite-web:latest
+    container_name: sqlite-web
+    restart: unless-stopped
+    command: ["app.db"]
+    environment:
+      SQLITE_DATABASE: app.db
+    volumes:
+      - ./sqlite:/data          # put your .db file here (working dir is /data)
+    ports:
+      - "8084:8080"  
+      
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5
+    container_name: keycloak
+    restart: unless-stopped
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: changeme
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+    ports:
+      - "8083:8080"     # admin console — NOT 8080, see below
+
+  vault:
+    image: hashicorp/vault:1.20
+    container_name: vault
+    restart: unless-stopped
+    command: server
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: http://0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    volumes:
+      - vault_data:/vault/file        # persistent storage backend
+      - ./vault/config:/vault/config:ro
+# hvs.n1kJjGkrj1ivJFIz6g9y17vD
+# EX6cMHsf9EW9zkVrCM2+JpTFPcNwTm4T7NKQd0c3NnC5
+# kfCNzmkpeDGzFh45OHMLOmu4S41HV1+QCTkzbh66YUDC
+# UTkZT3IEsn+6ouVCEJJpKGZ2BuTmz/vfEypM9ub8kGgJ
+
+volumes:
+  postgres_data:
+  mysql_data:
+  activemq_data:
+  rabbitmq_data:
+  elasticsearch_data:
+  kafka_data:
+  redis_data:
+  mongodb_data:
+  vault_data:
