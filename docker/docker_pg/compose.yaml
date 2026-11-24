@@ -176,7 +176,7 @@ services:
         hard: 65536
     ports:
       - "9200:9200"   # HTTP REST API
-      # - "9300:9300" # transport (inter-node; only needed for multi-node)
+      # - "9300:9300" # transport (internode; only needed for multi-node)
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     healthcheck:
