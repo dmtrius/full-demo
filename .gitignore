@@ -39,3 +39,4 @@ build/
 .myollamaenhancer/**
 
 .zig*/**
+.env

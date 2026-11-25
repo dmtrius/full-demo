@@ -12,9 +12,10 @@ import java.nio.charset.StandardCharsets;
 import static java.lang.IO.println;
 
 public class SimpleHttpServer {
+    private static final int PORT = 8080;
     void main() throws IOException {
         // Create an HttpServer instance
-        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
         // Create a context for handling requests at the root path
         server.createContext("/", new MyHandler());
@@ -23,7 +24,7 @@ public class SimpleHttpServer {
         server.setExecutor(null); // Use the default executor
         server.start();
 
-        println("Server is running on port 8000");
+        println("Server is running on port %d".formatted(PORT));
     }
 
     // Define a custom HttpHandler
